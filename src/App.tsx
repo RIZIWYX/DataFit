@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
-import './App.css'
-import './datafit.css'
+import './styles/App.css'
+import './styles/datafit.css'
 import AppLayout from './components/AppLayout.tsx'
 import Connexion from './pages/Connexion.tsx'
 import Dashboard from './pages/Dashboard.tsx'

@@ -9,8 +9,10 @@ type Props = {
 function DataFitPanel({ title, description }: Props) {
   return (
     <aside className="vitrine">
-      <Link to="/" className="logo">DataFit</Link>
-      <div>
+      <Link to="/" className="logo">
+        <img src="/logo.jpeg" alt="DataFit" className="nav-logo" />
+      </Link>
+      <div className="vitrine-texte">
         <h2>{title}</h2>
         <p>{description}</p>
         <svg className="ecg" viewBox="0 0 400 90" preserveAspectRatio="none" aria-hidden="true">

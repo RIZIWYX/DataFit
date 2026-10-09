@@ -1,19 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=DM+Sans:wght@400;500;600&display=swap");
-
-:root {
-  --encre: #12263A;
-  --fond: #F4F7FA;
-  --surface: #FFFFFF;
-  --accent: #C8421C;
-  --accent-fonce: #A83616;
-  --pouls: #FF6B45;
-  --focus: #17BEBB;
-  --texte-doux: #5B6B7B;
-  --bordure: #D5DEE7;
-  --erreur: #B3261E;
-  --titre: "Bricolage Grotesque", system-ui, sans-serif;
-  --corps: "DM Sans", system-ui, sans-serif;
-}
+/* pages connexion et profil : les couleurs viennent des variables de App.css */
 
 .datafit-root,
 .datafit-root * {
@@ -21,15 +6,16 @@
 }
 
 .datafit-root {
+  /* la charte n'a pas de rouge : rouge clair, lisible sur fond noir */
+  --erreur: #ff8a80;
   min-height: 100vh;
-  font-family: var(--corps);
-  background: var(--fond);
-  color: var(--encre);
   line-height: 1.5;
+  color-scheme: dark; /* champs du navigateur en version sombre */
 }
 
 .datafit-root fieldset {
   border: 0;
+  margin: 0;
   padding: 0;
   min-width: 0;
 }
@@ -41,25 +27,29 @@
 }
 
 .datafit-root .vitrine {
-  background: var(--encre);
-  color: #fff;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  color: var(--white);
   padding: 3rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   gap: 2rem;
+  /* reste à l'écran quand le formulaire est plus haut que la fenêtre */
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
 
 .datafit-root .logo {
-  color: inherit;
-  text-decoration: none;
-  font-family: var(--titre);
-  font-weight: 800;
-  font-size: 1.5rem;
+  align-self: flex-start;
+}
+
+/* titre, texte et courbe : centrés dans la hauteur du panneau */
+.datafit-root .vitrine-texte {
+  margin-block: auto;
 }
 
 .datafit-root .vitrine h2 {
-  font-family: var(--titre);
   font-weight: 800;
   font-size: clamp(1.9rem, 3.4vw, 3rem);
   line-height: 1.1;
@@ -67,7 +57,7 @@
 }
 
 .datafit-root .vitrine p {
-  color: #B9C6D3;
+  color: var(--muted);
   max-width: 34ch;
   margin-top: 1rem;
 }
@@ -81,7 +71,7 @@
 
 .datafit-root .ecg path {
   fill: none;
-  stroke: var(--pouls);
+  stroke: var(--turquoise);
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -108,21 +98,22 @@
 }
 
 .datafit-root .carte h1 {
-  font-family: var(--titre);
+  color: var(--white);
   font-weight: 800;
   font-size: 2rem;
   line-height: 1.15;
 }
 
 .datafit-root .sous-titre {
-  color: var(--texte-doux);
+  color: var(--muted);
   margin: 0.5rem 0 1.5rem;
 }
 
 .datafit-root .onglets {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: #E6ECF2;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 4px;
   margin-bottom: 1.75rem;
@@ -133,16 +124,16 @@
   background: transparent;
   font: inherit;
   font-weight: 600;
-  color: var(--texte-doux);
+  color: var(--muted);
   padding: 0.6rem;
   border-radius: 7px;
   cursor: pointer;
 }
 
+/* onglet choisi : même dégradé que la page en cours dans la sidebar */
 .datafit-root .onglets button[aria-selected="true"] {
-  background: var(--surface);
-  color: var(--encre);
-  box-shadow: 0 1px 3px rgba(18, 38, 58, 0.15);
+  background: var(--gradient);
+  color: #03120f;
 }
 
 .datafit-root .champ {
@@ -163,20 +154,27 @@
   gap: 1rem;
 }
 
-.datafit-root input:not([type="radio"]) {
+.datafit-root input:not([type="radio"]),
+.datafit-root select {
   width: 100%;
   padding: 0.75rem 0.9rem;
-  border: 1.5px solid var(--bordure);
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
   font: inherit;
-  background: var(--surface);
+  background: var(--card);
   color: inherit;
 }
 
+/* la liste déroulante fait la même hauteur que les champs */
+.datafit-root select {
+  height: calc(1.5em + 1.5rem + 2px);
+}
+
 .datafit-root input:focus-visible,
+.datafit-root select:focus-visible,
 .datafit-root button:focus-visible,
 .datafit-root a:focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 3px solid var(--turquoise);
   outline-offset: 2px;
 }
 
@@ -201,63 +199,43 @@
   display: block;
   text-align: center;
   padding: 0.7rem 0.4rem;
-  border: 1.5px solid var(--bordure);
-  border-radius: 8px;
-  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
   font-weight: 500;
   cursor: pointer;
 }
 
 .datafit-root .choix input:checked + label {
-  background: var(--encre);
-  border-color: var(--encre);
-  color: #fff;
+  background: var(--gradient);
+  border-color: var(--turquoise);
+  color: #03120f;
 }
 
 .datafit-root .choix input:focus-visible + label {
-  outline: 3px solid var(--focus);
+  outline: 3px solid var(--turquoise);
   outline-offset: 2px;
 }
 
+/* les couleurs des boutons viennent de .btn et .btn.ghost dans App.css */
 .datafit-root .btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
   width: 100%;
-  padding: 0.8rem 1rem;
-  border-radius: 8px;
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
+  font-family: inherit;
 }
 
 .datafit-root .btn-principal {
-  background: var(--accent);
-  color: #fff;
-  border: 0;
   margin-top: 0.5rem;
-}
-
-.datafit-root .btn-principal:hover {
-  background: var(--accent-fonce);
-}
-
-.datafit-root .btn-google {
-  background: var(--surface);
-  color: var(--encre);
-  border: 1.5px solid var(--bordure);
-}
-
-.datafit-root .btn-google:hover {
-  border-color: var(--encre);
 }
 
 .datafit-root .separateur {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: var(--texte-doux);
+  color: var(--muted);
   font-size: 0.9rem;
   margin: 1.25rem 0;
 }
@@ -267,7 +245,7 @@
   content: "";
   flex: 1;
   height: 1px;
-  background: var(--bordure);
+  background: var(--border);
 }
 
 .datafit-root .erreur {
@@ -277,14 +255,15 @@
 }
 
 .datafit-root .aide {
-  color: var(--texte-doux);
+  color: var(--muted);
   font-size: 0.8rem;
 }
 
 .datafit-root .message {
-  color: var(--encre);
-  background: #E6ECF2;
-  border-radius: 8px;
+  color: var(--mint-pale);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   padding: 0.7rem 0.8rem;
   font-size: 0.9rem;
   margin: 0.75rem 0;
@@ -297,7 +276,11 @@
 }
 
 .datafit-root .retour a {
-  color: var(--texte-doux);
+  color: var(--muted);
+}
+
+.datafit-root .retour a:hover {
+  color: var(--mint);
 }
 
 @media (max-width: 800px) {
@@ -307,7 +290,11 @@
   }
 
   .datafit-root .vitrine {
+    position: static;
+    height: auto;
     padding: 1.5rem;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
   }
 
   .datafit-root .vitrine p {

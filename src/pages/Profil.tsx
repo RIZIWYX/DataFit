@@ -12,7 +12,9 @@ function Profil() {
       prenom: String(formData.get('prenom') ?? ''),
       nom: String(formData.get('nom') ?? ''),
       age: Number(formData.get('age')),
+      taille: Number(formData.get('taille')),
       poids: Number(formData.get('poids')),
+      sport: String(formData.get('sport') ?? ''),
       sexe: String(formData.get('sexe') ?? ''),
       niveau: String(formData.get('niveau') ?? ''),
     }
@@ -53,8 +55,29 @@ function Profil() {
                   <input type="number" id="age" name="age" min={10} max={100} inputMode="numeric" required />
                 </div>
                 <div className="champ">
+                  <label htmlFor="taille">Taille (cm)</label>
+                  <input type="number" id="taille" name="taille" min={100} max={250} inputMode="numeric" required />
+                </div>
+              </div>
+
+              <div className="duo">
+                <div className="champ">
                   <label htmlFor="poids">Poids (kg)</label>
                   <input type="number" id="poids" name="poids" min={30} max={250} step="0.1" inputMode="decimal" required />
+                </div>
+                <div className="champ">
+                  <label htmlFor="sport">Sport pratiqué</label>
+                  <select id="sport" name="sport" defaultValue="" required>
+                    <option value="" disabled>Choisir…</option>
+                    <option value="course">Course à pied</option>
+                    <option value="marche">Marche</option>
+                    <option value="velo">Vélo</option>
+                    <option value="natation">Natation</option>
+                    <option value="fitness">Fitness</option>
+                    <option value="musculation">Musculation</option>
+                    <option value="collectif">Sport collectif</option>
+                    <option value="autre">Autre</option>
+                  </select>
                 </div>
               </div>
 
