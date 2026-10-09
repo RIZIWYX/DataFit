@@ -183,3 +183,91 @@ main {
 .nav nav a.btn:hover {
   color: #03120f;
 }
+.nav nav a.btn.ghost:hover {
+  color: var(--mint-pale);
+}
+
+/* application : header en haut, sidebar à gauche, page à droite */
+.app {
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+.app-body {
+  flex: 1;
+  min-height: 0; /* la sidebar et la page défilent chacune de leur côté */
+  display: flex;
+}
+.app-content {
+  padding: 2rem;
+  overflow-y: auto;
+}
+.a-venir {
+  color: var(--muted);
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.user-name {
+  font-weight: 600;
+}
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  /* anneau en dégradé autour de la photo */
+  padding: 2px;
+  background: var(--gradient);
+}
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  padding: 1rem;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+}
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.sidebar a {
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  color: var(--mint-pale);
+}
+.sidebar a:hover {
+  background: var(--card);
+  color: var(--mint);
+}
+/* page en cours */
+.sidebar a.active {
+  background: var(--gradient);
+  color: #03120f;
+  font-weight: bold;
+}
+
+/* petit écran : la sidebar passe en barre horizontale sous le header */
+@media (max-width: 700px) {
+  .app-body {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar nav {
+    flex-direction: row;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .sidebar a {
+    white-space: nowrap;
+  }
+}

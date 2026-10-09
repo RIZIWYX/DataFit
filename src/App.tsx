@@ -1,34 +1,30 @@
+import { BrowserRouter, Route, Routes } from 'react-router'
 import './App.css'
-
+import './datafit.css'
+import AppLayout from './components/AppLayout.tsx'
+import Connexion from './pages/Connexion.tsx'
+import Dashboard from './pages/Dashboard.tsx'
+import Landing from './pages/Landing.tsx'
+import Profil from './pages/Profil.tsx'
 
 function App() {
   return (
-    <>
-      <header className="nav">
-        <img src="/logo.jpeg" alt="DataFit" className="nav-logo" />
-        <nav>
-          <a href="#contact">Contact</a>
-          <button className="btn ghost small">Connexion</button>
-          <a href="#" className="btn small">Download</a>
-        </nav>
-      </header>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Landing />} />
 
-      <main>
-        <section className="hero">
-          <img src="/logo.jpeg" alt="DataFit" className="hero-logo" />
-          <h1>Ton sport, <span>en données.</span></h1>
-          <p>DataFit analyse tes séances et t'aide à progresser à ton rythme.</p>
-          <div className="cta">
-            <button className="btn">Commencer</button>
-            <a href="#features" className="btn ghost">En savoir plus</a>
-          </div>
-        </section>
-      </main>
+        {/* pages plein écran, sans header ni sidebar */}
+        <Route path="/connexion" element={<Connexion />} />
+        <Route path="/profil" element={<Profil />} />
 
-      <footer id="contact" className="footer">
-        © 2026 DataFit
-      </footer>
-    </>
+        {/* pages de l'application : elles partagent le header et la sidebar */}
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          {/* pages pas encore codées (programmation, fitness, ...) */}
+          <Route path="*" element={<p className="a-venir">Page en construction</p>} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
 

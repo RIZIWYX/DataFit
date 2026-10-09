@@ -1,0 +1,339 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=DM+Sans:wght@400;500;600&display=swap");
+
+:root {
+  --encre: #12263A;
+  --fond: #F4F7FA;
+  --surface: #FFFFFF;
+  --accent: #C8421C;
+  --accent-fonce: #A83616;
+  --pouls: #FF6B45;
+  --focus: #17BEBB;
+  --texte-doux: #5B6B7B;
+  --bordure: #D5DEE7;
+  --erreur: #B3261E;
+  --titre: "Bricolage Grotesque", system-ui, sans-serif;
+  --corps: "DM Sans", system-ui, sans-serif;
+}
+
+.datafit-root,
+.datafit-root * {
+  box-sizing: border-box;
+}
+
+.datafit-root {
+  min-height: 100vh;
+  font-family: var(--corps);
+  background: var(--fond);
+  color: var(--encre);
+  line-height: 1.5;
+}
+
+.datafit-root fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.datafit-root .page {
+  display: grid;
+  grid-template-columns: minmax(300px, 5fr) 6fr;
+  min-height: 100vh;
+}
+
+.datafit-root .vitrine {
+  background: var(--encre);
+  color: #fff;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.datafit-root .logo {
+  color: inherit;
+  text-decoration: none;
+  font-family: var(--titre);
+  font-weight: 800;
+  font-size: 1.5rem;
+}
+
+.datafit-root .vitrine h2 {
+  font-family: var(--titre);
+  font-weight: 800;
+  font-size: clamp(1.9rem, 3.4vw, 3rem);
+  line-height: 1.1;
+  max-width: 14ch;
+}
+
+.datafit-root .vitrine p {
+  color: #B9C6D3;
+  max-width: 34ch;
+  margin-top: 1rem;
+}
+
+.datafit-root .ecg {
+  display: block;
+  width: 100%;
+  height: 90px;
+  margin-top: 2.5rem;
+}
+
+.datafit-root .ecg path {
+  fill: none;
+  stroke: var(--pouls);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: datafit-trace 2.4s ease-out forwards;
+}
+
+@keyframes datafit-trace {
+  to { stroke-dashoffset: 0; }
+}
+
+.datafit-root .contenu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+}
+
+.datafit-root .carte {
+  width: 100%;
+  max-width: 420px;
+}
+
+.datafit-root .carte h1 {
+  font-family: var(--titre);
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.datafit-root .sous-titre {
+  color: var(--texte-doux);
+  margin: 0.5rem 0 1.5rem;
+}
+
+.datafit-root .onglets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #E6ECF2;
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 1.75rem;
+}
+
+.datafit-root .onglets button {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: var(--texte-doux);
+  padding: 0.6rem;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.datafit-root .onglets button[aria-selected="true"] {
+  background: var(--surface);
+  color: var(--encre);
+  box-shadow: 0 1px 3px rgba(18, 38, 58, 0.15);
+}
+
+.datafit-root .champ {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.datafit-root .champ > label,
+.datafit-root .legende {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.datafit-root .duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.datafit-root input:not([type="radio"]) {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1.5px solid var(--bordure);
+  border-radius: 8px;
+  font: inherit;
+  background: var(--surface);
+  color: inherit;
+}
+
+.datafit-root input:focus-visible,
+.datafit-root button:focus-visible,
+.datafit-root a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.datafit-root .choix {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.datafit-root .choix > div {
+  position: relative;
+}
+
+.datafit-root .choix input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.datafit-root .choix label {
+  display: block;
+  text-align: center;
+  padding: 0.7rem 0.4rem;
+  border: 1.5px solid var(--bordure);
+  border-radius: 8px;
+  background: var(--surface);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.datafit-root .choix input:checked + label {
+  background: var(--encre);
+  border-color: var(--encre);
+  color: #fff;
+}
+
+.datafit-root .choix input:focus-visible + label {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.datafit-root .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.datafit-root .btn-principal {
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  margin-top: 0.5rem;
+}
+
+.datafit-root .btn-principal:hover {
+  background: var(--accent-fonce);
+}
+
+.datafit-root .btn-google {
+  background: var(--surface);
+  color: var(--encre);
+  border: 1.5px solid var(--bordure);
+}
+
+.datafit-root .btn-google:hover {
+  border-color: var(--encre);
+}
+
+.datafit-root .separateur {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--texte-doux);
+  font-size: 0.9rem;
+  margin: 1.25rem 0;
+}
+
+.datafit-root .separateur::before,
+.datafit-root .separateur::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--bordure);
+}
+
+.datafit-root .erreur {
+  color: var(--erreur);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.datafit-root .aide {
+  color: var(--texte-doux);
+  font-size: 0.8rem;
+}
+
+.datafit-root .message {
+  color: var(--encre);
+  background: #E6ECF2;
+  border-radius: 8px;
+  padding: 0.7rem 0.8rem;
+  font-size: 0.9rem;
+  margin: 0.75rem 0;
+}
+
+.datafit-root .retour {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.datafit-root .retour a {
+  color: var(--texte-doux);
+}
+
+@media (max-width: 800px) {
+  .datafit-root .page {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .datafit-root .vitrine {
+    padding: 1.5rem;
+  }
+
+  .datafit-root .vitrine p {
+    display: none;
+  }
+
+  .datafit-root .ecg {
+    height: 56px;
+    margin-top: 1rem;
+  }
+
+  .datafit-root .contenu {
+    padding: 2rem 1.25rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .datafit-root .duo {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .datafit-root .ecg path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
