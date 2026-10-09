@@ -34,6 +34,18 @@ a {
   text-decoration: none;
 }
 
+#root {
+  min-height: 100svh;      /* au moins la hauteur de l'écran */
+  display: flex;
+  flex-direction: column;  /* header, main, footer empilés */
+}
+
+main {
+  flex: 1;                 /* prend toute la place laissée par le header et le footer */
+  display: flex;
+  flex-direction: column;
+}
+
 /* logo : le noir du JPEG disparaît sur fond sombre */
 .nav-logo,
 .hero-logo {
@@ -69,7 +81,7 @@ a {
 }
 
 .hero {
-  min-height: 85vh;
+  flex: 1;                 /* remplit tout le main */
   display: flex;
   flex-direction: column;
   align-items: center;
