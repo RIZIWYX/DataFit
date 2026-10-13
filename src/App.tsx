@@ -1,11 +1,11 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
-import './App.css'
-import './datafit.css'
+import './styles/App.css'
 import AppLayout from './components/AppLayout.tsx'
 import Connexion from './pages/Connexion.tsx'
 import Dashboard from './pages/Dashboard.tsx'
 import Landing from './pages/Landing.tsx'
 import Profil from './pages/Profil.tsx'
+import Sommeil from './pages/sommeil.tsx'
 
 function App() {
   return (
@@ -20,6 +20,7 @@ function App() {
         {/* pages de l'application : elles partagent le header et la sidebar */}
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/sommeil" element={<Sommeil />} />
           {/* pages pas encore codées (programmation, fitness, ...) */}
           <Route path="*" element={<p className="a-venir">Page en construction</p>} />
         </Route>

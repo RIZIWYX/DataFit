@@ -1,52 +1,27 @@
-import { useEffect, useState } from 'react'
-import '../dashboard.css'
+import '../styles/dashboard.css'
 import BadgeRang from '../components/BadgeRang.tsx'
 import CarteExercice from '../components/CarteExercice.tsx'
-import { CATEGORIES, DISCIPLINES, NOMS_RANGS, RANGS, type Sexe } from '../data/paliers.ts'
-import { type Perfs, type Profil, rangMoyen } from '../lib/rangs.ts'
-
-const CLE_STOCKAGE = 'datafit-rangs'
-
-interface Etat {
-  sexe: Sexe
-  categorie: number // index dans CATEGORIES[sexe]
-  onglet: string
-  perfs: Perfs
-}
-
-const ETAT_INITIAL: Etat = { sexe: 'H', categorie: 3, onglet: 'sbd', perfs: {} }
-
-// Démonstration : les perfs sont gardées dans le navigateur.
-// À remplacer par un appel au backend quand l'API sera prête.
-function chargerEtat(): Etat {
-  try {
-    const brut = localStorage.getItem(CLE_STOCKAGE)
-    return brut ? { ...ETAT_INITIAL, ...JSON.parse(brut) } : ETAT_INITIAL
-  } catch {
-    return ETAT_INITIAL
-  }
-}
+import { DISCIPLINES, NOMS_RANGS, RANGS } from '../data/paliers.ts'
+import useDashboard from '../hooks/useDashboard.ts'
 
 function Dashboard() {
-  const [etat, setEtat] = useState<Etat>(chargerEtat)
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(CLE_STOCKAGE, JSON.stringify(etat))
-    } catch {
-      // stockage indisponible (navigation privée…) : on continue sans sauvegarder
-    }
-  }, [etat])
-
-  const categories = CATEGORIES[etat.sexe]
-  const indexCategorie = Math.min(etat.categorie, categories.length - 1)
-  const [nomCategorie, poidsRef] = categories[indexCategorie]
-  const profil: Profil = { sexe: etat.sexe, poidsRef }
-  const discipline = DISCIPLINES.find((d) => d.id === etat.onglet) ?? DISCIPLINES[0]
-  const parCategorie = discipline.exercices.some((ex) => ex.type === 'load' || ex.type === 'lest')
-
-  const majPerf = (id: string, v: string) =>
-    setEtat((e) => ({ ...e, perfs: { ...e.perfs, [id]: v } }))
+  const {
+    sexe,
+    perfs,
+    categories,
+    indexCategorie,
+    nomCategorie,
+    poidsRef,
+    profil,
+    discipline,
+    parCategorie,
+    resume,
+    choisirSexe,
+    choisirCategorie,
+    choisirOnglet,
+    majPerf,
+    toutEffacer,
+  } = useDashboard()
 
   return (
     <div className="dash">
@@ -75,8 +50,8 @@ function Dashboard() {
               <button
                 key={s}
                 type="button"
-                aria-pressed={etat.sexe === s}
-                onClick={() => setEtat((e) => ({ ...e, sexe: s }))}
+                aria-pressed={sexe === s}
+                onClick={() => choisirSexe(s)}
               >
                 {s === 'H' ? 'Homme' : 'Femme'}
               </button>
@@ -88,7 +63,7 @@ function Dashboard() {
           <select
             id="dash-categorie"
             value={indexCategorie}
-            onChange={(e) => setEtat((s) => ({ ...s, categorie: Number(e.target.value) }))}
+            onChange={(e) => choisirCategorie(Number(e.target.value))}
           >
             {categories.map(([nom], i) => (
               <option key={nom} value={i}>{nom} kg</option>
@@ -100,24 +75,21 @@ function Dashboard() {
           <span className="dash-valeur">{poidsRef} kg</span>
         </div>
         <div className="dash-espace" />
-        <button type="button" className="btn ghost small" onClick={() => setEtat((e) => ({ ...e, perfs: {} }))}>
+        <button type="button" className="btn ghost small" onClick={toutEffacer}>
           Tout effacer
         </button>
       </section>
 
       <section className="dash-resume" aria-label="Résumé par discipline">
-        {DISCIPLINES.map((d) => {
-          const remplis = d.exercices.filter((ex) => (etat.perfs[ex.id] ?? '') !== '').length
-          return (
-            <button key={d.id} type="button" className="dash-resume-carte" onClick={() => setEtat((e) => ({ ...e, onglet: d.id }))}>
-              <BadgeRang rang={rangMoyen(d.exercices, etat.perfs, profil)} petit />
-              <span>
-                {d.nom}
-                <small>{remplis}/{d.exercices.length} renseignés</small>
-              </span>
-            </button>
-          )
-        })}
+        {resume.map((d) => (
+          <button key={d.id} type="button" className="dash-resume-carte" onClick={() => choisirOnglet(d.id)}>
+            <BadgeRang rang={d.rang} petit />
+            <span>
+              {d.nom}
+              <small>{d.remplis}/{d.total} renseignés</small>
+            </span>
+          </button>
+        ))}
       </section>
 
       <nav className="dash-onglets" role="tablist" aria-label="Disciplines">
@@ -127,7 +99,7 @@ function Dashboard() {
             type="button"
             role="tab"
             aria-selected={d.id === discipline.id}
-            onClick={() => setEtat((e) => ({ ...e, onglet: d.id }))}
+            onClick={() => choisirOnglet(d.id)}
           >
             {d.nom}
           </button>
@@ -139,12 +111,12 @@ function Dashboard() {
           <h2>{discipline.nom}</h2>
           <span className="dash-note">
             {parCategorie
-              ? `Seuils pour ${etat.sexe === 'H' ? 'homme' : 'femme'} ${nomCategorie} kg`
-              : `Seuils ${etat.sexe === 'H' ? 'hommes' : 'femmes'}, toutes catégories`}
+              ? `Seuils pour ${sexe === 'H' ? 'homme' : 'femme'} ${nomCategorie} kg`
+              : `Seuils ${sexe === 'H' ? 'hommes' : 'femmes'}, toutes catégories`}
           </span>
         </div>
         {discipline.exercices.map((ex) => (
-          <CarteExercice key={ex.id} exercice={ex} perfs={etat.perfs} profil={profil} onChange={majPerf} />
+          <CarteExercice key={ex.id} exercice={ex} perfs={perfs} profil={profil} onChange={majPerf} />
         ))}
       </section>
     </div>

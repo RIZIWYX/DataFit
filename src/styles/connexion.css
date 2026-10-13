@@ -1,0 +1,87 @@
+/* page de connexion (le reste de la mise en page est dans datafit.css) */
+
+/* photo dans le panneau de gauche, assombrie vers le bas pour le texte */
+.datafit-root.connexion .vitrine {
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.35), transparent 30%, rgba(0, 0, 0, 0.6) 60%, rgba(0, 0, 0, 0.9)),
+    url('/fond-connexion.jpg') 46% center / cover no-repeat; /* 46% : le coureur au centre */
+}
+
+/* le texte descend en bas du panneau pour ne pas cacher le coureur */
+.datafit-root.connexion .vitrine-texte {
+  margin-block: auto 0;
+}
+
+.datafit-root.connexion .vitrine p {
+  color: var(--mint-white);
+}
+
+.datafit-root .onglets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 1.75rem;
+}
+
+.datafit-root .onglets button {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 0.6rem;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+/* onglet choisi : même dégradé que la page en cours dans la sidebar */
+.datafit-root .onglets button[aria-selected="true"] {
+  background: var(--gradient);
+  color: #03120f;
+}
+
+.datafit-root .separateur {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 1.25rem 0;
+}
+
+.datafit-root .separateur::before,
+.datafit-root .separateur::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* la charte n'a pas de rouge : rouge clair, lisible sur fond noir */
+.datafit-root .erreur {
+  color: #ff8a80;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.datafit-root .aide {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.datafit-root .retour {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.datafit-root .retour a {
+  color: var(--muted);
+}
+
+.datafit-root .retour a:hover {
+  color: var(--mint);
+}

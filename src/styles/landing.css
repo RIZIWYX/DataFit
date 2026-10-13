@@ -1,0 +1,96 @@
+/* page de garde */
+
+/* photo en fond, assombrie pour que le texte reste lisible */
+.landing {
+  flex: 1;                 /* toute la hauteur de #root */
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.8)),
+    url('/fond-accueil.jpg') 70% center / cover no-repeat; /* 70% : le coureur reste visible sur mobile */
+}
+
+/* logo : le noir du JPEG disparaît sur fond sombre */
+.hero-logo {
+  mix-blend-mode: screen;
+  display: block;
+  width: min(420px, 80vw);
+}
+
+.hero {
+  flex: 1;                 /* remplit tout le main */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.2rem;
+  padding: 2rem;
+}
+.hero h1 {
+  font-size: clamp(2rem, 6vw, 4rem);
+  margin: 0;
+  color: var(--white);
+}
+.hero h1 span {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero p {
+  max-width: 520px;
+  font-size: 1.2rem;
+  color: var(--muted);
+}
+.cta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.features {
+  padding: 4rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+.features h2 {
+  color: var(--white);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  border-radius: 14px;
+  transition:
+    border-color 0.2s,
+    transform 0.2s;
+}
+.card:hover {
+  border-color: var(--turquoise);
+  transform: translateY(-4px);
+}
+.card h3 {
+  color: var(--mint-pale);
+}
+.card p {
+  color: var(--muted);
+}
+.icon {
+  font-size: 2rem;
+}
+
+.footer {
+  text-align: center;
+  padding: 2rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}

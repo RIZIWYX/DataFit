@@ -1,0 +1,67 @@
+/* page profil (le reste de la mise en page est dans datafit.css) */
+
+.datafit-root fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.datafit-root .legende {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* deux champs côte à côte */
+.datafit-root .duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* choix du sexe et du niveau : des boutons à la place des cases rondes */
+.datafit-root .choix {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.datafit-root .choix > div {
+  position: relative;
+}
+
+.datafit-root .choix input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.datafit-root .choix label {
+  display: block;
+  text-align: center;
+  padding: 0.7rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.datafit-root .choix input:checked + label {
+  background: var(--gradient);
+  border-color: var(--turquoise);
+  color: #03120f;
+}
+
+.datafit-root .choix input:focus-visible + label {
+  outline: 3px solid var(--turquoise);
+  outline-offset: 2px;
+}
+
+@media (max-width: 420px) {
+  .datafit-root .duo {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

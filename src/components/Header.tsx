@@ -10,7 +10,7 @@ function Header() {
         <img src="/logo.jpeg" alt="DataFit" className="nav-logo" />
       </Link>
       <div className="user">
-        <span className="user-name">{user.name}</span>
+        <span className="user-name">{"bienvenue " + user.name +" !"}</span>
         <img src={user.avatar} alt="Photo de profil" className="user-avatar" />
       </div>
     </header>
