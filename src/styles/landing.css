@@ -5,8 +5,6 @@
   flex: 1;                 /* toute la hauteur de #root */
   display: flex;
   flex-direction: column;
-  background:
-    url('/fond-accueil.jpg') 70% center / cover no-repeat; /* 70% : le coureur reste visible sur mobile */
 }
 
 /* logo : le noir du JPEG disparaît sur fond sombre */
@@ -17,7 +15,10 @@
 }
 
 .hero {
-  flex: 1;                 /* remplit tout le main */
+  min-height: 100svh;      /* le hero occupe tout l'écran, la suite apparaît en scrollant */
+  /* photo en fond sur le hero seulement, sinon elle s'étire sous toutes les sections */
+  background:
+    url('/fond-accueil.jpg') 70% center / cover no-repeat; /* 70% : le coureur reste visible sur mobile */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -87,9 +88,114 @@
   font-size: 2rem;
 }
 
-.footer {
-  text-align: center;
-  padding: 2rem;
+/* ---------- section « En savoir plus » ---------- */
+
+.features h2 {
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  margin: 0 0 0.5rem;
+}
+.features + .features {
+  padding-top: 0;          /* évite un double espacement entre deux sections */
+}
+
+/* étapes « comment ça marche » */
+.etapes {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+.etape {
+  padding: 1rem;
+}
+.etape h3 {
+  color: var(--mint-pale);
+}
+.etape p {
   color: var(--muted);
-  border-top: 1px solid var(--border);
+  margin: 0;
+}
+.etape-numero {
+  display: block;
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--turquoise);
+}
+.etape h3 {
+  margin-top: 0.3rem;
+}
+/* pastille ronde qui contient l'icône */
+.etape-icone {
+  display: inline-grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 1px solid var(--turquoise);
+  color: var(--turquoise);
+}
+.etape-icone .icone {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* carte des rangs, mise en avant sur toute la largeur */
+.carte-rangs {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  text-align: left;
+  border-color: var(--turquoise);
+}
+.carte-rangs > div:first-child {
+  flex: 1 1 320px;
+}
+.rangs-ligne {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* carte données personnelles */
+.carte-donnees {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+  text-align: left;
+}
+.carte-donnees h3 {
+  margin-top: 0.4rem;
+}
+.carte-donnees ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* appel à l'action final */
+.fin {
+  padding-bottom: 4rem;
+}
+.fin .btn {
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+.lien-politique {
+  display: inline-block;
+  margin-top: 0.8rem;
+  color: var(--mint-pale);
+  font-weight: 600;
+}
+.lien-politique:hover {
+  color: var(--turquoise);
 }
