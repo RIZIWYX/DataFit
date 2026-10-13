@@ -1,0 +1,63 @@
+/* Page progression. Le reste de la mise en page est dans pages.css. */
+
+/* choix du sport : des boutons côte à côte */
+.progression-sports {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.progression-sports button {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1.1rem;
+  border: 1px solid var(--d-bordure);
+  border-radius: 10px;
+  background: var(--d-carte);
+  font: inherit;
+  color: var(--d-encre);
+  cursor: pointer;
+}
+.progression-sports button:hover {
+  border-color: var(--turquoise);
+}
+/* le sport choisi : même dégradé que les autres éléments sélectionnés du site */
+.progression-sports button[aria-pressed='true'] {
+  border-color: transparent;
+  background: var(--gradient);
+  color: #03120f;
+  font-weight: bold;
+}
+
+/* les cartes d'une même colonne, l'une sous l'autre */
+.progression-colonne {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.progression-disciplines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.progression-disciplines a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--d-bordure);
+  border-radius: 10px;
+}
+.progression-disciplines li + li {
+  margin-top: 0.4rem;
+}
+.progression-disciplines a:hover {
+  border-color: var(--turquoise);
+  background: var(--d-creux);
+}
+.progression-disciplines span {
+  font-size: 1.2rem;
+  color: var(--d-discret);
+}

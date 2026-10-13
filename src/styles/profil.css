@@ -1,67 +1,156 @@
-/* page profil (le reste de la mise en page est dans datafit.css) */
+/* Page profil. Le reste de la mise en page est dans pages.css. */
 
-.datafit-root fieldset {
-  border: 0;
-  margin: 0;
-  padding: 0;
+/* le grand avatar et le nom, au-dessus du formulaire */
+.profil-identite {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 0.5rem 0 1.5rem;
+}
+.profil-avatar {
+  width: 120px;
+  height: 120px;
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  border-radius: 50%;
+  background: var(--gradient);
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #03120f;
+}
+.profil-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+.profil-identite h3 {
+  font-size: 1.4rem;
+}
+
+/* les cartes de droite, l'une sous l'autre */
+.profil-colonne {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
   min-width: 0;
 }
 
-.datafit-root .legende {
-  font-weight: 600;
-  font-size: 0.9rem;
+.profil-formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
 }
-
-/* deux champs côte à côte */
-.datafit-root .duo {
+.profil-champ {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+.profil-champ input,
+.profil-champ select {
+  width: 100%;
+}
+.profil-formulaire label,
+.profil-formulaire legend {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+/* âge, taille et poids sur une même ligne */
+.profil-mesures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
 }
 
-/* choix du sexe et du niveau : des boutons à la place des cases rondes */
-.datafit-root .choix {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+.profil-formulaire fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.profil-formulaire legend {
+  margin-bottom: 0.35rem;
+  padding: 0;
+}
+
+/* choix du sexe, du niveau et des activités : des boutons à la place des cases.
+   La vraie case reste là, invisible, pour le clavier et les lecteurs d'écran. */
+.profil-choix,
+.profil-activites {
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
-
-.datafit-root .choix > div {
+.profil-choix > div,
+.profil-activites > div {
   position: relative;
+  flex: 1;
 }
-
-.datafit-root .choix input {
+.profil-choix input,
+.profil-activites input {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
-
-.datafit-root .choix label {
-  display: block;
-  text-align: center;
-  padding: 0.7rem 0.4rem;
-  border: 1px solid var(--border);
+.profil-choix label,
+.profil-activites label {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--d-bordure);
   border-radius: 10px;
-  background: var(--card);
+  background: var(--d-carte);
   font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
 }
-
-.datafit-root .choix input:checked + label {
-  background: var(--gradient);
+.profil-choix label:hover,
+.profil-activites label:hover {
   border-color: var(--turquoise);
-  color: #03120f;
 }
-
-.datafit-root .choix input:focus-visible + label {
-  outline: 3px solid var(--turquoise);
+.profil-choix input:focus-visible + label,
+.profil-activites input:focus-visible + label {
+  outline: 2px solid var(--d-accent);
   outline-offset: 2px;
 }
+/* un seul choix possible : dégradé, comme les autres éléments sélectionnés du site */
+.profil-choix input:checked + label {
+  border-color: var(--turquoise);
+  background: var(--gradient);
+  color: #03120f;
+  font-weight: bold;
+}
+/* plusieurs choix possibles : fond teinté et bordure turquoise */
+.profil-activites .icone {
+  color: var(--d-accent);
+}
+.profil-activites input:checked + label {
+  border-color: var(--turquoise);
+  background: var(--mint-pale);
+  box-shadow: inset 0 0 0 1px var(--turquoise);
+  font-weight: bold;
+}
 
-@media (max-width: 420px) {
-  .datafit-root .duo {
-    grid-template-columns: 1fr;
-    gap: 0;
+/* bouton sur toute la largeur de la carte */
+.page .profil-formulaire .btn,
+.page .profil-large {
+  width: 100%;
+  padding: 0.9rem;
+}
+.profil-formulaire .pastille {
+  align-self: flex-start;
+}
+.page .profil-note {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--d-encre-2);
+}
+
+@media (max-width: 520px) {
+  .profil-mesures {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

@@ -7,7 +7,7 @@ interface Props {
 
 function BadgeRang({ rang, petit = false }: Props) {
   const lettre = rang >= 0 ? RANGS[rang] : null
-  const classes = ['dash-badge', petit ? 'petit' : '', lettre === 'Z' ? 'z' : '', lettre ? '' : 'vide']
+  const classes = ['sport-badge', petit ? 'petit' : '', lettre === 'Z' ? 'z' : '', lettre ? '' : 'vide']
     .filter(Boolean)
     .join(' ')
   const style = lettre && lettre !== 'Z' ? { background: `var(--rang-${lettre})` } : undefined

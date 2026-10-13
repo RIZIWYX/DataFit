@@ -95,11 +95,21 @@ main {
 .btn:hover {
   filter: brightness(1.1);
 }
-.btn.small {
-  padding: 0.5rem 1rem;
-}
+
 .btn.ghost {
   background: #000;
   border: 1px solid var(--turquoise);
   color: var(--mint-pale);
+}
+
+/* icônes au trait (composant Icone) : elles prennent la couleur du texte */
+.icone {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }

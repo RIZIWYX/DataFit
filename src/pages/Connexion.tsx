@@ -1,108 +1,120 @@
 import { Link } from 'react-router'
-import '../styles/datafit.css'
 import '../styles/connexion.css'
-import DataFitPanel from '../components/DataFitPanel.tsx'
+import Icone from '../components/Icone.tsx'
+import { ICONES } from '../data/icones.ts'
 import useConnexion from '../hooks/useConnexion.ts'
 
 function Connexion() {
-  const { isInscription, erreur, message, choisirMode, handleSubmit, handleGoogle } = useConnexion()
+  const {
+    isInscription,
+    basculerMode,
+    mdpVisible,
+    basculerMdp,
+    erreur,
+    message,
+    handleSubmit,
+    motDePasseOublie,
+  } = useConnexion()
 
   return (
-    <div className="datafit-root connexion">
-      <div className="page">
-        <DataFitPanel
-          title="Chaque minute compte."
-          description="Suis ta fréquence cardiaque, ta vitesse et tes progrès, séance après séance."
-        />
+    <div className="cnx">
+      <aside className="cnx-photo">
+        <Link to="/">
+          <img src="/logo.jpeg" alt="DataFit" className="nav-logo" />
+        </Link>
+        <div>
+          <h2>
+            Chaque séance
+            <br />
+            raconte <span>une histoire.</span>
+          </h2>
+          <p>Analysez vos performances. Suivez votre progression.</p>
+        </div>
+      </aside>
 
-        <main className="contenu">
-          <section className="carte" aria-labelledby="titre">
-            <h1 id="titre">
-              {isInscription ? 'Crée ton compte' : 'Content de te revoir'}
-            </h1>
-            <p className="sous-titre">
-              {isInscription
-                ? 'Quelques secondes suffisent pour commencer.'
-                : 'Connecte-toi pour retrouver tes séances.'}
-            </p>
+      <main className="cnx-panneau">
+        <section className="cnx-carte" aria-labelledby="cnx-titre">
+          <h1 id="cnx-titre">{isInscription ? 'Créez votre compte' : 'Heureux de vous revoir'}</h1>
+          <p className="cnx-sous-titre">
+            {isInscription
+              ? 'Quelques secondes suffisent pour commencer.'
+              : 'Connectez-vous à votre espace sportif.'}
+          </p>
 
-            <div className="onglets" role="tablist" aria-label="Connexion ou inscription">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={!isInscription}
-                onClick={() => choisirMode('connexion')}
-              >
-                Se connecter
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={isInscription}
-                onClick={() => choisirMode('inscription')}
-              >
-                Créer un compte
-              </button>
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="email">Adresse e-mail</label>
+            <div className="cnx-champ">
+              <Icone trace={ICONES.enveloppe} />
+              <input id="email" name="email" type="email" autoComplete="email" placeholder="exemple@email.com" required />
             </div>
 
-            <button type="button" className="btn ghost" onClick={handleGoogle}>
-              <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-                <path fill="#4285F4" d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087c1.7018-1.5668 2.6836-3.874 2.6836-6.615z"/>
-                <path fill="#34A853" d="M9 18c2.43 0 4.4673-.8059 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.859-3.0477.859-2.3441 0-4.3282-1.5836-5.036-3.7104H.9573v2.3318C2.4382 15.9832 5.4818 18 9 18z"/>
-                <path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.2822-1.1168-.2822-1.71s.1023-1.17.2823-1.71V4.9582H.9573A8.9965 8.9965 0 0 0 0 9c0 1.4523.3477 2.8268.9573 4.0418L3.964 10.71z"/>
-                <path fill="#EA4335" d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4632.8918 11.426 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.964 7.29C4.6718 5.1636 6.6559 3.5795 9 3.5795z"/>
-              </svg>
-              Continuer avec Google
-            </button>
+            <label htmlFor="mdp">Mot de passe</label>
+            <div className="cnx-champ">
+              <Icone trace={ICONES.cadenas} />
+              <input
+                id="mdp"
+                name="mdp"
+                type={mdpVisible ? 'text' : 'password'}
+                autoComplete={isInscription ? 'new-password' : 'current-password'}
+                minLength={isInscription ? 8 : undefined}
+                required
+              />
+              <button
+                type="button"
+                aria-label={mdpVisible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                aria-pressed={mdpVisible}
+                onClick={basculerMdp}
+              >
+                <Icone trace={ICONES.oeil} />
+              </button>
+            </div>
+            {isInscription && <p className="cnx-aide">8 caractères minimum.</p>}
 
-            <div className="separateur">ou avec ton e-mail</div>
-
-            <form onSubmit={handleSubmit}>
-              <div className="champ">
-                <label htmlFor="email">Adresse e-mail</label>
-                <input id="email" name="email" type="email" autoComplete="email" required />
-              </div>
-              <div className="champ">
-                <label htmlFor="mdp">Mot de passe</label>
-                <input
-                  id="mdp"
-                  name="mdp"
-                  type="password"
-                  autoComplete={isInscription ? 'new-password' : 'current-password'}
-                  minLength={isInscription ? 8 : undefined}
-                  required
-                />
-                {isInscription && <span className="aide">8 caractères minimum.</span>}
-              </div>
-
-              {isInscription && (
-                <div className="champ">
-                  <label htmlFor="mdp2">Confirmer le mot de passe</label>
+            {isInscription && (
+              <>
+                <label htmlFor="mdp2">Confirmer le mot de passe</label>
+                <div className="cnx-champ">
+                  <Icone trace={ICONES.cadenas} />
                   <input
                     id="mdp2"
                     name="mdp2"
-                    type="password"
+                    type={mdpVisible ? 'text' : 'password'}
                     autoComplete="new-password"
                     minLength={8}
                     required
                   />
                 </div>
-              )}
+              </>
+            )}
 
-              {erreur && <p className="erreur" role="alert">{erreur}</p>}
-              {message && <p className="message" role="status">{message}</p>}
+            {!isInscription && (
+              <div className="cnx-options">
+                <label>
+                  <input type="checkbox" name="souvenir" defaultChecked />
+                  Se souvenir de moi
+                </label>
+                <button type="button" className="cnx-lien" onClick={motDePasseOublie}>
+                  Mot de passe oublié ?
+                </button>
+              </div>
+            )}
 
-              <button type="submit" className="btn btn-principal">
-                {isInscription ? 'Créer mon compte' : 'Se connecter'}
-              </button>
-            </form>
+            {erreur && <p className="cnx-erreur" role="alert">{erreur}</p>}
+            {message && <p className="cnx-message" role="status">{message}</p>}
 
-            <p className="retour">
-              <Link to="/">Retour à l’accueil</Link>
-            </p>
-          </section>
-        </main>
-      </div>
+            <button type="submit" className="btn">
+              {isInscription ? 'Créer mon compte' : 'Se connecter'} →
+            </button>
+          </form>
+
+          <p className="cnx-bascule">
+            {isInscription ? 'Déjà un compte ?' : 'Pas encore de compte ?'}{' '}
+            <button type="button" className="cnx-lien" onClick={basculerMode}>
+              {isInscription ? 'Se connecter' : 'Créer un compte'}
+            </button>
+          </p>
+        </section>
+      </main>
     </div>
   )
 }

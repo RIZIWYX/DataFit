@@ -1,0 +1,46 @@
+/* Historique des séances. Le reste de la mise en page est dans pages.css. */
+
+/* les trois filtres, côte à côte */
+.historique-filtres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.9rem;
+  padding: 1rem 1.1rem;
+}
+
+/* sous le tableau : le nombre de séances à gauche, les pages à droite */
+.historique-pied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--d-bordure);
+  color: var(--d-encre-2);
+}
+.historique-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.historique-pages button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--d-bordure);
+  border-radius: 10px;
+  background: var(--d-carte);
+  font: inherit;
+  font-size: 1.2rem;
+  color: var(--d-encre);
+  cursor: pointer;
+}
+.historique-pages button:hover:not(:disabled) {
+  border-color: var(--turquoise);
+}
+.historique-pages button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
