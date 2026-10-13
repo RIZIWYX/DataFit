@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: datafit
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - donnees-postgres:/var/lib/postgresql/data   # les données survivent aux redémarrages
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro  # exécuté au 1er démarrage
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d datafit"]
+      interval: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/datafit   # "db" = le nom du service au-dessus
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: .
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  donnees-postgres:
