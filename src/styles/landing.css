@@ -6,7 +6,6 @@
   display: flex;
   flex-direction: column;
   background:
-    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.8)),
     url('/fond-accueil.jpg') 70% center / cover no-repeat; /* 70% : le coureur reste visible sur mobile */
 }
 

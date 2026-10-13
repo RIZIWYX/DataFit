@@ -1,80 +1,33 @@
-import { useEffect, useState } from 'react'
-import { CATEGORIES, DISCIPLINES, type Sexe } from '../data/paliers.ts'
-import { type Perfs, type Profil, rangMoyen } from '../lib/rangs.ts'
+import { useState } from 'react'
+import { SEANCES_DEMO } from '../data/seances.ts'
+import { parSemaine } from '../lib/activite.ts'
+import { lireProfil } from '../lib/profil.ts'
 
-const CLE_STOCKAGE = 'datafit-rangs'
+// périodes proposées dans le filtre, en nombre de semaines
+export const PERIODES = [4, 8]
 
-interface Etat {
-  sexe: Sexe
-  categorie: number // index dans CATEGORIES[sexe]
-  onglet: string
-  perfs: Perfs
-}
-
-const ETAT_INITIAL: Etat = { sexe: 'H', categorie: 3, onglet: 'sbd', perfs: {} }
-
-// Démonstration : les perfs sont gardées dans le navigateur.
-// À remplacer par un appel au backend quand l'API sera prête.
-function chargerEtat(): Etat {
-  try {
-    const brut = localStorage.getItem(CLE_STOCKAGE)
-    return brut ? { ...ETAT_INITIAL, ...JSON.parse(brut) } : ETAT_INITIAL
-  } catch {
-    return ETAT_INITIAL
-  }
-}
-
-// logique du dashboard : profil choisi, perfs saisies et valeurs calculées pour l'affichage
+// logique de l'accueil : période choisie, et tout ce qui en découle pour l'affichage
 function useDashboard() {
-  const [etat, setEtat] = useState<Etat>(chargerEtat)
+  const [nbSemaines, setNbSemaines] = useState(PERIODES[0])
+  const [profil] = useState(lireProfil)
+  // la date du jour est lue une seule fois, à l'ouverture de la page
+  const [aujourdHui] = useState(() => new Date())
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(CLE_STOCKAGE, JSON.stringify(etat))
-    } catch {
-      // stockage indisponible (navigation privée…) : on continue sans sauvegarder
-    }
-  }, [etat])
+  // de la plus récente à la plus ancienne
+  const seances = [...SEANCES_DEMO].sort((a, b) => b.date.getTime() - a.date.getTime())
 
-  const categories = CATEGORIES[etat.sexe]
-  const indexCategorie = Math.min(etat.categorie, categories.length - 1)
-  const [nomCategorie, poidsRef] = categories[indexCategorie]
-  const profil: Profil = { sexe: etat.sexe, poidsRef }
-  const discipline = DISCIPLINES.find((d) => d.id === etat.onglet) ?? DISCIPLINES[0]
-  const parCategorie = discipline.exercices.some((ex) => ex.type === 'load' || ex.type === 'lest')
-
-  // résumé par discipline : rang moyen et nombre d'exercices renseignés
-  const resume = DISCIPLINES.map((d) => ({
-    id: d.id,
-    nom: d.nom,
-    total: d.exercices.length,
-    remplis: d.exercices.filter((ex) => (etat.perfs[ex.id] ?? '') !== '').length,
-    rang: rangMoyen(d.exercices, etat.perfs, profil),
-  }))
-
-  const choisirSexe = (sexe: Sexe) => setEtat((e) => ({ ...e, sexe }))
-  const choisirCategorie = (categorie: number) => setEtat((e) => ({ ...e, categorie }))
-  const choisirOnglet = (onglet: string) => setEtat((e) => ({ ...e, onglet }))
-  const majPerf = (id: string, v: string) =>
-    setEtat((e) => ({ ...e, perfs: { ...e.perfs, [id]: v } }))
-  const toutEffacer = () => setEtat((e) => ({ ...e, perfs: {} }))
+  const semaines = parSemaine(seances, nbSemaines, aujourdHui)
+  const nbSeances = semaines.reduce((total, semaine) => total + semaine.total, 0)
 
   return {
-    sexe: etat.sexe,
-    perfs: etat.perfs,
-    categories,
-    indexCategorie,
-    nomCategorie,
-    poidsRef,
-    profil,
-    discipline,
-    parCategorie,
-    resume,
-    choisirSexe,
-    choisirCategorie,
-    choisirOnglet,
-    majPerf,
-    toutEffacer,
+    prenom: profil?.prenom ?? '',
+    nbSemaines,
+    choisirPeriode: setNbSemaines,
+    nbSeances,
+    semaines,
+    // rien s'il n'y a encore aucune séance
+    derniereSeance: seances.at(0),
+    seancesRecentes: seances.slice(0, 5),
   }
 }
 

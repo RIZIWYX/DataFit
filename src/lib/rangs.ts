@@ -1,11 +1,19 @@
 // Algo de calcul des rangs E → Z. Fonctions pures : aucune dépendance à React.
-import { type Exercice, type Sexe, POIDS_CALIBRAGE, TOUS_LES_EXERCICES } from '../data/paliers.ts'
+import { type Exercice, type Sexe, CATEGORIES, POIDS_CALIBRAGE, TOUS_LES_EXERCICES } from '../data/paliers.ts'
 
 export type Perfs = Record<string, string>
 
 export interface Profil {
   sexe: Sexe
   poidsRef: number // poids de référence de la catégorie (kg)
+}
+
+// Catégorie de poids d'une personne (index dans CATEGORIES[sexe]) : la première dont
+// la limite n'est pas dépassée. La dernière, « + », accueille tous les poids au-dessus.
+export function categoriePourPoids(sexe: Sexe, poids: number): number {
+  const categories = CATEGORIES[sexe]
+  const index = categories.findIndex(([nom, limite]) => nom.startsWith('-') && poids <= limite)
+  return index === -1 ? categories.length - 1 : index
 }
 
 // Seuils réels (rangs D à Z) pour un exercice et un profil.

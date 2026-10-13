@@ -42,14 +42,14 @@ function CarteExercice({ exercice: ex, perfs, profil, onChange }: Props) {
   const couleurJauge = r >= 0 ? `var(--rang-${RANGS[Math.min(7, r + 1)]})` : undefined
 
   return (
-    <article className={`dash-ex${verrouille ? ' verrouille' : ''}`}>
-      <div className="dash-ex-main">
-        <div className="dash-ex-top">
-          <label className="dash-ex-nom" htmlFor={idChamp}>{ex.nom}</label>
-          <span className="dash-ex-unite">{libelleMesure(ex)}</span>
+    <article className={`sport-ex${verrouille ? ' verrouille' : ''}`}>
+      <div className="sport-ex-main">
+        <div className="sport-ex-top">
+          <label className="sport-ex-nom" htmlFor={idChamp}>{ex.nom}</label>
+          <span className="sport-ex-unite">{libelleMesure(ex)}</span>
         </div>
 
-        <div className="dash-ex-saisie">
+        <div className="sport-ex-saisie">
           {ex.type === 'ladder' ? (
             <select id={idChamp} value={perfs[ex.id] ?? ''} onChange={(e) => onChange(ex.id, e.target.value)}>
               <option value="">Choisir…</option>
@@ -68,24 +68,24 @@ function CarteExercice({ exercice: ex, perfs, profil, onChange }: Props) {
             />
           )}
           {r >= 0 && (
-            <span className="dash-rang-nom" style={{ color: `var(--rang-${RANGS[r]})` }}>{NOMS_RANGS[r]}</span>
+            <span className="sport-rang-nom">{NOMS_RANGS[r]}</span>
           )}
           {ex.type === 'load' && r >= 0 && (
-            <span className="dash-note">{(valeur(ex, perfs) / profil.poidsRef).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} × PdC</span>
+            <span className="sport-note">{(valeur(ex, perfs) / profil.poidsRef).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} × PdC</span>
           )}
         </div>
 
-        <div className="dash-jauge" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label={`Progression ${ex.nom}`}>
+        <div className="sport-jauge" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label={`Progression ${ex.nom}`}>
           <i style={{ width: `${pct}%`, background: couleurJauge }} />
         </div>
 
-        <p className="dash-prochain">
+        <p className="sport-prochain">
           {verrouille
             ? 'Verrouillé · valide 1 muscle-up dans Calisthenics pour le débloquer.'
             : texteProchain(ex, perfs, profil, RANGS)}
         </p>
 
-        <button type="button" className="dash-lien" aria-expanded={ouvert} onClick={() => setOuvert(!ouvert)}>
+        <button type="button" className="sport-lien" aria-expanded={ouvert} onClick={() => setOuvert(!ouvert)}>
           {ouvert ? 'Masquer les paliers' : 'Voir les paliers'}
         </button>
       </div>
@@ -93,12 +93,12 @@ function CarteExercice({ exercice: ex, perfs, profil, onChange }: Props) {
       <BadgeRang rang={r} />
 
       {ouvert && (
-        <div className="dash-paliers">
+        <div className="sport-paliers">
           <table>
             <thead>
               <tr>
                 {RANGS.map((k) => (
-                  <th key={k} style={{ color: `var(--rang-${k})` }}>{k}</th>
+                  <th key={k} style={{ boxShadow: `inset 0 -3px 0 var(--rang-${k})` }}>{k}</th>
                 ))}
               </tr>
             </thead>

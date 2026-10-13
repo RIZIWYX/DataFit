@@ -1,0 +1,95 @@
+/* Page montre. Le reste de la mise en page est dans pages.css. */
+
+/* le dessin de la montre à gauche, ses informations à droite */
+.montre-fiche {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+.montre-dessin {
+  width: 110px;
+  flex-shrink: 0;
+}
+.montre-fiche > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  color: var(--d-encre-2);
+}
+.montre-fiche h3 {
+  color: var(--d-encre);
+}
+.montre-fiche .btn {
+  margin-top: 0.5rem;
+}
+/* « Connectée » : un point de couleur, toujours accompagné du mot */
+.montre-etat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+.montre-etat i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--d-axe);
+}
+.montre-etat.connectee {
+  color: var(--d-accent);
+}
+.montre-etat.connectee i {
+  background: var(--turquoise);
+}
+
+.montre-synchro {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.montre-synchro-etat {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.montre-synchro-etat p {
+  margin-top: 0.2rem;
+  color: var(--d-encre-2);
+}
+/* la ligne garde sa hauteur même sans message, pour que la carte ne bouge pas */
+.montre-message {
+  min-height: 1.5em;
+  text-align: center;
+  color: var(--d-encre-2);
+}
+
+.montre-recue-titre {
+  justify-content: flex-start;
+}
+.montre-recue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--d-encre-2);
+}
+.montre-recue h3 {
+  color: var(--d-encre);
+}
+
+.montre-pied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  margin-top: 1.25rem;
+  color: var(--d-encre-2);
+}
+.montre-pied p {
+  flex: 1;
+  min-width: 220px;
+}

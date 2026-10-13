@@ -1,87 +1,204 @@
-/* page de connexion (le reste de la mise en page est dans datafit.css) */
+/* Page de connexion : la photo à gauche, le formulaire sur fond clair à droite */
 
-/* photo dans le panneau de gauche, assombrie vers le bas pour le texte */
-.datafit-root.connexion .vitrine {
+.cnx {
+  --c-encre: #0f1f24;
+  --c-encre-2: #4c5f66;
+  --c-bordure: #d5dfe0;
+  --c-accent: #0a7d74; /* turquoise foncé : lisible en texte sur fond blanc */
+
+  flex: 1;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(380px, 1fr);
+  color-scheme: light; /* champs du navigateur en version claire */
+}
+
+/* la photo, assombrie en haut pour que le logo et le titre restent lisibles */
+.cnx-photo {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  padding: 2.5rem 3rem;
   background:
-    linear-gradient(rgba(0, 0, 0, 0.35), transparent 30%, rgba(0, 0, 0, 0.6) 60%, rgba(0, 0, 0, 0.9)),
-    url('/fond-connexion.jpg') 46% center / cover no-repeat; /* 46% : le coureur au centre */
+    linear-gradient(rgba(3, 18, 15, 0.65), rgba(3, 18, 15, 0.3) 45%, rgba(3, 18, 15, 0.1)),
+    url('/fond-connexion.jpg') 15% center / cover no-repeat; /* 15% : le coureur à droite du titre */
+  color: var(--white);
 }
-
-/* le texte descend en bas du panneau pour ne pas cacher le coureur */
-.datafit-root.connexion .vitrine-texte {
-  margin-block: auto 0;
+.cnx-photo a {
+  align-self: flex-start;
 }
-
-.datafit-root.connexion .vitrine p {
+.cnx-photo h2 {
+  margin: 0;
+  font-size: clamp(2rem, 3.6vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+.cnx-photo h2 span {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.cnx-photo p {
+  margin: 1rem 0 0;
+  font-size: 1.15rem;
   color: var(--mint-white);
 }
 
-.datafit-root .onglets {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 4px;
-  margin-bottom: 1.75rem;
+.cnx-panneau {
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: #fff;
+  color: var(--c-encre);
+}
+.cnx-carte {
+  width: 100%;
+  max-width: 420px;
+}
+.cnx-carte h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+.cnx-sous-titre {
+  margin: 0.6rem 0 1.5rem;
+  text-align: center;
+  font-size: 1.05rem;
+  color: var(--c-encre-2);
 }
 
-.datafit-root .onglets button {
-  border: 0;
-  background: transparent;
-  font: inherit;
+.cnx form {
+  display: flex;
+  flex-direction: column;
+}
+.cnx form > label {
+  margin: 0.9rem 0 0.35rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: var(--muted);
-  padding: 0.6rem;
-  border-radius: 7px;
-  cursor: pointer;
 }
-
-/* onglet choisi : même dégradé que la page en cours dans la sidebar */
-.datafit-root .onglets button[aria-selected="true"] {
-  background: var(--gradient);
-  color: #03120f;
-}
-
-.datafit-root .separateur {
+/* le champ : une icône, la saisie, et parfois un bouton à droite */
+.cnx-champ {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  color: var(--muted);
-  font-size: 0.9rem;
-  margin: 1.25rem 0;
+  gap: 0.7rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--c-bordure);
+  border-radius: 10px;
+  color: var(--c-encre-2);
 }
-
-.datafit-root .separateur::before,
-.datafit-root .separateur::after {
-  content: "";
+.cnx-champ:focus-within {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 1px;
+}
+.cnx-champ input {
   flex: 1;
-  height: 1px;
-  background: var(--border);
+  min-width: 0;
+  padding: 0.85rem 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  color: var(--c-encre);
 }
-
-/* la charte n'a pas de rouge : rouge clair, lisible sur fond noir */
-.datafit-root .erreur {
-  color: #ff8a80;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
+.cnx-champ button {
+  display: flex;
+  padding: 0.3rem;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
 }
-
-.datafit-root .aide {
-  color: var(--muted);
+.cnx-champ button[aria-pressed='true'] {
+  color: var(--c-accent);
+}
+.cnx-aide {
+  margin: 0.35rem 0 0;
   font-size: 0.8rem;
+  color: var(--c-encre-2);
 }
 
-.datafit-root .retour {
-  text-align: center;
-  margin-top: 1rem;
+.cnx-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-top: 0.9rem;
+}
+.cnx-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.cnx-options input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--c-accent);
+}
+/* boutons présentés comme des liens */
+.cnx-lien {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  color: var(--c-accent);
+  cursor: pointer;
+}
+.cnx button:focus-visible,
+.cnx a:focus-visible,
+.cnx-options input:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+}
+
+.cnx-erreur,
+.cnx-message {
+  margin: 0.9rem 0 0;
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
   font-size: 0.9rem;
 }
-
-.datafit-root .retour a {
-  color: var(--muted);
+.cnx-erreur {
+  background: #fdecea;
+  color: #a1281d;
+}
+.cnx-message {
+  background: #f1f6f5;
+  color: var(--c-encre-2);
 }
 
-.datafit-root .retour a:hover {
-  color: var(--mint);
+.cnx .btn {
+  margin-top: 1.1rem;
+  padding: 1rem;
+  font-family: inherit;
+}
+
+.cnx-bascule {
+  margin: 1.5rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--c-bordure);
+  text-align: center;
+  color: var(--c-encre-2);
+}
+
+/* petit écran : la photo passe en bandeau au-dessus du formulaire */
+@media (max-width: 800px) {
+  .cnx {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+  .cnx-photo {
+    gap: 1.25rem;
+    padding: 1.5rem;
+  }
+  .cnx-photo p {
+    display: none;
+  }
 }

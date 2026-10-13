@@ -1,0 +1,58 @@
+/* Page d'une séance (détail). Le reste de la mise en page est dans pages.css. */
+
+.detail-retour {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* l'icône du sport, puis son nom, l'état et la date */
+.detail-entete {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+.detail-icone {
+  width: 76px;
+  height: 76px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--mint-pale);
+  color: var(--d-accent);
+}
+.detail-icone .icone {
+  width: 40px;
+  height: 40px;
+}
+.detail-entete h1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+.detail-entete p {
+  margin-top: 0.3rem;
+  font-size: 1.05rem;
+  color: var(--d-encre-2);
+}
+
+.detail-notes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+.detail-notes label {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  font-weight: bold;
+}
+.detail-notes textarea {
+  flex: 1;
+  min-width: 240px;
+  resize: vertical;
+}

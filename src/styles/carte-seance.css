@@ -1,0 +1,78 @@
+/* encadré d'une séance (composant CarteSeance) : photo du sport en fond, infos par-dessus */
+
+.seance {
+  position: relative;
+  display: flex; /* le contenu s'étire si l'encadré est plus haut que lui */
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+}
+
+/* la photo occupe la partie droite de l'encadré */
+.seance-photo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 62%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 70% center; /* garde le sportif visible */
+}
+
+/* le contenu passe au-dessus de la photo ; le voile noir cache son bord gauche et garde le texte lisible */
+.seance-contenu {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.1rem;
+  padding: 1.5rem;
+  background: linear-gradient(90deg, #000 38%, rgba(0, 0, 0, 0.1) 90%);
+}
+
+.seance-entete {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.seance-icone {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--turquoise) 18%, #000);
+  color: var(--turquoise);
+}
+.seance-icone .icone {
+  width: 26px;
+  height: 26px;
+}
+
+.seance h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--white);
+}
+.seance-date {
+  margin: 0.15rem 0 0;
+  font-size: 0.9rem;
+  color: var(--mint-white);
+}
+
+.seance-infos {
+  margin: 0;
+  font-weight: bold;
+  color: var(--white);
+}
+/* point de séparation entre la durée et le résumé */
+.seance-infos span + span::before {
+  content: "·";
+  margin: 0 0.6rem;
+  color: var(--muted);
+}

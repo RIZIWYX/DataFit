@@ -1,123 +1,120 @@
+import { Link } from 'react-router'
 import '../styles/dashboard.css'
-import BadgeRang from '../components/BadgeRang.tsx'
-import CarteExercice from '../components/CarteExercice.tsx'
-import { DISCIPLINES, NOMS_RANGS, RANGS } from '../data/paliers.ts'
-import useDashboard from '../hooks/useDashboard.ts'
+import CarteSeance from '../components/CarteSeance.tsx'
+import EntetePage from '../components/EntetePage.tsx'
+import GrapheColonnes from '../components/GrapheColonnes.tsx'
+import Icone from '../components/Icone.tsx'
+import { ICONES } from '../data/icones.ts'
+import { LISTE_SPORTS, SPORTS } from '../data/sports.ts'
+import useDashboard, { PERIODES } from '../hooks/useDashboard.ts'
+import { colonnesDesSemaines, nbSeances as pluriel, seriesDesSports } from '../lib/colonnes.ts'
+import { formatDate, formatDuree, resumeSeance } from '../lib/format.ts'
 
 function Dashboard() {
   const {
-    sexe,
-    perfs,
-    categories,
-    indexCategorie,
-    nomCategorie,
-    poidsRef,
-    profil,
-    discipline,
-    parCategorie,
-    resume,
-    choisirSexe,
-    choisirCategorie,
-    choisirOnglet,
-    majPerf,
-    toutEffacer,
+    prenom,
+    nbSemaines,
+    choisirPeriode,
+    nbSeances,
+    semaines,
+    derniereSeance,
+    seancesRecentes,
   } = useDashboard()
 
   return (
-    <div className="dash">
-      <section className="dash-hero">
-        <h1>Rangs <span className="dash-grad">E → Z</span></h1>
-        <p>
-          Entre tes perfs, choisis ton sexe et ta catégorie de poids : chaque exo te donne un rang,
-          de « éclaté au sol » à « GOAT », et ce qu'il te manque pour le palier suivant.
-        </p>
-        <div className="dash-echelle">
-          {RANGS.map((r, i) => (
-            <div key={r}>
-              <b>{r}</b>
-              <i style={{ background: `var(--rang-${r})` }} />
-              <span>{NOMS_RANGS[i]}</span>
-            </div>
+    <div className="page">
+      <EntetePage
+        titre={`Bonjour${prenom ? ` ${prenom}` : ''} 👋`}
+        sousTitre="Retrouvez vos séances et suivez votre progression."
+      >
+        <select
+          aria-label="Période affichée"
+          value={nbSemaines}
+          onChange={(e) => choisirPeriode(Number(e.target.value))}
+        >
+          {PERIODES.map((n) => (
+            <option key={n} value={n}>{n} dernières semaines</option>
           ))}
+        </select>
+      </EntetePage>
+
+      <section className="carte dash-chiffre">
+        <span className="dash-chiffre-icone">
+          <Icone trace={ICONES.activite} />
+        </span>
+        <div>
+          <p>Séances</p>
+          <strong>{nbSeances}</strong>
+          <p>sur les {nbSemaines} dernières semaines</p>
         </div>
       </section>
 
-      <section className="dash-profil" aria-label="Profil">
-        <div className="dash-champ">
-          <span className="dash-label">Sexe</span>
-          <div className="dash-seg" role="group" aria-label="Sexe">
-            {(['H', 'F'] as const).map((s) => (
-              <button
-                key={s}
-                type="button"
-                aria-pressed={sexe === s}
-                onClick={() => choisirSexe(s)}
-              >
-                {s === 'H' ? 'Homme' : 'Femme'}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="dash-champ">
-          <label className="dash-label" htmlFor="dash-categorie">Catégorie</label>
-          <select
-            id="dash-categorie"
-            value={indexCategorie}
-            onChange={(e) => choisirCategorie(Number(e.target.value))}
-          >
-            {categories.map(([nom], i) => (
-              <option key={nom} value={i}>{nom} kg</option>
-            ))}
-          </select>
-        </div>
-        <div className="dash-champ">
-          <span className="dash-label">Poids de référence</span>
-          <span className="dash-valeur">{poidsRef} kg</span>
-        </div>
-        <div className="dash-espace" />
-        <button type="button" className="btn ghost small" onClick={toutEffacer}>
-          Tout effacer
-        </button>
-      </section>
+      <div className="grille-2">
+        <section className="carte">
+          <h2>Votre activité au fil des semaines</h2>
+          <p className="sous-titre">Nombre de séances par semaine et par sport.</p>
+          <GrapheColonnes
+            series={seriesDesSports(LISTE_SPORTS)}
+            colonnes={colonnesDesSemaines(semaines, LISTE_SPORTS)}
+            unite={pluriel}
+            entete="Semaine"
+          />
+        </section>
 
-      <section className="dash-resume" aria-label="Résumé par discipline">
-        {resume.map((d) => (
-          <button key={d.id} type="button" className="dash-resume-carte" onClick={() => choisirOnglet(d.id)}>
-            <BadgeRang rang={d.rang} petit />
-            <span>
-              {d.nom}
-              <small>{d.remplis}/{d.total} renseignés</small>
-            </span>
-          </button>
-        ))}
-      </section>
+        <section className="carte dash-derniere">
+          <h2>Dernière séance</h2>
+          {derniereSeance ? (
+            <CarteSeance
+              sport={derniereSeance.sport}
+              date={derniereSeance.date}
+              duree={formatDuree(derniereSeance.dureeMin)}
+              resume={resumeSeance(derniereSeance)}
+              lien={`/historique/${derniereSeance.id}`}
+            />
+          ) : (
+            <p className="sous-titre">Aucune séance pour l'instant.</p>
+          )}
+        </section>
+      </div>
 
-      <nav className="dash-onglets" role="tablist" aria-label="Disciplines">
-        {DISCIPLINES.map((d) => (
-          <button
-            key={d.id}
-            type="button"
-            role="tab"
-            aria-selected={d.id === discipline.id}
-            onClick={() => choisirOnglet(d.id)}
-          >
-            {d.nom}
-          </button>
-        ))}
-      </nav>
-
-      <section className="dash-panneau" role="tabpanel" aria-label={discipline.nom}>
-        <div className="dash-panneau-titre">
-          <h2>{discipline.nom}</h2>
-          <span className="dash-note">
-            {parCategorie
-              ? `Seuils pour ${sexe === 'H' ? 'homme' : 'femme'} ${nomCategorie} kg`
-              : `Seuils ${sexe === 'H' ? 'hommes' : 'femmes'}, toutes catégories`}
-          </span>
+      <section className="carte">
+        <div className="carte-titre">
+          <h2>Séances récentes</h2>
+          <Link to="/historique" className="lien">Voir l'historique →</Link>
         </div>
-        {discipline.exercices.map((ex) => (
-          <CarteExercice key={ex.id} exercice={ex} perfs={perfs} profil={profil} onChange={majPerf} />
-        ))}
+        <div className="tableau">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Activité</th>
+                <th scope="col">Durée</th>
+                <th scope="col">Résumé</th>
+                <th scope="col">Consulter</th>
+              </tr>
+            </thead>
+            <tbody>
+              {seancesRecentes.map((seance) => (
+                <tr key={seance.id}>
+                  <td>{formatDate(seance.date)}</td>
+                  <td>
+                    <span className="activite">
+                      <span style={{ color: SPORTS[seance.sport].couleur }}>
+                        <Icone trace={SPORTS[seance.sport].icone} />
+                      </span>
+                      {SPORTS[seance.sport].nom}
+                    </span>
+                  </td>
+                  <td>{formatDuree(seance.dureeMin)}</td>
+                  <td>{resumeSeance(seance)}</td>
+                  <td>
+                    <Link to={`/historique/${seance.id}`} className="lien">Consulter →</Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </div>
   )
