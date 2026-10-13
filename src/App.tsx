@@ -1,8 +1,10 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router'
 import './styles/App.css'
 import AppLayout from './components/AppLayout.tsx'
+import Cgu from './pages/Cgu.tsx'
 import Connexion from './pages/Connexion.tsx'
 import Dashboard from './pages/Dashboard.tsx'
+import DonneesPersonnelles from './pages/DonneesPersonnelles.tsx'
 import Historique from './pages/Historique.tsx'
 import Landing from './pages/Landing.tsx'
 import Montre from './pages/Montre.tsx'
@@ -19,6 +21,8 @@ function App() {
         {/* pages plein écran, sans sidebar */}
         <Route path="/" element={<Landing />} />
         <Route path="/connexion" element={<Connexion />} />
+        <Route path="/donnees-personnelles" element={<DonneesPersonnelles />} />
+        <Route path="/cgu" element={<Cgu />} />
 
         {/* pages de l'application : elles partagent la sidebar */}
         <Route element={<AppLayout />}>

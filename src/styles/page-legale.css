@@ -1,0 +1,118 @@
+/* pages légales : données personnelles et CGU (composant PageLegale) */
+
+.legal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.legal-entete {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border);
+}
+.legal-retour {
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.legal-retour:hover {
+  color: var(--turquoise);
+}
+
+/* colonne de texte étroite : plus facile à lire */
+.legal-contenu {
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.legal-fil {
+  font-size: 0.9rem;
+  margin: 0;
+}
+.legal-contenu h1 {
+  margin: 0.6rem 0 0.3rem;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  line-height: 1.15;
+  color: var(--white);
+}
+.legal-date {
+  margin-top: 0;
+  font-size: 0.9rem;
+  color: var(--turquoise);
+}
+.legal-contenu section {
+  margin-top: 2.5rem;
+}
+.legal-contenu h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.35rem;
+  color: var(--white);
+}
+.legal-contenu h3 {
+  margin: 1.2rem 0 0.3rem;
+  font-size: 1.05rem;
+  color: var(--mint-pale);
+}
+.legal-contenu p {
+  margin: 0 0 0.8rem;
+}
+.legal-contenu strong {
+  color: var(--mint-white);
+}
+.legal-contenu ul {
+  padding-left: 1.2rem;
+}
+.legal-contenu li {
+  margin-bottom: 0.4rem;
+}
+.legal-contenu a {
+  color: var(--mint-pale);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.legal-contenu a:hover {
+  color: var(--turquoise);
+}
+
+/* résumé en questions / réponses */
+.legal-resume {
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.legal-resume h3 {
+  margin-top: 0;
+}
+.legal-resume dl {
+  margin: 0;
+}
+.legal-resume dl > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--border);
+}
+.legal-resume dt {
+  color: var(--mint-white);
+}
+.legal-resume dd {
+  margin: 0;
+  flex-shrink: 0;
+  font-weight: 700;
+  text-align: right;
+}
+.legal-resume dd.non {
+  color: var(--mint);
+}
+.legal-resume dd.oui {
+  color: var(--turquoise);
+}
