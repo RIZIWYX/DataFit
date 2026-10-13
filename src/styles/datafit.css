@@ -1,0 +1,196 @@
+/* commun aux pages connexion et profil : panneau de gauche, carte et champs du formulaire.
+   Les couleurs viennent des variables de App.css. */
+
+.datafit-root,
+.datafit-root * {
+  box-sizing: border-box;
+}
+
+.datafit-root {
+  min-height: 100vh;
+  line-height: 1.5;
+  color-scheme: dark; /* champs du navigateur en version sombre */
+}
+
+.datafit-root .page {
+  display: grid;
+  grid-template-columns: minmax(300px, 5fr) 6fr;
+  min-height: 100vh;
+}
+
+.datafit-root .vitrine {
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  color: var(--white);
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  /* reste à l'écran quand le formulaire est plus haut que la fenêtre */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.datafit-root .logo {
+  align-self: flex-start;
+}
+
+/* titre, texte et courbe : centrés dans la hauteur du panneau */
+.datafit-root .vitrine-texte {
+  margin-block: auto;
+}
+
+.datafit-root .vitrine h2 {
+  font-weight: 800;
+  font-size: clamp(1.9rem, 3.4vw, 3rem);
+  line-height: 1.1;
+  max-width: 14ch;
+}
+
+.datafit-root .vitrine p {
+  color: var(--muted);
+  max-width: 34ch;
+  margin-top: 1rem;
+}
+
+.datafit-root .ecg {
+  display: block;
+  width: 100%;
+  height: 90px;
+  margin-top: 2.5rem;
+}
+
+.datafit-root .ecg path {
+  fill: none;
+  stroke: var(--turquoise);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: datafit-trace 2.3s ease-out forwards;
+}
+
+@keyframes datafit-trace {
+  to { stroke-dashoffset: 0; }
+}
+
+.datafit-root .contenu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+}
+
+.datafit-root .carte {
+  width: 100%;
+  max-width: 420px;
+}
+
+.datafit-root .carte h1 {
+  color: var(--white);
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.datafit-root .sous-titre {
+  color: var(--muted);
+  margin: 0.5rem 0 1.5rem;
+}
+
+.datafit-root .champ {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.datafit-root .champ > label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.datafit-root input:not([type="radio"]),
+.datafit-root select {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font: inherit;
+  background: var(--card);
+  color: inherit;
+}
+
+/* la liste déroulante fait la même hauteur que les champs */
+.datafit-root select {
+  height: calc(1.5em + 1.5rem + 2px);
+}
+
+.datafit-root input:focus-visible,
+.datafit-root select:focus-visible,
+.datafit-root button:focus-visible,
+.datafit-root a:focus-visible {
+  outline: 3px solid var(--turquoise);
+  outline-offset: 2px;
+}
+
+/* les couleurs des boutons viennent de .btn et .btn.ghost dans App.css */
+.datafit-root .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  font-family: inherit;
+}
+
+.datafit-root .btn-principal {
+  margin-top: 0.5rem;
+}
+
+.datafit-root .message {
+  color: var(--mint-pale);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  font-size: 0.9rem;
+  margin: 0.75rem 0;
+}
+
+@media (max-width: 800px) {
+  .datafit-root .page {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .datafit-root .vitrine {
+    position: static;
+    height: auto;
+    padding: 1.5rem;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .datafit-root .vitrine p {
+    display: none;
+  }
+
+  .datafit-root .ecg {
+    height: 56px;
+    margin-top: 1rem;
+  }
+
+  .datafit-root .contenu {
+    padding: 2rem 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .datafit-root .ecg path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

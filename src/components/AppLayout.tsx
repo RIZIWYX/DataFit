@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router'
+import '../styles/layout.css'
 import Header from './Header.tsx'
 import Sidebar from './Sidebar.tsx'
 

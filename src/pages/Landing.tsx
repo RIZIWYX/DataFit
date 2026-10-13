@@ -1,8 +1,9 @@
 import { Link } from 'react-router'
+import '../styles/landing.css'
 
 function Landing() {
   return (
-    <>
+    <div className="landing">
       <header className="nav">
         <img src="/logo.jpeg" alt="DataFit" className="nav-logo" />
         <nav>
@@ -27,7 +28,7 @@ function Landing() {
       <footer id="contact" className="footer">
         © 2026 DataFit
       </footer>
-    </>
+    </div>
   )
 }
 
