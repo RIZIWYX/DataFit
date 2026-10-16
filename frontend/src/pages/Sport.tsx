@@ -30,7 +30,7 @@ function Sport() {
   return (
     <div className="ecran sport">
       <TitrePage surtitre="Entraînement" titre="Performance">
-        Vos records par exercice, convertis en rangs selon votre sexe et votre catégorie de poids.
+        Vos records par exercice, convertis en rangs.
       </TitrePage>
 
       {/* l'échelle des huit rangs, en rappel */}

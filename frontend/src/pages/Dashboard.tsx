@@ -50,30 +50,6 @@ function Dashboard() {
         {resume}
       </TitrePage>
 
-      {/* la semaine : chiffres clés et bande des jours, directement sur le fond */}
-      <section className="accueil-semaine" aria-labelledby="accueil-semaine-titre">
-        <div>
-          <h2 id="accueil-semaine-titre" className="surtitre">7 derniers jours</h2>
-          <dl className="indicateurs">
-            <Indicateur
-              nom="Séances"
-              valeur={String(semaine.nbSeances)}
-              ecart={ecart(semaine.nbSeances, semainePrecedente.nbSeances, String)}
-            />
-            <Indicateur
-              nom="Entraînement"
-              valeur={formatDuree(semaine.minutes)}
-              ecart={ecart(semaine.minutes, semainePrecedente.minutes, formatDuree)}
-            />
-            <Indicateur nom="Distance" valeur={km(semaine.km)} ecart={ecart(semaine.km, semainePrecedente.km, km)} />
-          </dl>
-          <p className="accueil-note">
-            Comparé aux 7 jours précédents. La distance réunit course et natation.
-          </p>
-        </div>
-        <BandeJours jours={d.jours} />
-      </section>
-
       {/* côte à côte : ce que j'ai fait en dernier, ce qui m'attend ensuite */}
       <div className="accueil-cartes">
         {derniereSeance ? (
