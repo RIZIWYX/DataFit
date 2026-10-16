@@ -1,10 +1,9 @@
+
 import { Link } from 'react-router'
 import '../styles/dashboard.css'
 import BadgeRang from '../components/BadgeRang.tsx'
-import BandeJours from '../components/BandeJours.tsx'
 import CarteSeance from '../components/CarteSeance.tsx'
 import EtatVide from '../components/EtatVide.tsx'
-import Indicateur from '../components/Indicateur.tsx'
 import Jauge from '../components/Jauge.tsx'
 import LienFleche from '../components/LienFleche.tsx'
 import ListeSeances from '../components/ListeSeances.tsx'
@@ -16,19 +15,22 @@ import { SPORTS, couleurSport } from '../data/sports.ts'
 import useDashboard from '../hooks/useDashboard.ts'
 import useMontre from '../hooks/useMontre.ts'
 import { nbSeances } from '../lib/colonnes.ts'
-import { ecart } from '../lib/ecart.ts'
-import { allureSeance, formatDuree, formatHeure, formatJourRelatif, nombre, resumeSeance } from '../lib/format.ts'
+import {
+  allureSeance,
+  formatDuree,
+  formatHeure,
+  formatJourRelatif,
+  resumeSeance,
+} from '../lib/format.ts'
 import { titreObjectif } from '../lib/objectifs.ts'
 import { couleurSeance, depuisIso } from '../lib/programmation.ts'
-
-const km = (n: number) => `${nombre(n)} km`
 
 // L'accueil : une synthèse, pas un inventaire. Ce que j'ai fait (la semaine, la dernière séance)
 // et ce qui m'attend (la prochaine séance, mes objectifs) ; le détail est dans les pages dédiées.
 function Dashboard() {
   const d = useDashboard()
   const montre = useMontre()
-  const { aujourdHui, semaine, semainePrecedente, derniereSeance } = d
+  const { aujourdHui, semaine, derniereSeance } = d
 
   const heure = aujourdHui.getHours()
   const salut = heure >= 18 || heure < 5 ? 'Bonsoir' : 'Bonjour'
@@ -36,21 +38,26 @@ function Dashboard() {
     ? `${nbSeances(semaine.nbSeances)} et ${formatDuree(semaine.minutes)} d'entraînement ces 7 derniers jours.`
     : "Aucune séance ces 7 derniers jours : c'est le moment de s'y remettre."
 
-  // la prochaine séance planifiée, et celles qui la suivent
+  // La prochaine séance planifiée, et celles qui la suivent
   const [prochaine, ...ensuite] = d.prochaines
   const debutProchaine = prochaine && depuisIso(prochaine.debut)
-  const quand = (date: Date) => `${formatJourRelatif(date, aujourdHui)} · ${formatHeure(date)}`
+  const quand = (date: Date) =>
+    `${formatJourRelatif(date, aujourdHui)} · ${formatHeure(date)}`
 
   return (
     <div className="ecran accueil">
       <TitrePage
-        surtitre={aujourdHui.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+        surtitre={aujourdHui.toLocaleDateString('fr-FR', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+        })}
         titre={d.prenom ? `${salut} ${d.prenom}` : salut}
       >
         {resume}
       </TitrePage>
 
-      {/* côte à côte : ce que j'ai fait en dernier, ce qui m'attend ensuite */}
+      {/* Ce que j'ai fait en dernier, ce qui m'attend ensuite */}
       <div className="accueil-cartes">
         {derniereSeance ? (
           <CarteSeance
@@ -60,9 +67,14 @@ function Dashboard() {
             couleur={couleurSport(derniereSeance.sport)}
             image={SPORTS[derniereSeance.sport].image}
             mesures={[
-              { nom: derniereSeance.sport === 'musculation' ? 'Contenu' : 'Distance', valeur: resumeSeance(derniereSeance) },
+              {
+                nom: derniereSeance.sport === 'musculation' ? 'Contenu' : 'Distance',
+                valeur: resumeSeance(derniereSeance),
+              },
               { nom: 'Durée', valeur: formatDuree(derniereSeance.dureeMin) },
-              ...(allureSeance(derniereSeance) ? [{ nom: 'Allure', valeur: allureSeance(derniereSeance)! }] : []),
+              ...(allureSeance(derniereSeance)
+                ? [{ nom: 'Allure', valeur: allureSeance(derniereSeance)! }]
+                : []),
               { nom: 'FC moyenne', valeur: `${derniereSeance.fcMoyenne} bpm` },
             ]}
             lien={`/historique/${derniereSeance.id}`}
@@ -78,7 +90,9 @@ function Dashboard() {
             lien="/montre"
             action="Synchroniser la montre"
           >
-            <p className="carte-seance-detail">Vos séances apparaîtront ici dès que la montre les aura envoyées.</p>
+            <p className="carte-seance-detail">
+              Vos séances apparaîtront ici dès que la montre les aura envoyées.
+            </p>
           </CarteSeance>
         )}
 
@@ -92,7 +106,12 @@ function Dashboard() {
             mesures={[
               { nom: 'Durée prévue', valeur: formatDuree(prochaine.dureeMin) },
               { nom: 'Exercices', valeur: String(prochaine.exercices.length) },
-              { nom: 'Programme', valeur: d.programmes.find((p) => p.id === prochaine.programmeId)?.nom ?? 'Séance unique' },
+              {
+                nom: 'Programme',
+                valeur:
+                  d.programmes.find((p) => p.id === prochaine.programmeId)?.nom ??
+                  'Séance unique',
+              },
             ]}
             lien={`/programmation?seance=${prochaine.id}`}
             action="Voir dans le calendrier"
@@ -106,7 +125,15 @@ function Dashboard() {
             {ensuite.length > 0 && (
               <p className="carte-seance-detail">
                 <strong>Ensuite :</strong>{' '}
-                {ensuite.map((s) => `${s.titre}, ${formatJourRelatif(depuisIso(s.debut), aujourdHui).toLowerCase()}`).join(' · ')}
+                {ensuite
+                  .map(
+                    (s) =>
+                      `${s.titre}, ${formatJourRelatif(
+                        depuisIso(s.debut),
+                        aujourdHui,
+                      ).toLowerCase()}`,
+                  )
+                  .join(' · ')}
               </p>
             )}
           </CarteSeance>
@@ -127,9 +154,12 @@ function Dashboard() {
         )}
       </div>
 
-      {/* l'état du moment : objectifs, rangs, montre ; trois panneaux de même hauteur */}
+      {/* Objectifs, rangs et montre */}
       <div className="accueil-etat">
-        <Panneau titre="Objectifs" action={d.objectifs.length > 0 && <LienFleche to="/profil">Profil</LienFleche>}>
+        <Panneau
+          titre="Objectifs"
+          action={d.objectifs.length > 0 && <LienFleche to="/profil">Profil</LienFleche>}
+        >
           {d.objectifs.length ? (
             <ul className="accueil-objectifs">
               {d.objectifs.slice(0, 3).map(({ objectif, avancement }) => (
@@ -155,7 +185,11 @@ function Dashboard() {
           ) : d.objectifTexte ? (
             <p className="accueil-objectif-texte">{d.objectifTexte}</p>
           ) : (
-            <EtatVide icone={ICONES.cible} titre="Aucun objectif en cours" action={<LienFleche to="/profil">Fixer un objectif</LienFleche>}>
+            <EtatVide
+              icone={ICONES.cible}
+              titre="Aucun objectif en cours"
+              action={<LienFleche to="/profil">Fixer un objectif</LienFleche>}
+            >
               Un temps sur 5 km, une charge au squat, un nombre de séances par semaine…
             </EtatVide>
           )}
@@ -166,11 +200,19 @@ function Dashboard() {
           action={d.rangs?.length ? <LienFleche to="/performance">Tous les rangs</LienFleche> : undefined}
         >
           {d.rangs === null ? (
-            <EtatVide icone={ICONES.profil} titre="Profil à compléter" action={<LienFleche to="/profil">Compléter mon profil</LienFleche>}>
+            <EtatVide
+              icone={ICONES.profil}
+              titre="Profil à compléter"
+              action={<LienFleche to="/profil">Compléter mon profil</LienFleche>}
+            >
               Votre sexe et votre poids servent à calculer vos rangs, de E à Z.
             </EtatVide>
           ) : d.rangs.length === 0 ? (
-            <EtatVide icone={ICONES.trophee} titre="Aucun record enregistré" action={<LienFleche to="/performance">Saisir mes records</LienFleche>}>
+            <EtatVide
+              icone={ICONES.trophee}
+              titre="Aucun record enregistré"
+              action={<LienFleche to="/performance">Saisir mes records</LienFleche>}
+            >
               Entrez vos meilleures performances : chaque exercice vous donnera un rang.
             </EtatVide>
           ) : (
@@ -181,7 +223,8 @@ function Dashboard() {
                     <span>
                       <strong>{discipline.nom}</strong>
                       <small>
-                        {discipline.remplis} / {discipline.total} exercice{discipline.total > 1 ? 's' : ''}
+                        {discipline.remplis} / {discipline.total} exercice
+                        {discipline.total > 1 ? 's' : ''}
                       </small>
                     </span>
                     <BadgeRang rang={discipline.rang} petit />
@@ -203,13 +246,19 @@ function Dashboard() {
           <dl className="accueil-details">
             <div>
               <dt>Dernière synchronisation</dt>
-              <dd>{montre.synchronisation ? quand(montre.synchronisation).replace(' · ', ', ') : 'Jamais'}</dd>
+              <dd>
+                {montre.synchronisation
+                  ? quand(montre.synchronisation).replace(' · ', ', ')
+                  : 'Jamais'}
+              </dd>
             </div>
             <div>
               <dt>Dernière nuit</dt>
               <dd>
                 <Link to="/sommeil" className="accueil-sommeil">
-                  {montre.derniereNuit ? formatDuree(montre.derniereNuit.minutes) : 'Aucune'}
+                  {montre.derniereNuit
+                    ? formatDuree(montre.derniereNuit.minutes)
+                    : 'Aucune'}
                 </Link>
               </dd>
             </div>
@@ -222,7 +271,10 @@ function Dashboard() {
       </div>
 
       {d.seancesPrecedentes.length > 0 && (
-        <Panneau titre="Séances précédentes" action={<LienFleche to="/historique">Historique</LienFleche>}>
+        <Panneau
+          titre="Séances précédentes"
+          action={<LienFleche to="/historique">Historique</LienFleche>}
+        >
           <ListeSeances seances={d.seancesPrecedentes} aujourdHui={aujourdHui} />
         </Panneau>
       )}
