@@ -34,7 +34,11 @@ function GrapheLigne({
   const [actif, setActif] = useState<number | null>(null)
 
   const valeurs = points.map((point) => point.valeur)
-  const axe = graduations(depuisZero ? 0 : Math.min(...valeurs), Math.max(...valeurs))
+  const minimum = Math.min(...valeurs)
+  const maximum = Math.max(...valeurs)
+  // toutes les valeurs égales : on ouvre l'axe autour d'elles, sinon il n'aurait pas de hauteur
+  const marge = minimum === maximum ? Math.max(1, Math.abs(maximum) * 0.1) : 0
+  const axe = graduations(depuisZero ? 0 : minimum - marge, maximum + marge)
   const haut = axe[0]
   const bas = axe[axe.length - 1]
 

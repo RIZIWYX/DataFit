@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { CATEGORIES, DISCIPLINES, type Sexe } from '../data/paliers.ts'
 import { lireProfil } from '../lib/profil.ts'
-import { type Perfs, type Profil, categoriePourPoids, rangMoyen } from '../lib/rangs.ts'
+import { noterRecord } from '../lib/records.ts'
+import { type Perfs, type Profil, type ResumeDiscipline, categoriePourPoids, resumeDisciplines } from '../lib/rangs.ts'
 
 const CLE_STOCKAGE = 'datafit-rangs'
 
@@ -15,7 +16,7 @@ const ETAT_INITIAL: Etat = { onglet: 'sbd', perfs: {} }
 
 // Démonstration : les perfs sont gardées dans le navigateur.
 // À remplacer par un appel au backend quand l'API sera prête.
-function chargerEtat(): Etat {
+export function chargerEtat(): Etat {
   try {
     const garde = JSON.parse(localStorage.getItem(CLE_STOCKAGE) ?? '{}')
     return { onglet: garde.onglet ?? ETAT_INITIAL.onglet, perfs: garde.perfs ?? {} }
@@ -26,7 +27,7 @@ function chargerEtat(): Etat {
 
 // Le sexe et le poids ne se choisissent pas ici : ils viennent de la page profil.
 // Rien tant que le profil n'est pas rempli.
-function lireMorphologie(): { sexe: Sexe; poids: number } | null {
+export function lireMorphologie(): { sexe: Sexe; poids: number } | null {
   const profil = lireProfil()
   if (!profil || (profil.sexe !== 'H' && profil.sexe !== 'F') || !(profil.poids > 0)) return null
   return { sexe: profil.sexe, poids: profil.poids }
@@ -60,18 +61,19 @@ function useSport() {
   const parCategorie = discipline.exercices.some((ex) => ex.type === 'load' || ex.type === 'lest')
 
   // résumé par discipline : rang moyen et nombre d'exercices renseignés
-  const resume = DISCIPLINES.map((d) => ({
-    id: d.id,
-    nom: d.nom,
-    total: d.exercices.length,
-    remplis: d.exercices.filter((ex) => (etat.perfs[ex.id] ?? '') !== '').length,
-    rang: rangMoyen(d.exercices, etat.perfs, profil),
-  }))
+  const resume = resumeDisciplines(etat.perfs, profil)
 
   const choisirOnglet = (onglet: string) => setEtat((e) => ({ ...e, onglet }))
-  const majPerf = (id: string, v: string) =>
+  const majPerf = (id: string, v: string) => {
     setEtat((e) => ({ ...e, perfs: { ...e.perfs, [id]: v } }))
-  const toutEffacer = () => setEtat((e) => ({ ...e, perfs: {} }))
+    // daté, pour suivre l'évolution du record sur la page Progression
+    noterRecord(id, v)
+  }
+  const toutEffacer = () => {
+    // les jours passés restent dans l'historique ; seules les valeurs d'aujourd'hui sont retirées
+    for (const id of Object.keys(etat.perfs)) noterRecord(id, '')
+    setEtat((e) => ({ ...e, perfs: {} }))
+  }
 
   return {
     profilRempli: morphologie !== null,
@@ -88,6 +90,23 @@ function useSport() {
     majPerf,
     toutEffacer,
   }
+}
+
+// Le profil de calcul des rangs (sexe et poids de référence de la catégorie),
+// ou null tant que le profil n'est pas rempli.
+export function lireProfilRangs(): Profil | null {
+  const morphologie = lireMorphologie()
+  if (!morphologie) return null
+  const { sexe, poids } = morphologie
+  const [, poidsRef] = CATEGORIES[sexe][categoriePourPoids(sexe, poids)]
+  return { sexe, poidsRef }
+}
+
+// Pour l'accueil : le résumé des rangs par discipline, lu dans le navigateur.
+// null tant que le profil (sexe et poids) n'est pas rempli : sans lui, pas de rang.
+export function lireResumeRangs(): ResumeDiscipline[] | null {
+  const profil = lireProfilRangs()
+  return profil && resumeDisciplines(chargerEtat().perfs, profil)
 }
 
 export default useSport

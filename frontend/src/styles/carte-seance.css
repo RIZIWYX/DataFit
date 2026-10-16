@@ -1,78 +1,132 @@
-/* encadré d'une séance (composant CarteSeance) : photo du sport en fond, infos par-dessus */
+/* grande carte d'une séance (composant CarteSeance) : la photo de la discipline à droite,
+   en noir et blanc sous un voile noir qui garde le texte lisible. Couleurs : charte.css */
 
-.seance {
+.carte-seance {
   position: relative;
-  display: flex; /* le contenu s'étire si l'encadré est plus haut que lui */
+  isolation: isolate; /* le voile et la photo restent sous le contenu */
+  container-type: inline-size; /* la mise en page suit la largeur de la carte, pas celle de l'écran */
+  display: flex;
+  min-height: 300px;
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--card);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
 }
-
-/* la photo occupe la partie droite de l'encadré */
-.seance-photo {
+/* le trait de couleur du sport ou du programme, contre le bord gauche */
+.carte-seance::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: 3px;
+  background: var(--couleur);
+}
+/* le voile : noir à gauche sous le texte, presque transparent à droite sur le sportif */
+.carte-seance-voile {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, var(--noir-1) 30%, rgb(17 17 19 / 0.72) 58%, rgb(17 17 19 / 0.15));
+}
+.carte-seance-photo {
   position: absolute;
   top: 0;
   right: 0;
-  width: 62%;
+  z-index: -2;
+  width: 75%;
   height: 100%;
   object-fit: cover;
   object-position: 70% center; /* garde le sportif visible */
+  filter: grayscale(1) contrast(1.05) brightness(0.8);
 }
 
-/* le contenu passe au-dessus de la photo ; le voile noir cache son bord gauche et garde le texte lisible */
-.seance-contenu {
-  position: relative;
-  flex: 1;
+.carte-seance-contenu {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
-  gap: 1.1rem;
-  padding: 1.5rem;
-  background: linear-gradient(90deg, #000 38%, rgba(0, 0, 0, 0.1) 90%);
+  gap: 1.25rem;
+  width: min(100%, 440px);
+  padding: 1.5rem 1.6rem;
 }
-
-.seance-entete {
+.carte-seance-entete {
   display: flex;
   align-items: center;
   gap: 0.9rem;
 }
-
-.seance-icone {
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
+.carte-seance-icone {
   display: grid;
   place-items: center;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border: 1px solid var(--trait-fort);
   border-radius: 50%;
-  background: color-mix(in srgb, var(--turquoise) 18%, #000);
-  color: var(--turquoise);
+  background: rgb(9 9 10 / 0.6);
+  color: var(--couleur);
 }
-.seance-icone .icone {
-  width: 26px;
-  height: 26px;
+.carte-seance-icone .icone {
+  width: 24px;
+  height: 24px;
+}
+.carte-seance-entete .surtitre {
+  margin-bottom: 0.45rem;
+  color: var(--gris);
+}
+.carte-seance-titre {
+  margin: 0;
+  font-size: clamp(1.6rem, 1.1rem + 1.3vw, 2.3rem);
+  font-stretch: 118%;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1;
 }
 
-.seance h3 {
+/* les chiffres clés, en ligne */
+.carte-seance-mesures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 1.75rem;
   margin: 0;
-  font-size: 1.15rem;
-  color: var(--white);
 }
-.seance-date {
-  margin: 0.15rem 0 0;
-  font-size: 0.9rem;
-  color: var(--mint-white);
+.carte-seance-mesures dt {
+  font-size: 0.72rem;
+  color: var(--gris);
+}
+.carte-seance-mesures dd {
+  margin: 0.25rem 0 0;
+  font-size: 1.2rem;
+  font-stretch: 108%;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* une précision sous les chiffres : les exercices prévus, la suite du programme */
+.carte-seance-detail {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--gris);
+}
+.carte-seance-detail strong {
+  font-weight: 600;
+  color: var(--blanc);
+}
+.carte-seance-action {
+  margin-top: auto;
+  background: rgb(9 9 10 / 0.6) !important;
 }
 
-.seance-infos {
-  margin: 0;
-  font-weight: bold;
-  color: var(--white);
-}
-/* point de séparation entre la durée et le résumé */
-.seance-infos span + span::before {
-  content: "·";
-  margin: 0 0.6rem;
-  color: var(--muted);
+/* carte étroite (une seule colonne, téléphone) : la photo passe sous tout le texte, le voile s'épaissit */
+@container (max-width: 600px) {
+  .carte-seance-photo {
+    width: 100%;
+  }
+  .carte-seance-voile {
+    background: linear-gradient(90deg, rgb(17 17 19 / 0.94) 35%, rgb(17 17 19 / 0.6));
+  }
+  .carte-seance-contenu {
+    padding: 1.25rem 1.25rem 1.25rem 1.4rem;
+  }
 }

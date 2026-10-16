@@ -1,4 +1,4 @@
-/* pages légales : données personnelles et CGU (composant PageLegale) */
+/* pages légales : données personnelles et CGU (composant PageLegale). Couleurs et police : charte.css */
 
 .legal {
   flex: 1;
@@ -8,71 +8,78 @@
 
 .legal-entete {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
-  padding: 1rem 2rem;
-  border-bottom: 1px solid var(--border);
+  justify-content: space-between;
+  gap: 1rem;
+  height: 76px;
+  padding: 0 clamp(1rem, 4vw, 3.5rem);
+  border-bottom: 1px solid var(--trait);
 }
-.legal-retour {
-  color: var(--muted);
-  transition: color 0.2s;
-}
-.legal-retour:hover {
-  color: var(--turquoise);
+.legal-entete .logo {
+  font-size: 1.3rem;
 }
 
 /* colonne de texte étroite : plus facile à lire */
 .legal-contenu {
   width: 100%;
-  max-width: 780px;
+  max-width: 760px;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
+  padding: 3.5rem 1.25rem 5rem;
   line-height: 1.7;
-  color: var(--muted);
+  color: var(--gris);
 }
-.legal-fil {
-  font-size: 0.9rem;
-  margin: 0;
+.legal-contenu > .surtitre a:hover {
+  color: var(--blanc);
 }
 .legal-contenu h1 {
-  margin: 0.6rem 0 0.3rem;
-  font-size: clamp(1.8rem, 5vw, 2.6rem);
-  line-height: 1.15;
-  color: var(--white);
+  margin-top: 1rem;
+  color: var(--blanc);
 }
 .legal-date {
-  margin-top: 0;
-  font-size: 0.9rem;
-  color: var(--turquoise);
+  margin: 1rem 0 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--trait);
+  font-size: 0.875rem;
+  color: var(--gris-2);
 }
 .legal-contenu section {
-  margin-top: 2.5rem;
+  margin-top: 2.75rem;
 }
 .legal-contenu h2 {
-  margin: 0 0 0.6rem;
-  font-size: 1.35rem;
-  color: var(--white);
+  margin: 0 0 0.75rem;
+  font-size: 1.3rem;
+  font-stretch: 110%;
+  font-weight: 750;
+  line-height: 1.25;
+  color: var(--blanc);
 }
 .legal-contenu h3 {
-  margin: 1.2rem 0 0.3rem;
-  font-size: 1.05rem;
-  color: var(--mint-pale);
+  margin: 1.4rem 0 0.4rem;
+  font-size: 1.02rem;
+  font-weight: 650;
+  color: var(--blanc);
 }
 .legal-contenu p {
-  margin: 0 0 0.8rem;
+  margin: 0 0 0.9rem;
 }
 .legal-contenu strong {
-  color: var(--mint-white);
+  font-weight: 600;
+  color: var(--blanc);
 }
 .legal-contenu ul {
   padding-left: 1.2rem;
 }
 .legal-contenu li {
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.45rem;
+}
+.legal-contenu li::marker {
+  color: var(--turquoise);
 }
 .legal-contenu a {
-  color: var(--mint-pale);
+  color: var(--blanc);
   text-decoration: underline;
+  text-decoration-color: var(--turquoise);
   text-underline-offset: 3px;
 }
 .legal-contenu a:hover {
@@ -81,11 +88,11 @@
 
 /* résumé en questions / réponses */
 .legal-resume {
-  margin-top: 1rem;
-  padding: 1rem 1.25rem;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
 }
 .legal-resume h3 {
   margin-top: 0;
@@ -95,24 +102,24 @@
 }
 .legal-resume dl > div {
   display: flex;
-  justify-content: space-between;
   align-items: baseline;
+  justify-content: space-between;
   gap: 1rem;
-  padding: 0.55rem 0;
-  border-top: 1px solid var(--border);
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--trait);
 }
 .legal-resume dt {
-  color: var(--mint-white);
+  color: var(--blanc);
 }
 .legal-resume dd {
-  margin: 0;
   flex-shrink: 0;
+  margin: 0;
   font-weight: 700;
   text-align: right;
 }
 .legal-resume dd.non {
-  color: var(--mint);
+  color: var(--vert);
 }
 .legal-resume dd.oui {
-  color: var(--turquoise);
+  color: var(--ambre);
 }

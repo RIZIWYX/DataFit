@@ -13,11 +13,16 @@ function lireNotes(): Record<string, string> {
   }
 }
 
-// logique de la page d'une séance : la retrouver, préparer ses courbes, garder la note
+// logique de la page d'une séance : la retrouver, préparer ses courbes, garder la note,
+// et trouver les séances voisines pour passer de l'une à l'autre
 function useSeance(id: string | undefined) {
   const seance = SEANCES_DEMO.find((s) => s.id === id)
   const detail = useMemo(() => (seance ? detailSeance(seance) : null), [seance])
   const [notes, setNotes] = useState(lireNotes)
+
+  // de la plus ancienne à la plus récente
+  const chronologie = [...SEANCES_DEMO].sort((a, b) => a.date.getTime() - b.date.getTime())
+  const rang = chronologie.findIndex((s) => s.id === id)
 
   function ecrireNote(texte: string) {
     if (!seance) return
@@ -30,7 +35,14 @@ function useSeance(id: string | undefined) {
     }
   }
 
-  return { seance, detail, note: seance ? (notes[seance.id] ?? '') : '', ecrireNote }
+  return {
+    seance,
+    detail,
+    note: seance ? (notes[seance.id] ?? '') : '',
+    ecrireNote,
+    precedente: rang > 0 ? chronologie[rang - 1] : undefined,
+    suivante: rang >= 0 ? chronologie[rang + 1] : undefined,
+  }
 }
 
 export default useSeance

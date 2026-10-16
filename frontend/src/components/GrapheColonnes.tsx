@@ -19,12 +19,13 @@ type Props = {
   colonnes: Colonne[]
   unite: (n: number) => string // la valeur avec son unité : « 3 séances »
   entete: string // titre de la première colonne du tableau
+  legende?: boolean // false : la légende est affichée ailleurs sur la page
 }
 
 const somme = (valeurs: number[]) => valeurs.reduce((a, b) => a + b, 0)
 
 // colonnes fines, empilées quand il y a plusieurs séries (un étage par série)
-function GrapheColonnes({ series, colonnes, unite, entete }: Props) {
+function GrapheColonnes({ series, colonnes, unite, entete, legende = true }: Props) {
   const axe = graduations(0, Math.max(1, ...colonnes.map((colonne) => somme(colonne.valeurs))), 1)
   const maximum = axe[0]
   const plusieurs = series.length > 1
@@ -32,7 +33,7 @@ function GrapheColonnes({ series, colonnes, unite, entete }: Props) {
   return (
     <figure className="graphe">
       {/* une seule série : le titre de la carte dit déjà ce qui est tracé */}
-      {plusieurs && (
+      {plusieurs && legende && (
         <ul className="graphe-legende">
           {series.map((serie) => (
             <li key={serie.nom}>

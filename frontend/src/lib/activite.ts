@@ -54,6 +54,58 @@ export function parSemaine(seances: Seance[], nbSemaines: number, aujourdHui: Da
   return semaines
 }
 
+export interface Jour {
+  date: Date
+  seances: Seance[] // de la plus tôt à la plus tard dans la journée
+  minutes: number // durée totale des séances du jour
+}
+
+// Les n derniers jours, du plus ancien à aujourd'hui (compris), avec leurs séances.
+export function parJour(seances: Seance[], nbJours: number, aujourdHui: Date): Jour[] {
+  const jours: Jour[] = Array.from({ length: nbJours }, (_, i) => ({
+    date: decaler(aujourdHui, i - nbJours + 1),
+    seances: [],
+    minutes: 0,
+  }))
+
+  for (const seance of seances) {
+    const ecart = joursEcoules(seance.date, aujourdHui)
+    if (ecart < 0 || ecart >= nbJours) continue
+    const jour = jours[nbJours - 1 - ecart]
+    jour.seances.push(seance)
+    jour.minutes += seance.dureeMin
+  }
+  for (const jour of jours) jour.seances.sort((a, b) => a.date.getTime() - b.date.getTime())
+  return jours
+}
+
+// Distance d'une séance en kilomètres : course et natation ; rien pour la musculation.
+export function distanceKm(seance: Seance): number {
+  switch (seance.sport) {
+    case 'course': return seance.quantite
+    case 'natation': return seance.quantite / 1000
+    case 'musculation': return 0
+  }
+}
+
+export interface Bilan {
+  nbSeances: number
+  minutes: number
+  km: number // course et natation réunies
+}
+
+// Totaux d'une liste de séances.
+export function bilan(seances: Seance[]): Bilan {
+  return seances.reduce(
+    (total, seance) => ({
+      nbSeances: total.nbSeances + 1,
+      minutes: total.minutes + seance.dureeMin,
+      km: total.km + distanceKm(seance),
+    }),
+    { nbSeances: 0, minutes: 0, km: 0 },
+  )
+}
+
 // Graduations d'un axe en nombres ronds, de la plus haute à la plus basse.
 // On vise environ quatre intervalles entre le minimum et le maximum.
 // pasMinimum : 1 pour un axe qui compte des choses entières (des séances).

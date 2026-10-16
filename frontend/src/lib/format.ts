@@ -1,5 +1,6 @@
 // Mise en forme des dates, durées et mesures. Fonctions pures : aucune dépendance à React.
 import { type Seance } from '../data/seances.ts'
+import { joursEcoules } from './activite.ts'
 
 export const nombre = (n: number, decimales = 1) =>
   n.toLocaleString('fr-FR', { maximumFractionDigits: decimales })
@@ -19,6 +20,19 @@ export const formatDateLongue = (date: Date) =>
 // « 18:10 »
 export const formatHeure = (date: Date) =>
   date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+
+// « Aujourd'hui », « Hier », « Demain », « Mardi » dans la semaine écoulée ou à venir, puis « 7 oct. »
+export function formatJourRelatif(date: Date, aujourdHui: Date): string {
+  const jours = joursEcoules(date, aujourdHui) // négatif dans le futur
+  if (jours === 0) return "Aujourd'hui"
+  if (jours === 1) return 'Hier'
+  if (jours === -1) return 'Demain'
+  if (Math.abs(jours) < 7) {
+    const nom = date.toLocaleDateString('fr-FR', { weekday: 'long' })
+    return nom[0].toUpperCase() + nom.slice(1)
+  }
+  return formatJour(date)
+}
 
 // 32 → « 32 min » ; 70 → « 1 h 10 » ; 60 → « 1 h »
 export function formatDuree(minutes: number): string {

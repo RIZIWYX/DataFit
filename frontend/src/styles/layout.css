@@ -1,116 +1,28 @@
-/* cadre de l'application : sidebar sombre à gauche sur toute la hauteur, page claire à droite */
+/* cadre de l'application : la navigation (navigation.css) et la zone de page à côté.
+   Couleurs et police : charte.css */
 
 .app {
-  height: 100svh;
+  height: 100vh;
+  height: 100dvh; /* hauteur réellement visible : les onglets du bas restent collés au bord */
   display: flex;
+  background: var(--noir);
 }
 
-/* la zone de page : claire. Les couleurs --d-* servent à toutes les pages de l'application. */
+/* la zone de page : c'est elle qui défile, la navigation reste en place */
 .app-content {
-  --d-carte: #ffffff;
-  --d-encre: #0f1f24; /* texte principal */
-  --d-encre-2: #4c5f66; /* texte secondaire */
-  --d-discret: #66777d; /* axes et petites étiquettes */
-  --d-bordure: #e0eae8;
-  --d-grille: #e6eeec;
-  --d-axe: #c5d2cf;
-  --d-creux: #f1f6f5; /* fond légèrement grisé : en-têtes de tableau, champs */
-  --d-accent: #0a7d74; /* turquoise foncé : lisible en texte sur fond blanc */
-
+  flex: 1;
   min-width: 0;
-  padding: 2rem;
-  overflow-y: auto; /* la page défile, la sidebar reste en place */
-  background:
-    radial-gradient(60rem 26rem at 100% 0, rgba(50, 221, 203, 0.16), transparent 70%),
-    #f3f9f7;
-  color: var(--d-encre);
-  color-scheme: light; /* champs du navigateur en version claire */
-}
-
-.sidebar {
-  width: 250px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.25rem 0.9rem;
-  border-right: 1px solid var(--border);
+  padding: 2.5rem clamp(1rem, 3.5vw, 3rem) 4rem;
   overflow-y: auto;
 }
-.sidebar-logo {
-  padding: 0 0.6rem;
-}
-.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-.sidebar nav a,
-.sidebar-deconnexion {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  padding: 0.75rem 0.9rem;
-  border-radius: 10px;
-  color: var(--mint-white);
-}
-.sidebar nav a:hover,
-.sidebar-deconnexion:hover {
-  background: var(--card);
-  color: var(--mint);
-}
-/* page en cours : fond turquoise léger et trait vif à gauche */
-.sidebar nav a.active {
-  background: linear-gradient(90deg, rgba(50, 221, 203, 0.24), rgba(50, 221, 203, 0.07));
-  box-shadow: inset 3px 0 0 var(--turquoise);
-  color: var(--white);
-  font-weight: 600;
-}
-.sidebar nav a.active .icone {
-  color: var(--turquoise);
-}
 
-/* tout en bas, séparé du reste par un trait */
-.sidebar-deconnexion {
-  margin-top: auto;
-  border-top: 1px solid var(--border);
-  border-radius: 0 0 10px 10px;
-  padding-top: 1rem;
-}
-
-/* petit écran : la sidebar devient une barre horizontale en haut */
-@media (max-width: 700px) {
+/* téléphone : barre du haut, page, onglets en bas */
+@media (max-width: 699px) {
   .app {
     flex-direction: column;
   }
   .app-content {
-    padding: 1.25rem;
-  }
-  .sidebar {
-    width: auto;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 0.75rem;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .sidebar nav {
-    flex-direction: row;
-  }
-  .sidebar nav a,
-  .sidebar-deconnexion {
-    white-space: nowrap;
-    padding: 0.6rem 0.8rem;
-  }
-  .sidebar nav a.active {
-    box-shadow: inset 0 -3px 0 var(--turquoise);
-  }
-  .sidebar-deconnexion {
-    margin-top: 0;
-    border-top: none;
-    border-radius: 10px;
+    order: 2;
+    padding: 1.5rem 1rem 2.5rem;
   }
 }

@@ -1,63 +1,115 @@
-/* Page progression. Le reste de la mise en page est dans pages.css. */
+/* Page Progression. Composants de base : charte.css ; chiffres clés : indicateur.css */
 
-/* choix du sport : des boutons côte à côte */
-.progression-sports {
+.progression {
+  gap: 1.75rem;
+}
+
+/* le menu des exercices : le choix principal de la page, mis en avant */
+.progression-choix {
+  max-width: 560px;
+}
+.progression-choix > label {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gris-2);
+}
+.progression-choix select {
+  min-height: 52px;
+  border-color: var(--trait-fort);
+  background: var(--noir-1);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.progression-barre {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-}
-.progression-sports button {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.7rem 1.1rem;
-  border: 1px solid var(--d-bordure);
-  border-radius: 10px;
-  background: var(--d-carte);
-  font: inherit;
-  color: var(--d-encre);
-  cursor: pointer;
-}
-.progression-sports button:hover {
-  border-color: var(--turquoise);
-}
-/* le sport choisi : même dégradé que les autres éléments sélectionnés du site */
-.progression-sports button[aria-pressed='true'] {
-  border-color: transparent;
-  background: var(--gradient);
-  color: #03120f;
-  font-weight: bold;
-}
-
-/* les cartes d'une même colonne, l'une sous l'autre */
-.progression-colonne {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  min-width: 0;
-}
-
-.progression-disciplines {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.progression-disciplines a {
-  display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.7rem 0.9rem;
-  border: 1px solid var(--d-bordure);
-  border-radius: 10px;
+  gap: 1rem;
 }
-.progression-disciplines li + li {
-  margin-top: 0.4rem;
+
+/* chiffres clés comparés à la période précédente */
+.progression-bande {
+  margin: 0;
+  padding: 1.5rem 0;
+  border-block: 1px solid var(--trait);
 }
-.progression-disciplines a:hover {
-  border-color: var(--turquoise);
-  background: var(--d-creux);
+.progression-note {
+  margin: 0.9rem 0 0;
+  font-size: 0.78rem;
+  color: var(--gris-2);
 }
-.progression-disciplines span {
-  font-size: 1.2rem;
-  color: var(--d-discret);
+.progression-bande .progression-note {
+  margin-top: 1.25rem;
+}
+
+.progression-grille {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr; /* toutes les lignes ont la même hauteur */
+  align-items: stretch;
+  gap: 1.25rem;
+}
+/* même structure dans chaque bloc : le tracé en haut, « Voir les chiffres » et la note calés en bas */
+.progression-grille > .panneau {
+  display: flex;
+  flex-direction: column;
+}
+.progression-grille .graphe {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.progression-grille .graphe.anneau {
+  flex-direction: row;
+}
+.progression-grille .graphe-chiffres {
+  margin-top: auto;
+  padding-top: 0.9rem;
+}
+
+/* en-tête d'un exercice : son nom en grand, son rang, le lien vers Performance */
+.progression-exercice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+.progression-exercice h2 {
+  margin: 0.6rem 0 0;
+  font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.4rem);
+  font-stretch: 118%;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.progression-exercice-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+.progression-unique {
+  margin: 0;
+  padding: 1.25rem 0;
+  font-size: 0.9rem;
+  color: var(--gris);
+}
+.progression-unique strong {
+  color: var(--blanc);
+}
+
+/* ce qui manque pour tracer les autres critères */
+.progression-manques {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 1099px) {
+  .progression-grille {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

@@ -21,6 +21,9 @@ interface Props {
   onChange: (id: string, valeur: string) => void
 }
 
+// couleur d'un rang ; le plus haut (Z) prend le turquoise de la charte
+const couleurRang = (lettre: string) => (lettre === 'Z' ? 'var(--turquoise)' : `var(--rang-${lettre})`)
+
 const PLACEHOLDERS: Record<string, string> = {
   time: 'ex. 4:30',
   load: 'kg',
@@ -39,7 +42,7 @@ function CarteExercice({ exercice: ex, perfs, profil, onChange }: Props) {
   const idChamp = `perf-${ex.id}`
 
   // couleur de la jauge = couleur du rang visé
-  const couleurJauge = r >= 0 ? `var(--rang-${RANGS[Math.min(7, r + 1)]})` : undefined
+  const couleurJauge = r >= 0 ? couleurRang(RANGS[Math.min(7, r + 1)]) : undefined
 
   return (
     <article className={`sport-ex${verrouille ? ' verrouille' : ''}`}>
@@ -81,7 +84,7 @@ function CarteExercice({ exercice: ex, perfs, profil, onChange }: Props) {
 
         <p className="sport-prochain">
           {verrouille
-            ? 'Verrouillé · valide 1 muscle-up dans Calisthenics pour le débloquer.'
+            ? 'Verrouillé · validez 1 muscle-up dans Calisthenics pour le débloquer.'
             : texteProchain(ex, perfs, profil, RANGS)}
         </p>
 
@@ -98,7 +101,7 @@ function CarteExercice({ exercice: ex, perfs, profil, onChange }: Props) {
             <thead>
               <tr>
                 {RANGS.map((k) => (
-                  <th key={k} style={{ boxShadow: `inset 0 -3px 0 var(--rang-${k})` }}>{k}</th>
+                  <th key={k} style={{ boxShadow: `inset 0 -3px 0 ${couleurRang(k)}` }}>{k}</th>
                 ))}
               </tr>
             </thead>

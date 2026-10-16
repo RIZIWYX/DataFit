@@ -1,82 +1,139 @@
-import { useEffect } from 'react'
+import { type CSSProperties, useEffect } from 'react'
 import { Link, useLocation } from 'react-router'
 import '../styles/landing.css'
-import '../styles/sport.css' // couleurs des badges de rang
 import Icone from '../components/Icone.tsx'
-import BadgeRang from '../components/BadgeRang.tsx'
+import LienFleche from '../components/LienFleche.tsx'
+import Logo from '../components/Logo.tsx'
+import Orbites from '../components/Orbites.tsx'
 import PiedDePage from '../components/PiedDePage.tsx'
 import { ICONES } from '../data/icones.ts'
-import { RANGS } from '../data/paliers.ts'
+import { DISCIPLINES, NOMS_RANGS, RANGS, TOUS_LES_EXERCICES } from '../data/paliers.ts'
 
-// les 3 étapes du parcours d'une séance
+// les trois temps d'une séance
 const ETAPES = [
   {
-    icone: ICONES.montre,
-    titre: "Tu t'entraînes",
-    texte: 'Ta montre ou ta ceinture cardio enregistre ta séance : fréquence cardiaque, vitesse, parcours.',
+    titre: 'Vous vous entraînez',
+    texte: 'Votre montre enregistre la séance : fréquence cardiaque, vitesse et distance, minute par minute.',
   },
   {
-    icone: ICONES.activite,
     titre: 'DataFit analyse',
-    texte: "Tes données sont envoyées à DataFit, qui calcule tes zones d'effort et ta charge d'entraînement.",
+    texte: 'À la fin de la séance, les mesures arrivent dans DataFit : allure, temps au kilomètre, effort cardiaque.',
   },
   {
-    icone: ICONES.progression,
-    titre: 'Tu progresses',
-    texte: 'Ton tableau de bord te montre où tu en es et comment tu évolues, séance après séance.',
+    titre: 'Vous progressez',
+    texte: 'Votre tableau de bord résume votre semaine, vos rangs et votre évolution, séance après séance.',
   },
 ]
 
+// ce que fait l'application
 const FONCTIONNALITES = [
   {
-    icone: ICONES.coeur,
-    titre: 'Suivi des séances',
-    texte: 'Fréquence cardiaque, vitesse et parcours de chaque séance, au même endroit.',
+    icone: ICONES.tous,
+    titre: 'Tableau de bord',
+    texte: "Votre semaine en un coup d'œil : séances, temps d'entraînement, distance parcourue.",
   },
   {
-    icone: ICONES.allure,
-    titre: "Analyse de l'effort",
-    texte: "Temps passé dans chaque zone d'effort et charge d'entraînement pour doser tes semaines.",
-  },
-  {
-    icone: ICONES.historique,
+    icone: ICONES.chrono,
     titre: 'Historique',
-    texte: 'Retrouve toutes tes séances passées et compare-les entre elles.',
+    texte: 'Toutes vos séances, filtrées par sport et par période, avec le détail de chacune.',
+  },
+  {
+    icone: ICONES.trophee,
+    titre: 'Performance',
+    texte: 'Vos records par exercice, convertis en rangs de E à Z selon votre catégorie.',
+  },
+  {
+    icone: ICONES.tendance,
+    titre: 'Progression',
+    texte: 'Exercice par exercice : record, rang, charge, répétitions et volume au fil des semaines.',
+  },
+  {
+    icone: ICONES.montre,
+    titre: 'Montre',
+    texte: 'Les séances terminées sont récupérées depuis votre montre, sans saisie.',
+  },
+  {
+    icone: ICONES.calendrier,
+    titre: 'Programmation',
+    texte: 'Retrouvez toute votre programmation dans un calendrier, séance par séance.',
+  },
+  {
+    icone: ICONES.sommeil,
+    titre: 'Sommeil',
+    texte: 'Horaires, durée, régularité et fréquence cardiaque de vos nuits, mesurés par la montre.',
+  },
+]
+
+const ENGAGEMENTS = [
+  { titre: 'Rien sans votre accord.', texte: "Aucune donnée n'est collectée sans votre consentement." },
+  { titre: 'Hébergées en Europe.', texte: 'Vos données restent sur des serveurs européens.' },
+  {
+    titre: "Pas un outil médical.",
+    texte: "Les alertes comparent une séance à vos propres habitudes : ce n'est pas un diagnostic.",
   },
 ]
 
 function Landing() {
   const { hash } = useLocation()
 
-  // React Router ne fait pas défiler jusqu'à l'ancre (#features...) quand on arrive
+  // React Router ne fait pas défiler jusqu'à l'ancre (#rangs…) quand on arrive
   // d'une autre page : on cherche la section après l'affichage et on y va nous-mêmes.
   useEffect(() => {
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView()
   }, [hash])
 
   return (
-    <div className="landing">
+    <div className="vitrine refonte">
+      <header className="vitrine-entete">
+        <Link to="/" aria-label="DataFit, accueil">
+          <Logo />
+        </Link>
+        <nav className="vitrine-menu" aria-label="Découvrir DataFit">
+          <a href="#fonctionnement">Fonctionnement</a>
+          <a href="#fonctionnalites">Fonctionnalités</a>
+          <a href="#rangs">Rangs</a>
+        </nav>
+        <div className="vitrine-compte">
+          <Link to="/connexion" className="vitrine-connexion">Se connecter</Link>
+          <Link to="/connexion?mode=inscription" className="bouton contour petit">S'inscrire</Link>
+        </div>
+      </header>
+
       <main>
-        <section className="hero">
-          <img src="/logo.jpeg" alt="DataFit" className="hero-logo" />
-          <h1>Au-delà de</h1>
-          <h1>vos <span>limites.</span></h1>
-          <p>DataFit analyse tes séances et t'aide à progresser à ton rythme.</p>
-          <div className="cta">
-            <Link to="/connexion?mode=inscription" className="btn">Commencer</Link>
-            <a href="#" className="btn small">Download</a>
-            <a href="#features" className="btn ghost">En savoir plus</a>
+        <section className="vitrine-hero">
+          <div className="hero-texte">
+            <p className="surtitre">DataFit · Votre activité en chiffres</p>
+            <h1 className="hero-titre affiche">
+              Chaque sport.
+              <br />
+              Vos progrès<span className="point">.</span>
+            </h1>
+            <p className="hero-intro">Suivez vos séances et visualisez vos progrès.</p>
+            <div className="hero-actions">
+              <Link to="/connexion?mode=inscription" className="bouton">
+                Découvrir mon espace
+                <Icone trace={ICONES.fleche} />
+              </Link>
+              <a href="#fonctionnement" className="bouton fantome">Explorer DataFit</a>
+            </div>
+            {/* des chiffres tirés des barèmes de l'application, pas des statistiques inventées */}
+            <ul className="hero-faits">
+              <li><strong>{DISCIPLINES.length}</strong> disciplines</li>
+              <li><strong>{TOUS_LES_EXERCICES.length}</strong> exercices classés</li>
+              <li><strong>{RANGS.length}</strong> rangs, de E à Z</li>
+            </ul>
           </div>
+          <Orbites />
         </section>
 
-        {/* cible du bouton « En savoir plus » */}
-        <section id="features" className="features">
-          <h2>Comment ça marche</h2>
-          <ol className="etapes">
+        <section id="fonctionnement" className="vitrine-section">
+          <h2 className="titre-section affiche">
+            Comment ça marche&nbsp;<span className="point">?</span>
+          </h2>
+          <ol className="vitrine-etapes">
             {ETAPES.map((etape, i) => (
-              <li key={etape.titre} className="etape">
-                <span className="etape-icone"><Icone trace={etape.icone} /></span>
-                <span className="etape-numero">Étape {i + 1}</span>
+              <li key={etape.titre}>
+                <span className="etape-numero" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
                 <h3>{etape.titre}</h3>
                 <p>{etape.texte}</p>
               </li>
@@ -84,58 +141,104 @@ function Landing() {
           </ol>
         </section>
 
-        <section id="fonctionnalites" className="features">
-          <h2>Ce que DataFit fait pour toi</h2>
-          <div className="grid">
-            {FONCTIONNALITES.map((f) => (
-              <div key={f.titre} className="card">
-                <span className="etape-icone"><Icone trace={f.icone} /></span>
-                <h3>{f.titre}</h3>
-                <p>{f.texte}</p>
-              </div>
-            ))}
+        <section id="fonctionnalites" className="vitrine-section vitrine-fonctions">
+          <div className="fonctions-intro">
+            <p className="surtitre">Fonctionnalités</p>
+            <h2 className="titre-section affiche">
+              Tout ce qui compte<span className="point">.</span>
+              <br />
+              Rien de plus.
+            </h2>
+            <p>
+              Vos séances, vos records et votre progression réunis dans un seul espace, pensé pour se
+              lire en quelques secondes.
+            </p>
+            <Link to="/connexion?mode=inscription" className="bouton secondaire">Créer mon compte</Link>
           </div>
+          <ul className="fonctions-liste">
+            {FONCTIONNALITES.map((f) => (
+              <li key={f.titre}>
+                <span className="fonction-icone">
+                  <Icone trace={f.icone} />
+                </span>
+                <div>
+                  <h3>{f.titre}</h3>
+                  <p>{f.texte}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-          {/* carte mise en avant : ce qui différencie DataFit */}
-          <div id="rangs" className="card carte-rangs">
-            <div>
-              <h3>Des rangs de E à Z</h3>
+        <section id="rangs" className="vitrine-rangs">
+          <div className="vitrine-section">
+            <div className="rangs-tete">
+              <div>
+                <p className="surtitre">Le système de rangs</p>
+                <h2 className="titre-section affiche">
+                  De E à Z<span className="point">.</span>
+                </h2>
+              </div>
               <p>
-                Pour chaque exercice, ta performance est convertie en rang selon ton sexe et
-                ta catégorie de poids. Tu sais où tu te situes et quel palier viser ensuite.
+                Pour chaque exercice, votre record devient un rang, calculé selon votre sexe et votre
+                catégorie de poids. Vous savez où vous en êtes, et quel palier viser ensuite.
               </p>
             </div>
-            <div className="rangs-ligne">
+
+            {/* une marche par rang, de plus en plus haute ; le dernier en turquoise */}
+            <ol className="echelle">
               {RANGS.map((lettre, i) => (
-                <BadgeRang key={lettre} rang={i} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="features">
-          <div id="donnees" className="card carte-donnees">
-            <span className="etape-icone"><Icone trace={ICONES.cadenas} /></span>
-            <div>
-              <h3>Tes données t'appartiennent</h3>
-              <ul>
-                <li>Rien n'est collecté sans ton accord.</li>
-                <li>Tes données sont hébergées en Europe.</li>
-                <li>
-                  DataFit n'est pas un outil médical : les alertes comparent une séance à tes
-                  propres habitudes, ce n'est pas un diagnostic.
+                <li key={lettre} className={lettre === 'Z' ? 'z' : undefined}>
+                  <span className="echelle-lettre">{lettre}</span>
+                  <span
+                    className="echelle-marche"
+                    style={{ '--hauteur': 0.12 + (i / (RANGS.length - 1)) * 0.88 } as CSSProperties}
+                  />
+                  <span className="echelle-nom">{NOMS_RANGS[i]}</span>
                 </li>
-              </ul>
-              <Link to="/donnees-personnelles" className="lien-politique">
-                Lire notre politique de confidentialité →
-              </Link>
-            </div>
+              ))}
+            </ol>
+
+            <ul className="vitrine-disciplines" aria-label="Disciplines classées">
+              {DISCIPLINES.map((d) => (
+                <li key={d.id}>{d.nom}</li>
+              ))}
+            </ul>
           </div>
         </section>
 
-        <section className="features fin">
-          <h2>Prêt à dépasser tes limites ?</h2>
-          <Link to="/connexion?mode=inscription" className="btn">Commencer</Link>
+        <section id="donnees" className="vitrine-section vitrine-donnees">
+          <div>
+            <p className="surtitre">Confidentialité</p>
+            <h2 className="titre-section affiche">
+              Vos données vous appartiennent<span className="point">.</span>
+            </h2>
+          </div>
+          <div>
+            <ul className="donnees-liste">
+              {ENGAGEMENTS.map((e) => (
+                <li key={e.titre}>
+                  <Icone trace={ICONES.valide} />
+                  <p>
+                    <strong>{e.titre}</strong> {e.texte}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <LienFleche to="/donnees-personnelles">Lire la politique de confidentialité</LienFleche>
+          </div>
+        </section>
+
+        <section className="vitrine-appel">
+          <h2 className="affiche">
+            Votre prochaine séance
+            <br />
+            compte<span className="point">.</span>
+          </h2>
+          <Link to="/connexion?mode=inscription" className="bouton">
+            Créer mon compte
+            <Icone trace={ICONES.fleche} />
+          </Link>
         </section>
       </main>
 
