@@ -1,229 +1,202 @@
-/* Page sport : rangs E → Z. Le reste de la mise en page est dans pages.css. */
+/* Page Performance : rangs E → Z. Composants de base : charte.css ; couleurs des rangs : badge-rang.css */
 
-:root {
-  --rang-E: #6f7d7a;
-  --rang-D: #b9865a;
-  --rang-C: #5cc98a;
-  --rang-B: #4fa3f0;
-  --rang-A: #a780ee;
-  --rang-S: #f0c443;
-  --rang-SS: #ff7a52;
-  --rang-Z: #ff4f9a;
+.sport {
+  gap: 1.75rem;
 }
-
 .sport-note {
+  margin: 0;
   font-size: 0.8rem;
-  color: var(--d-discret);
+  color: var(--gris-2);
 }
 
-/* l'échelle des huit rangs */
+/* l'échelle des huit rangs : la lettre, un trait de sa couleur, son nom */
 .sport-echelle {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 6px;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 1.25rem 0;
+  border-block: 1px solid var(--trait);
+  list-style: none;
 }
-.sport-echelle div {
+.sport-echelle li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
   text-align: center;
-  padding: 10px 4px;
-  border: 1px solid var(--d-bordure);
-  border-radius: 12px;
-  background: var(--d-carte);
 }
 .sport-echelle b {
-  display: block;
-  font-size: 1.15rem;
+  font-size: 1.4rem;
+  font-stretch: 125%;
+  font-weight: 850;
+  line-height: 1;
 }
 .sport-echelle i {
-  display: block;
   width: 60%;
   height: 3px;
-  margin: 6px auto 0;
   border-radius: 2px;
 }
+.sport-echelle .z b {
+  color: var(--turquoise);
+}
+.sport-echelle .z i {
+  background: var(--turquoise);
+}
 .sport-echelle span {
-  display: block;
-  margin-top: 4px;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   line-height: 1.2;
-  color: var(--d-discret);
+  color: var(--gris-2);
 }
 
-/* profil : sexe, poids, catégorie et poids de référence, repris de la page profil */
+/* la catégorie, reprise du profil */
 .sport-profil {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem 2rem;
+  justify-content: space-between;
+  gap: 1rem 2rem;
 }
-.sport-champ {
+.sport-profil dl {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 0.75rem 2.25rem;
+  margin: 0;
 }
-.sport-label {
-  font-size: 0.7rem;
+.sport-profil dt {
+  font-size: 0.68rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--d-discret);
+  color: var(--gris-2);
 }
-.sport-valeur {
-  font-size: 1.1rem;
+.sport-profil dd {
+  margin: 0.3rem 0 0;
+  font-size: 1.15rem;
+  font-stretch: 108%;
   font-weight: 700;
 }
-.sport-espace {
-  flex: 1;
-}
-.sport input::placeholder {
-  color: var(--d-discret);
-}
-
-/* résumé par discipline */
-.sport-resume {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px;
-}
-.sport-resume-carte {
+.sport-profil-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px;
-  text-align: left;
-  font: inherit;
-  color: inherit;
-  border: 1px solid var(--d-bordure);
-  border-radius: 14px;
-  background: var(--d-carte);
-  cursor: pointer;
-  transition: border-color 0.2s, transform 0.2s;
-}
-.sport-resume-carte:hover {
-  border-color: var(--turquoise);
-  transform: translateY(-3px);
-}
-.sport-resume-carte span {
-  min-width: 0;
-  font-size: 0.85rem;
-  font-weight: 600;
-  line-height: 1.2;
-}
-.sport-resume-carte small {
-  display: block;
-  font-size: 0.7rem;
-  font-weight: 400;
-  color: var(--d-discret);
+  gap: 1.25rem;
 }
 
-/* badge de rang */
-.sport-badge {
-  flex: none;
-  display: inline-grid;
-  place-items: center;
-  min-width: 40px;
-  height: 40px;
-  padding: 0 6px;
-  border-radius: 10px;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #03120f;
-}
-.sport-badge.petit {
-  min-width: 34px;
-  height: 34px;
-  font-size: 0.95rem;
-}
-.sport-badge.z {
-  background: var(--gradient);
-}
-.sport-badge.vide {
-  border: 1px solid var(--d-bordure);
-  background: var(--d-creux);
-  color: var(--d-discret);
-}
-
-/* onglets des disciplines */
-.sport-onglets {
-  display: flex;
-  gap: 6px;
+/* les disciplines : chacune est un onglet, avec son rang moyen */
+/* les sept disciplines toujours sur une ligne ; si l'écran est trop étroit, la ligne défile */
+.sport-disciplines {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(118px, 1fr));
+  gap: 0.6rem;
   overflow-x: auto;
   scrollbar-width: none;
 }
-.sport-onglets button {
-  flex: none;
-  padding: 0.6rem 1rem;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--d-encre-2);
+.sport-disciplines button {
+  display: flex;
+  flex-direction: column-reverse; /* le badge au-dessus, le nom en dessous */
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 0.75rem 0.8rem 0.75rem 1rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
   font: inherit;
+  text-align: left;
+  color: var(--blanc);
   cursor: pointer;
+  transition:
+    border-color var(--transition),
+    background-color var(--transition);
 }
-.sport-onglets button:hover {
-  background: var(--d-creux);
-  color: var(--d-encre);
+.sport-disciplines button:hover {
+  border-color: var(--trait-fort);
+  background: var(--noir-2);
 }
-.sport-onglets button[aria-selected='true'] {
-  background: var(--gradient);
-  color: #03120f;
-  font-weight: bold;
+.sport-disciplines button[aria-selected='true'] {
+  border-color: var(--blanc);
+  background: var(--noir-2);
+}
+.sport-disciplines span {
+  min-width: 0;
+}
+.sport-disciplines strong {
+  display: block;
+  overflow: hidden;
+  font-size: 0.95rem;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sport-disciplines small {
+  font-size: 0.75rem;
+  color: var(--gris-2);
 }
 
-/* liste des exercices */
+/* les exercices de la discipline choisie */
 .sport-panneau {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.75rem;
 }
 .sport-panneau-titre {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 4px 12px;
+  gap: 0.25rem 1rem;
+  margin-bottom: 0.25rem;
 }
 .sport-panneau-titre h2 {
-  font-size: 1.5rem;
+  margin: 0;
+  font-size: 1.75rem;
+  font-stretch: 118%;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
+
+/* un exercice (composant CarteExercice) */
 .sport-ex {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px 14px;
-  padding: 14px 16px;
-  border: 1px solid var(--d-bordure);
-  border-radius: 14px;
-  background: var(--d-carte);
+  gap: 0.75rem 1.25rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
 }
 .sport-ex.verrouille {
-  opacity: 0.55;
+  opacity: 0.5;
 }
 .sport-ex-main {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.6rem;
   min-width: 0;
 }
 .sport-ex-top {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 12px;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
 }
 .sport-ex-nom {
-  font-weight: 700;
+  font-size: 1.02rem;
+  font-weight: 650;
 }
 .sport-ex-unite {
-  font-size: 0.75rem;
-  color: var(--d-discret);
+  font-size: 0.78rem;
+  color: var(--gris-2);
 }
 .sport-ex-saisie {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 0.6rem 1rem;
 }
 .sport-ex-saisie input {
-  width: 130px;
+  width: 140px;
   font-variant-numeric: tabular-nums;
 }
 .sport-ex-saisie select {
@@ -231,39 +204,42 @@
   max-width: 100%;
 }
 .sport-rang-nom {
-  font-weight: 700;
+  font-weight: 650;
 }
 .sport-jauge {
   height: 6px;
   overflow: hidden;
-  border-radius: 4px;
-  background: var(--d-grille);
+  border-radius: 3px;
+  background: var(--noir-3);
 }
 .sport-jauge i {
   display: block;
   height: 100%;
-  border-radius: 4px;
-  background: var(--gradient);
+  border-radius: 3px;
+  background: var(--blanc);
   transition: width 0.3s;
 }
-.sport .sport-prochain {
-  font-size: 0.8rem;
-  color: var(--d-encre-2);
+.sport-prochain {
+  margin: 0;
+  font-size: 0.82rem;
   font-variant-numeric: tabular-nums;
+  color: var(--gris);
 }
 .sport-lien {
   align-self: flex-start;
   padding: 0;
   border: 0;
   background: none;
-  color: var(--d-accent);
   font: inherit;
   font-size: 0.8rem;
   font-weight: 600;
+  color: var(--gris);
+  text-decoration: underline;
+  text-underline-offset: 3px;
   cursor: pointer;
 }
 .sport-lien:hover {
-  text-decoration: underline;
+  color: var(--blanc);
 }
 
 /* tableau des paliers */
@@ -280,29 +256,37 @@
 }
 .sport-paliers th,
 .sport-paliers td {
-  padding: 6px;
+  padding: 0.5rem 0.4rem;
+  border-bottom: 1px solid var(--trait);
   text-align: center;
   vertical-align: top;
-  border-bottom: 1px solid var(--d-bordure);
+  color: var(--gris);
+}
+.sport-paliers th {
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-stretch: 118%;
+  color: var(--blanc);
 }
 /* le rang atteint */
 .sport-paliers td.actuel {
-  background: var(--mint-pale);
+  border-radius: var(--rayon-s);
+  background: var(--noir-3);
   font-weight: 700;
+  color: var(--blanc);
 }
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
   .sport-echelle span {
     display: none;
+  }
+  .sport-ex {
+    padding: 1rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sport-jauge i,
-  .sport-resume-carte {
+  .sport-jauge i {
     transition: none;
-  }
-  .sport-resume-carte:hover {
-    transform: none;
   }
 }

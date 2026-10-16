@@ -1,11 +1,13 @@
 import { type SubmitEvent, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 
 type Mode = 'connexion' | 'inscription'
 
 // logique de la page de connexion : mode choisi, messages et envoi du formulaire
 function useConnexion() {
-  const [mode, setMode] = useState<Mode>('connexion')
+  // /connexion?mode=inscription ouvre directement le formulaire d'inscription
+  const [parametres] = useSearchParams()
+  const [mode, setMode] = useState<Mode>(parametres.get('mode') === 'inscription' ? 'inscription' : 'connexion')
   const [mdpVisible, setMdpVisible] = useState(false)
   const [erreur, setErreur] = useState('')
   const [message, setMessage] = useState('')
@@ -45,6 +47,7 @@ function useConnexion() {
   }
 
   return {
+    mode,
     isInscription,
     basculerMode,
     mdpVisible,

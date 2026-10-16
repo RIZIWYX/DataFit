@@ -1,51 +1,131 @@
-/* Page sommeil. Le reste de la mise en page est dans pages.css. */
+/* Page sommeil. Composants de base : charte.css ; chiffres clés : indicateur.css */
 
-.sommeil-annonce {
+.sommeil {
+  gap: 1.75rem;
+}
+.sommeil-bande {
+  padding: 1.5rem 0;
+  border-block: 1px solid var(--trait);
+}
+.sommeil-bande .indicateurs {
+  row-gap: 1.25rem;
+}
+.sommeil-grille {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 1.25rem;
+}
+.sommeil-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  color: var(--gris-2);
+}
+.sommeil-note strong {
+  color: var(--blanc);
+}
+
+/* régularité : deux chiffres, puis la frise des horaires */
+.sommeil-regularite {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 3rem;
+  margin: 0 0 1.5rem;
+}
+.sommeil-regularite dt {
+  font-size: 0.8rem;
+  color: var(--gris);
+}
+.sommeil-regularite dd {
+  margin: 0.3rem 0 0;
+  font-size: 1.6rem;
+  font-stretch: 110%;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+.sommeil-horaires {
   display: flex;
   flex-direction: column;
+  gap: 0.6rem;
+}
+.sommeil-horaires > div {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
   align-items: center;
-  gap: 0.75rem;
-  padding: 2.5rem 1.5rem;
-  text-align: center;
-}
-.sommeil-lune {
-  width: 96px;
-  height: 96px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--mint-pale);
-  color: var(--d-accent);
-}
-.sommeil-lune .icone {
-  width: 48px;
-  height: 48px;
-}
-.sommeil-annonce h2 {
-  font-size: clamp(1.4rem, 2.5vw, 1.9rem);
-}
-.sommeil-annonce > p {
-  color: var(--d-encre-2);
-}
-
-/* les trois fonctions prévues */
-.sommeil-annonce ul {
-  width: 100%;
-  max-width: 900px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
-  margin: 1.5rem 0 0;
-  padding: 0;
-  list-style: none;
 }
-.sommeil-annonce li {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1.5rem 1rem;
-  border: 1px solid var(--d-bordure);
-  border-radius: 14px;
+.sommeil-horaires-nuit {
+  font-size: 0.85rem;
+  color: var(--gris);
+}
+.sommeil-horaires-piste {
+  position: relative;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--noir-2);
+}
+.sommeil-horaires-piste i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 7px;
+  background: var(--gris-2);
+}
+.sommeil-horaires .choisie .sommeil-horaires-nuit {
+  color: var(--blanc);
   font-weight: 600;
+}
+.sommeil-horaires .choisie i {
+  background: var(--blanc);
+}
+.sommeil-horaires-axe .sommeil-horaires-piste {
+  height: 1rem;
+  background: none;
+}
+.sommeil-horaires-axe small {
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  color: var(--gris-2);
+  transform: translateX(-50%);
+}
+.sommeil-horaires-axe small:first-child {
+  transform: none;
+}
+.sommeil-horaires-axe small:last-child {
+  transform: translateX(-100%);
+}
+
+.sommeil-tableau {
+  overflow-x: auto;
+}
+.sommeil-tableau table {
+  min-width: 620px;
+}
+
+.sommeil-limites {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--gris-2);
+}
+.sommeil-limites .icone {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: 0.1rem;
+}
+
+@media (max-width: 1099px) {
+  .sommeil-grille {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .sommeil-horaires > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
 }

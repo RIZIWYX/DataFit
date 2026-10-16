@@ -1,32 +1,42 @@
-# React + TypeScript + Vite
+# DataFit
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Application de suivi sportif. DataFit récupère les séances d'une montre connectée (fréquence cardiaque, vitesse, position), les range par sport (course, natation, musculation) et montre au sportif ses progrès : performances, rangs E → Z par exercice, programmation des séances dans un calendrier, sommeil.
 
-Currently, two official plugins are available:
+## Le dépôt
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Dossier | Contenu |
+|---|---|
+| `frontend/` | le site : React, TypeScript, Vite |
+| `backend/` | l'API : Java 21, Spring Boot |
+| `db/` | le script qui crée les tables PostgreSQL au premier démarrage |
+| `analyse/` | le service d'analyse en Python 🚧 prévu |
+| `simulateur/` | le simulateur de montre 🚧 prévu |
+| `SD/` | les carnets Jupyter de l'équipe sciences des données |
+| `docs/` | la documentation technique |
 
-## React Compiler
+## Lancer le projet
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Tout d'un coup, avec Docker :
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+cp .env.example .env    # puis remplacer « change-moi » par un mot de passe
+docker compose up --build
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Le site est sur http://localhost:3000.
+
+Le site seul, pour développer :
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Le site est sur http://localhost:5173, rechargé à chaque sauvegarde.
+
+## Pour aller plus loin
+
+- [Documentation technique](docs/README.md) : architecture, API, base de données, contribution.
+- [Guide de développement](docs/developpement.md) : installation détaillée et problèmes fréquents.
+- [Charte graphique](docs/charte-graphique.md) : couleurs, typographie et composants du site.

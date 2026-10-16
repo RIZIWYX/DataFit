@@ -1,5 +1,5 @@
 // Algo de calcul des rangs E → Z. Fonctions pures : aucune dépendance à React.
-import { type Exercice, type Sexe, CATEGORIES, POIDS_CALIBRAGE, TOUS_LES_EXERCICES } from '../data/paliers.ts'
+import { type Exercice, type Sexe, CATEGORIES, DISCIPLINES, POIDS_CALIBRAGE, TOUS_LES_EXERCICES } from '../data/paliers.ts'
 
 export type Perfs = Record<string, string>
 
@@ -87,6 +87,19 @@ export function rangMoyen(exercices: Exercice[], perfs: Perfs, profil: Profil): 
   if (rangs.length === 0) return -1
   return Math.round(rangs.reduce((a, b) => a + b, 0) / rangs.length)
 }
+
+// Résumé de chaque discipline : rang moyen et nombre d'exercices renseignés.
+export function resumeDisciplines(perfs: Perfs, profil: Profil) {
+  return DISCIPLINES.map((d) => ({
+    id: d.id,
+    nom: d.nom,
+    total: d.exercices.length,
+    remplis: d.exercices.filter((ex) => (perfs[ex.id] ?? '') !== '').length,
+    rang: rangMoyen(d.exercices, perfs, profil),
+  }))
+}
+
+export type ResumeDiscipline = ReturnType<typeof resumeDisciplines>[number]
 
 // ---------- affichage ----------
 
