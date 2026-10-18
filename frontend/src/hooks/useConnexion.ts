@@ -1,6 +1,8 @@
 
 import { type SubmitEvent, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
+import { enregistrerCompte, lireCompte } from '../lib/compte.ts'
+import { effacerProfil } from '../lib/profil.ts'
 
 type Mode = 'connexion' | 'inscription'
 
@@ -25,63 +27,62 @@ function useConnexion() {
     setMode(isInscription ? 'connexion' : 'inscription')
     setErreur('')
     setMessage('')
+  }async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+  event.preventDefault()
+  setErreur('')
+  setMessage('')
+
+  const formData = new FormData(event.currentTarget)
+
+  // Vérif propre à l'inscription : les deux mots de passe doivent correspondre
+  if (isInscription && formData.get('mdp') !== formData.get('mdp2')) {
+    setErreur('Les deux mots de passe ne sont pas identiques.')
+    return
   }
 
-  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setErreur('')
-    setMessage('')
+  // On choisit la route selon le mode
+  const url = isInscription
+    ? '/api/auth/register'
+    : '/api/auth/login'
 
-    const formData = new FormData(event.currentTarget)
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: formData.get('email'),
+        password: formData.get('mdp'),
+      }),
+    })
 
-    // Inscription
-    if (isInscription) {
-      if (formData.get('mdp') !== formData.get('mdp2')) {
-        setErreur('Les deux mots de passe ne sont pas identiques.')
-        return
-      }
+    const data = await response.json()
 
-      try {
-        const response = await fetch(
-          'http://localhost:8080/api/auth/register',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: formData.get('email'),
-              password: formData.get('mdp'),
-            }),
-          }
-        )
-
-        const data = await response.json()
-
-        if (!response.ok) {
-          setErreur(
-            data.error || data.message || "Impossible de créer le compte."
-          )
-          return
-        }
-
-        // L'inscription a réussi : revenir au formulaire de connexion
-        setMessage('Compte créé avec succès !')
-        setMode('connexion')
-        return
-      } catch {
-        setErreur(
-          'Impossible de contacter le serveur. Vérifie que le backend est démarré.'
-        )
-      }
-
+    if (!response.ok) {
+      const parDefaut = isInscription
+        ? "Impossible de créer le compte."
+        : "Impossible de se connecter."
+      setErreur(data.error || data.message || parDefaut)
       return
     }
 
-    // Connexion encore en démonstration
-    navigate('/dashboard')
+    // Succès : le chemin diffère selon le mode
+    if (isInscription) {
+      enregistrerCompte({ id: data.id, email: data.email })
+      effacerProfil()
+      navigate('/creation-profil')
+    } else {
+      // un autre compte que celui gardé dans ce navigateur : le profil gardé n'est pas le sien
+      if (lireCompte()?.id !== data.id) effacerProfil()
+      enregistrerCompte({ id: data.id, email: data.email })
+      navigate('/dashboard')
+    }
+  } catch (e) {
+    console.error(e) // en dev, pour voir la vraie cause dans la console
+    setErreur(
+      'Impossible de contacter le serveur. Vérifie que le backend est démarré.'
+    )
   }
-
+}
   function motDePasseOublie() {
     setMessage(
       'La réinitialisation du mot de passe n’est pas encore disponible.'

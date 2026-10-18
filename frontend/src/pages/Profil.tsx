@@ -11,7 +11,7 @@ import { DISCIPLINES, TOUS_LES_EXERCICES } from '../data/paliers.ts'
 import { LISTE_SPORTS, SPORTS } from '../data/sports.ts'
 import useObjectifs from '../hooks/useObjectifs.ts'
 import useProfil, { type ChampProfil } from '../hooks/useProfil.ts'
-import { nombre } from '../lib/format.ts'
+import { formatDateLongue, nombre } from '../lib/format.ts'
 import {
   GROUPES_OBJECTIFS,
   MESURES_VOLUME,
@@ -22,23 +22,20 @@ import {
   texteEcheance,
   titreObjectif,
 } from '../lib/objectifs.ts'
-import { type Profil as DonneesProfil, initiales } from '../lib/profil.ts'
+import {
+  type Profil as DonneesProfil,
+  NIVEAUX,
+  OBJECTIFS,
+  SEXES,
+  bornesNaissance,
+  initiales,
+} from '../lib/profil.ts'
 import { libelleMesure, lireTemps } from '../lib/rangs.ts'
-
-const SEXES = [
-  { valeur: 'H', nom: 'Homme' },
-  { valeur: 'F', nom: 'Femme' },
-]
-const NIVEAUX = [
-  { valeur: 'novice', nom: 'Novice' },
-  { valeur: 'intermediaire', nom: 'Intermédiaire' },
-  { valeur: 'pro', nom: 'Confirmé' },
-]
 
 interface DefinitionChamp {
   cle: ChampProfil
   nom: string
-  type: 'texte' | 'email' | 'nombre' | 'choix' | 'multi'
+  type: 'texte' | 'email' | 'nombre' | 'date' | 'choix' | 'multi'
   unite?: string
   min?: number
   max?: number
@@ -61,7 +58,7 @@ const GROUPES_CHAMPS: { titre: string; champs: DefinitionChamp[] }[] = [
   {
     titre: 'Corps',
     champs: [
-      { cle: 'age', nom: 'Âge', type: 'nombre', unite: 'ans', min: 10, max: 100 },
+      { cle: 'dateNaissance', nom: 'Date de naissance', type: 'date', autoComplete: 'bday' },
       { cle: 'taille', nom: 'Taille', type: 'nombre', unite: 'cm', min: 100, max: 250 },
       { cle: 'poids', nom: 'Poids', type: 'nombre', unite: 'kg', min: 30, max: 250, pas: 0.1, aide: 'Fixe votre catégorie de poids pour les rangs.' },
       { cle: 'sexe', nom: 'Sexe', type: 'choix', options: SEXES, aide: 'Choisit les barèmes des rangs.' },
@@ -77,6 +74,7 @@ const GROUPES_CHAMPS: { titre: string; champs: DefinitionChamp[] }[] = [
         type: 'multi',
         options: LISTE_SPORTS.map((sport) => ({ valeur: sport, nom: SPORTS[sport].nom })),
       },
+      { cle: 'objectif', nom: 'Objectif principal', type: 'choix', options: OBJECTIFS },
     ],
   },
 ]
@@ -85,6 +83,8 @@ const GROUPES_CHAMPS: { titre: string; champs: DefinitionChamp[] }[] = [
 function valeurAffichee(champ: DefinitionChamp, profil: DonneesProfil | null): string {
   const brut = profil?.[champ.cle]
   if (champ.type === 'nombre') return typeof brut === 'number' && brut > 0 ? `${nombre(brut)} ${champ.unite}` : ''
+  // « T00:00 » : la date est lue à minuit, heure locale (sinon en UTC, la veille selon le fuseau)
+  if (champ.type === 'date') return typeof brut === 'string' && brut ? formatDateLongue(new Date(`${brut}T00:00`)) : ''
   if (champ.type === 'choix') return champ.options?.find((o) => o.valeur === brut)?.nom ?? ''
   if (champ.type === 'multi')
     return (Array.isArray(brut) ? brut : []).map((v) => champ.options?.find((o) => o.valeur === v)?.nom ?? v).join(', ')
@@ -106,6 +106,7 @@ function lireChamp(champ: DefinitionChamp, donnees: FormData): Partial<DonneesPr
 function Saisie({ champ, profil, autoFocus = false }: { champ: DefinitionChamp; profil: DonneesProfil | null; autoFocus?: boolean }) {
   const id = `profil-${champ.cle}`
   const brut = profil?.[champ.cle]
+  const bornes = champ.type === 'date' ? bornesNaissance() : undefined
   if (champ.type === 'choix' || champ.type === 'multi') {
     return (
       <div className="profil-options" role={champ.type === 'choix' ? 'radiogroup' : 'group'} aria-label={champ.nom}>
@@ -128,10 +129,10 @@ function Saisie({ champ, profil, autoFocus = false }: { champ: DefinitionChamp; 
     <input
       id={id}
       name={champ.cle}
-      type={champ.type === 'nombre' ? 'number' : champ.type === 'email' ? 'email' : 'text'}
+      type={champ.type === 'nombre' ? 'number' : champ.type === 'email' ? 'email' : champ.type === 'date' ? 'date' : 'text'}
       inputMode={champ.type === 'nombre' ? 'decimal' : undefined}
-      min={champ.min}
-      max={champ.max}
+      min={bornes?.min ?? champ.min}
+      max={bornes?.max ?? champ.max}
       step={champ.pas}
       autoComplete={champ.autoComplete}
       autoFocus={autoFocus}
@@ -141,22 +142,12 @@ function Saisie({ champ, profil, autoFocus = false }: { champ: DefinitionChamp; 
 }
 
 function Profil() {
-  const { profil, premiereVisite, enEdition, editer, annuler, enregistrer, message } = useProfil()
+  const { profil, enEdition, editer, annuler, enregistrer, message } = useProfil()
   const nomComplet = `${profil?.prenom ?? ''} ${profil?.nom ?? ''}`.trim()
 
   function enregistrerChamp(champ: DefinitionChamp, event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     enregistrer(lireChamp(champ, new FormData(event.currentTarget)), `${champ.nom} enregistré.`)
-  }
-
-  function enregistrerTout(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const donnees = new FormData(event.currentTarget)
-    const modifications = GROUPES_CHAMPS.flatMap((g) => g.champs).reduce(
-      (total, champ) => ({ ...total, ...lireChamp(champ, donnees) }),
-      {},
-    )
-    enregistrer(modifications, 'Profil créé. Vous pouvez modifier chaque information à tout moment.')
   }
 
   return (
@@ -187,81 +178,52 @@ function Profil() {
             )}
           </p>
 
-          {premiereVisite ? (
-            // juste après l'inscription : tout se remplit d'un coup, une seule fois
-            <form className="profil-accueil" onSubmit={enregistrerTout}>
-              <p className="profil-accueil-texte">
-                <strong>Bienvenue.</strong> Quelques informations pour commencer : le sexe et le poids
-                servent à calculer vos rangs.
-              </p>
-              {GROUPES_CHAMPS.map((groupe) => (
-                <fieldset key={groupe.titre}>
-                  <legend>{groupe.titre}</legend>
-                  {groupe.champs.map((champ) => (
-                    <div key={champ.cle} className="champ">
+          {/* tout est en lecture, un crayon par information
+              (le premier remplissage se fait sur la page de création du profil) */}
+          {GROUPES_CHAMPS.map((groupe) => (
+            <div key={groupe.titre} className="profil-groupe">
+              <h3>{groupe.titre}</h3>
+              <dl>
+                {groupe.champs.map((champ) => {
+                  const valeur = valeurAffichee(champ, profil)
+                  return enEdition === champ.cle ? (
+                    <form
+                      key={champ.cle}
+                      className="profil-ligne en-edition"
+                      onSubmit={(e) => enregistrerChamp(champ, e)}
+                      onKeyDown={(e) => e.key === 'Escape' && annuler()}
+                    >
                       {champ.type === 'choix' || champ.type === 'multi' ? (
                         <span className="champ-nom">{champ.nom}</span>
                       ) : (
-                        <label htmlFor={`profil-${champ.cle}`}>
+                        <label htmlFor={`profil-${champ.cle}`} className="champ-nom">
                           {champ.nom}
                           {champ.unite && ` (${champ.unite})`}
                         </label>
                       )}
-                      <Saisie champ={champ} profil={profil} />
+                      <Saisie champ={champ} profil={profil} autoFocus />
                       {champ.aide && <p className="champ-aide">{champ.aide}</p>}
-                    </div>
-                  ))}
-                </fieldset>
-              ))}
-              <button type="submit" className="bouton">Enregistrer mon profil</button>
-            </form>
-          ) : (
-            // ensuite : tout est en lecture, un crayon par information
-            GROUPES_CHAMPS.map((groupe) => (
-              <div key={groupe.titre} className="profil-groupe">
-                <h3>{groupe.titre}</h3>
-                <dl>
-                  {groupe.champs.map((champ) => {
-                    const valeur = valeurAffichee(champ, profil)
-                    return enEdition === champ.cle ? (
-                      <form
-                        key={champ.cle}
-                        className="profil-ligne en-edition"
-                        onSubmit={(e) => enregistrerChamp(champ, e)}
-                        onKeyDown={(e) => e.key === 'Escape' && annuler()}
-                      >
-                        {champ.type === 'choix' || champ.type === 'multi' ? (
-                          <span className="champ-nom">{champ.nom}</span>
-                        ) : (
-                          <label htmlFor={`profil-${champ.cle}`} className="champ-nom">
-                            {champ.nom}
-                            {champ.unite && ` (${champ.unite})`}
-                          </label>
-                        )}
-                        <Saisie champ={champ} profil={profil} autoFocus />
-                        {champ.aide && <p className="champ-aide">{champ.aide}</p>}
-                        <div className="profil-ligne-actions">
-                          <button type="submit" className="bouton petit">Enregistrer</button>
-                          <button type="button" className="bouton secondaire petit" onClick={annuler}>
-                            Annuler
-                          </button>
-                        </div>
-                      </form>
-                    ) : (
-                      <div key={champ.cle} className="profil-ligne">
-                        <dt>{champ.nom}</dt>
-                        <dd className={valeur ? undefined : 'vide'}>{valeur || 'Non renseigné'}</dd>
-                        <button type="button" className="bouton-icone discret" onClick={() => editer(champ.cle)}>
-                          <Icone trace={ICONES.crayon} />
-                          <span className="visuellement-cache">Modifier : {champ.nom}</span>
+                      <div className="profil-ligne-actions">
+                        <button type="submit" className="bouton petit">Enregistrer</button>
+                        <button type="button" className="bouton secondaire petit" onClick={annuler}>
+                          Annuler
                         </button>
                       </div>
-                    )
-                  })}
-                </dl>
-              </div>
-            ))
-          )}
+                    </form>
+                  ) : (
+                    <div key={champ.cle} className="profil-ligne">
+                      <dt>{champ.nom}</dt>
+                      <dd className={valeur ? undefined : 'vide'}>{valeur || 'Non renseigné'}</dd>
+                      <button type="button" className="bouton-icone discret" onClick={() => editer(champ.cle)}>
+                        <Icone trace={ICONES.crayon} />
+                        <span className="visuellement-cache">Modifier : {champ.nom}</span>
+                      </button>
+                    </div>
+                  )
+                })}
+              </dl>
+            </div>
+          ))}
 
           <div className="profil-groupe">
             <h3>Sécurité</h3>

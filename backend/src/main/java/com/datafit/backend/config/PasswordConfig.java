@@ -1,4 +1,4 @@
-package com.datafit.backend;
+package com.datafit.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

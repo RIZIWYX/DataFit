@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { Outlet, useLocation } from 'react-router'
+import { Navigate, Outlet, useLocation } from 'react-router'
 import '../styles/layout.css'
+import { lireProfil, profilComplet } from '../lib/profil.ts'
 import Navigation from './Navigation.tsx'
 
 // le cadre de toutes les pages de l'application : la navigation, et la zone de page à côté
@@ -13,6 +14,9 @@ function AppLayout() {
   useEffect(() => {
     zone.current?.scrollTo(0, 0)
   }, [pathname])
+
+  // l'application reste fermée tant que le profil n'est pas complet
+  if (!profilComplet(lireProfil())) return <Navigate to="/creation-profil" replace />
 
   return (
     <div className="app">

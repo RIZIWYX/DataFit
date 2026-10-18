@@ -1,5 +1,6 @@
-package com.datafit.backend;
+package com.datafit.backend.inscription;
 
+import com.datafit.backend.utilisateur.Utilisateur;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

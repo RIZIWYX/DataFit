@@ -3,6 +3,7 @@ import './styles/App.css'
 import AppLayout from './components/AppLayout.tsx'
 import Cgu from './pages/Cgu.tsx'
 import Connexion from './pages/Connexion.tsx'
+import CreationProfil from './pages/CreationProfil.tsx'
 import Dashboard from './pages/Dashboard.tsx'
 import DonneesPersonnelles from './pages/DonneesPersonnelles.tsx'
 import Historique from './pages/Historique.tsx'
@@ -30,6 +31,7 @@ function App() {
         {/* pages plein écran, sans navigation */}
         <Route path="/" element={<Landing />} />
         <Route path="/connexion" element={<Connexion />} />
+        <Route path="/creation-profil" element={<CreationProfil />} />
         <Route path="/donnees-personnelles" element={<DonneesPersonnelles />} />
         <Route path="/cgu" element={<Cgu />} />
 

@@ -1,5 +1,7 @@
-package com.datafit.backend;
+package com.datafit.backend.inscription;
 
+import com.datafit.backend.utilisateur.Utilisateur;
+import com.datafit.backend.utilisateur.UtilisateurRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

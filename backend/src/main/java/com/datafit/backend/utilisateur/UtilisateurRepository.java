@@ -1,4 +1,4 @@
-package com.datafit.backend;
+package com.datafit.backend.utilisateur;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

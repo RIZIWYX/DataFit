@@ -1,4 +1,4 @@
-package com.datafit.backend;
+package com.datafit.backend.utilisateur;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
