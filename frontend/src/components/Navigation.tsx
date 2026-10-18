@@ -30,8 +30,16 @@ const GROUPES: { titre?: string; pages: Page[] }[] = [
   {
     titre: 'Suivi',
     pages: [
+      { to: '/nutrition', nom: 'Nutrition', icone: ICONES.nutrition },
       { to: '/sommeil', nom: 'Sommeil', icone: ICONES.sommeil },
       { to: '/montre', nom: 'Montre', icone: ICONES.montre },
+    ],
+  },
+  {
+    titre: 'Services',
+    pages: [
+      { to: '/chatbot', nom: 'Chatbot', icone: ICONES.chatbot },
+      { to: '/premium', nom: 'Premium', icone: ICONES.premium },
     ],
   },
 ]

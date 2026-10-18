@@ -21,24 +21,47 @@ Pas besoin d'installer Maven : le dépôt contient `mvnw`, un script qui téléc
 ```bash
 git clone git@github.com:RIZIWYX/DataFit.git
 cd DataFit
-cp .env.example .env
 ```
 
-Ouvre `.env` et remplace `change-moi` par un mot de passe à toi. Ce fichier n'est jamais commité (il est dans `.gitignore`).
+C'est tout : au premier lancement, `./lancer.sh` crée `.env` à partir de `.env.example`. Ce fichier n'est jamais commité (il est dans `.gitignore`). Le mot de passe d'exemple suffit pour travailler en local, et tu peux le changer quand tu veux : au lancement suivant, le script le redonne à la base.
+
+`.env` est la seule source du mot de passe : Docker Compose le lit pour créer la base et lancer le back, et le back lancé hors Docker le lit aussi (`spring.config.import` dans `application.properties`).
+
+### Utiliser Docker sans sudo
+
+Si Docker demande les droits administrateur, `./lancer.sh` passe par `sudo` et te demande ton mot de passe Ubuntu. Pour ne plus avoir à le taper, ajoute-toi une fois pour toutes au groupe `docker` :
+
+```bash
+sudo groupadd -f docker
+sudo usermod -aG docker $USER
+sudo snap restart docker   # si Docker est installé avec snap ; sinon : sudo service docker restart
+```
+
+Puis ferme et rouvre ton terminal (sous WSL : `wsl --shutdown` depuis Windows, puis rouvre Ubuntu). Être dans ce groupe revient à avoir les droits administrateur sur Docker : c'est l'usage normal sur une machine de développement.
 
 ## Lancer tout le projet (Docker)
 
 ```bash
-docker compose up --build
+./lancer.sh
 ```
 
 | Service | Adresse sur ta machine |
 |---|---|
 | Site (front servi par nginx) | http://localhost:3000 |
-| Backend | http://localhost:8080/api/hello |
+| Backend | http://localhost:8080 |
 | Base PostgreSQL | `localhost:5433` |
 
-`--build` reconstruit les images si le code a changé. Pour arrêter : `Ctrl+C`, puis `docker compose down`.
+Ce que fait le script, dans l'ordre :
+
+1. crée `.env` depuis `.env.example` s'il n'existe pas ;
+2. passe par `sudo` si Docker l'exige ;
+3. arrête un éventuel ancien conteneur qui occuperait déjà le port 5433 (ses données sont gardées) ;
+4. démarre la base, lui redonne le mot de passe de `.env` et crée les tables de `db/init.sql` qui manquent (rien n'est effacé) ;
+5. reconstruit les images si le code a changé et lance le back et le site (`docker compose up --build`).
+
+Pour arrêter : `Ctrl+C`, puis `docker compose down`.
+
+`./lancer.sh --reinitialiser` supprime la base locale avant de tout relancer : elle est recréée vide, avec toutes les tables de `db/init.sql`. Les comptes et profils de test sont effacés.
 
 C'est le mode à utiliser pour **vérifier que tout marche ensemble** avant d'ouvrir une PR. Pour coder au quotidien, le mode suivant est plus rapide.
 
@@ -52,7 +75,7 @@ npm install        # la première fois, ou quand package.json a changé
 npm run dev
 ```
 
-Site sur http://localhost:5173, rechargé à chaque sauvegarde.
+Site sur http://localhost:5173, rechargé à chaque sauvegarde. Les appels `/api/...` sont transmis au back sur le port 8080 (`server.proxy` dans `vite.config.ts`, le même rôle que nginx dans Docker) : lance aussi le back pour tout ce qui touche aux comptes.
 
 | Commande | Effet |
 |---|---|
@@ -68,15 +91,10 @@ Le back a besoin d'une base. Le plus simple : ne lancer **que** la base avec Doc
 ```bash
 docker compose up -d db          # -d : en arrière-plan
 cd backend
-export DB_URL=jdbc:postgresql://localhost:5433/datafit
-export DB_USER=datafit_user
-export DB_PASSWORD=le-mot-de-passe-de-ton-.env
 ./mvnw spring-boot:run
 ```
 
-Attention au port : Docker publie la base sur **5433**, alors que la valeur par défaut de `application.properties` est 5432. D'où le `DB_URL` ci-dessus.
-
-Dans IntelliJ ou VS Code, mets ces trois variables dans la configuration de lancement plutôt que de les retaper.
+Rien à exporter : le back lit le `.env` du projet, et son adresse de base par défaut est déjà `localhost:5433`, le port publié par Docker. Lance-le depuis le dossier `backend/` (y compris dans IntelliJ ou VS Code) : c'est de là qu'il cherche `../.env`.
 
 ### Service d'analyse 🚧
 
@@ -97,7 +115,7 @@ Un **environnement virtuel** (`.venv`) garde les bibliothèques du projet sépar
 |---|---|---|---|
 | `DB_USER` | base, back | `datafit_user` (back) | utilisateur PostgreSQL |
 | `DB_PASSWORD` | base, back | **aucun**, obligatoire | mot de passe PostgreSQL |
-| `DB_URL` | back | `jdbc:postgresql://localhost:5432/datafit` | adresse de la base |
+| `DB_URL` | back | `jdbc:postgresql://localhost:5433/datafit` | adresse de la base |
 
 Toute nouvelle variable doit être ajoutée **ici et dans `.env.example`**, avec une valeur d'exemple sans danger.
 
@@ -107,7 +125,11 @@ Toute nouvelle variable doit être ajoutée **ici et dans `.env.example`**, avec
 
 **Le back démarre puis s'arrête avec une erreur de connexion à la base** : la base n'est pas lancée, ou `DB_PASSWORD` / `DB_URL` sont faux. Avec Docker Compose, le back attend que la base soit prête (`healthcheck`) ; en local, vérifie le port 5433.
 
-**J'ai modifié `db/init.sql` et rien n'a changé** : normal, il ne s'exécute qu'à la création de la base. Voir [Base de données](base-de-donnees.md#faire-évoluer-le-schéma).
+**`password authentication failed for user "datafit_user"`** : la base a un autre mot de passe que celui de `.env` (PostgreSQL ne le lit qu'à sa création). Relance `./lancer.sh` : il le remet d'accord avec `.env`.
+
+**`permission denied while trying to connect to the docker API`** : voir [Utiliser Docker sans sudo](#utiliser-docker-sans-sudo).
+
+**J'ai modifié `db/init.sql` et rien n'a changé** : PostgreSQL ne l'exécute qu'à la création de la base. `./lancer.sh` crée les **nouvelles** tables à chaque lancement, mais ne modifie pas une table qui existe déjà (ajout de colonne…) : pour ça, `./lancer.sh --reinitialiser`, ou une commande `ALTER TABLE`. Voir [Base de données](base-de-donnees.md#faire-évoluer-le-schéma).
 
 **Après un `git pull`, le front ne compile plus** : `package.json` a sans doute changé. Relance `npm install` dans `frontend/`.
 

@@ -91,7 +91,7 @@ Une seule famille, **Archivo**, servie par le site (paquet `@fontsource-variable
 | `EtatVide` | absence de données : cadre pointillé, explication et suite possible |
 | `Segments` | choix exclusif entre quelques options visibles (filtres, vues, étapes) ; l'option choisie passe en blanc |
 | `Fenetre` | fenêtre modale (`<dialog>`) ; sur téléphone, elle monte du bas de l'écran |
-| `Jauge` | barre de progression fine (objectifs) |
+| `Jauge` | barre de progression fine (besoins nutritionnels, eau) |
 | `.tableau-donnees` | tableau de chiffres : en-têtes en petites capitales, chiffres alignés |
 | `.champ`, `.champs-ligne` | un champ de formulaire avec son nom au-dessus ; plusieurs petits champs sur une ligne |
 | `.alerte` | erreur, en rouge d'état |
@@ -104,14 +104,16 @@ Toutes les pages portent la classe `.refonte`, qui applique la charte (page de g
 
 | Page | Contenu |
 |---|---|
-| Accueil | les 7 derniers jours (chiffres clés et bande des jours), la dernière séance et la prochaine séance prévue côte à côte, puis les objectifs, les rangs et la montre, et les séances précédentes |
+| Accueil | les 7 derniers jours (chiffres clés et bande des jours), la dernière séance et la prochaine séance prévue côte à côte, puis l'objectif principal, les rangs et la montre, et les séances précédentes |
 | Programmation | programmes (modèles de séances) et calendrier (leurs occurrences) : vues mois, semaine et jour, filtre par programme, création à une date et une heure, déplacement par glisser-déposer, fiche au clic, séance « faite » |
 | Historique | toutes les séances, montre et programmation réunies : recherche, filtres, tri, regroupement par mois |
 | Progression | vue d'ensemble des séances (comparée à la période précédente) ou un exercice choisi dans le menu : seuls les graphiques que les données permettent de calculer sont affichés |
 | Performance | l'ancienne page « Sport », renommée (l'adresse `/sport` mène à `/performance`) |
 | Sommeil | horaires, durée, fréquence cardiaque et agitation des nuits ; pas de phases de sommeil, que la montre ne mesure pas |
 | Montre | état, synchronisation, mesures transmises (et celles qui ne le sont pas), données reçues |
-| Profil | informations en lecture, modifiables une par une (crayon) ; objectifs par discipline, en cours, atteints ou abandonnés |
+| Nutrition | besoins du jour selon l'objectif et l'activité choisis sur la page (calories, protéines, glucides, lipides, eau), journal des repas, 7 derniers jours |
+| Chatbot, Premium | pages réservées, encore vides |
+| Profil | informations en lecture, modifiables une par une (crayon), dont l'objectif principal ; remplies une première fois sur la page de création du profil, juste après l'inscription |
 
 ## D'où viennent les données
 
@@ -123,8 +125,8 @@ Rien n'est inventé à l'écran : chaque graphique ne montre que ce qui est mesu
 | Nuits | exemple, `data/sommeil-demo.ts`, généré depuis `SD/sommeil_mesures.csv` | — |
 | Records et rangs | saisis dans Performance ; chaque record est daté (une valeur par jour) pour la Progression | navigateur (`datafit-rangs`, `datafit-records`) |
 | Programmes et séances planifiées | créés dans Programmation ; une séance « faite » compte dans l'Historique et la Progression | navigateur (`datafit-programmation`) |
-| Objectifs | fixés dans le Profil ; l'avancement vient des records ou des séances | navigateur (`datafit-objectifs`) |
-| Profil | saisi dans le Profil | navigateur (`datafit-profil`) |
+| Repas et eau | saisis dans Nutrition ; les besoins sont calculés à partir du profil | navigateur (`datafit-nutrition`) |
+| Profil | saisi sur la page de création du profil, modifiable dans le Profil | base de données (création) et navigateur (`datafit-profil`) |
 
 La connexion ne vérifie pas encore les identifiants, et la déconnexion ramène à la page de connexion (`hooks/useDeconnexion.ts`) : c'est là qu'il faudra brancher le backend.
 

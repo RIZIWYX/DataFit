@@ -4,7 +4,6 @@ import '../styles/dashboard.css'
 import BadgeRang from '../components/BadgeRang.tsx'
 import CarteSeance from '../components/CarteSeance.tsx'
 import EtatVide from '../components/EtatVide.tsx'
-import Jauge from '../components/Jauge.tsx'
 import LienFleche from '../components/LienFleche.tsx'
 import ListeSeances from '../components/ListeSeances.tsx'
 import Panneau from '../components/Panneau.tsx'
@@ -22,11 +21,10 @@ import {
   formatJourRelatif,
   resumeSeance,
 } from '../lib/format.ts'
-import { titreObjectif } from '../lib/objectifs.ts'
 import { couleurSeance, depuisIso } from '../lib/programmation.ts'
 
 // L'accueil : une synthèse, pas un inventaire. Ce que j'ai fait (la semaine, la dernière séance)
-// et ce qui m'attend (la prochaine séance, mes objectifs) ; le détail est dans les pages dédiées.
+// et ce qui m'attend (la prochaine séance, mon objectif) ; le détail est dans les pages dédiées.
 function Dashboard() {
   const d = useDashboard()
   const montre = useMontre()
@@ -154,43 +152,18 @@ function Dashboard() {
         )}
       </div>
 
-      {/* Objectifs, rangs et montre */}
+      {/* Objectif, rangs et montre */}
       <div className="accueil-etat">
-        <Panneau
-          titre="Objectifs"
-          action={d.objectifs.length > 0 && <LienFleche to="/profil">Profil</LienFleche>}
-        >
-          {d.objectifs.length ? (
-            <ul className="accueil-objectifs">
-              {d.objectifs.slice(0, 3).map(({ objectif, avancement }) => (
-                <li key={objectif.id}>
-                  <strong>{titreObjectif(objectif)}</strong>
-                  {avancement ? (
-                    <>
-                      <Jauge
-                        part={avancement.part}
-                        libelle={`Avancement : ${titreObjectif(objectif)}`}
-                        couleur={avancement.part >= 1 ? 'var(--turquoise)' : undefined}
-                      />
-                      <small>
-                        <b>{Math.round(avancement.part * 100)} %</b> · {avancement.actuel}
-                      </small>
-                    </>
-                  ) : (
-                    <small>Pas encore mesurable</small>
-                  )}
-                </li>
-              ))}
-            </ul>
-          ) : d.objectifTexte ? (
-            <p className="accueil-objectif-texte">{d.objectifTexte}</p>
+        <Panneau titre="Objectif" action={<LienFleche to="/profil">Modifier</LienFleche>}>
+          {d.objectif ? (
+            <p className="accueil-objectif-texte">{d.objectif}</p>
           ) : (
             <EtatVide
               icone={ICONES.cible}
-              titre="Aucun objectif en cours"
-              action={<LienFleche to="/profil">Fixer un objectif</LienFleche>}
+              titre="Aucun objectif choisi"
+              action={<LienFleche to="/profil">Choisir mon objectif</LienFleche>}
             >
-              Un temps sur 5 km, une charge au squat, un nombre de séances par semaine…
+              Votre objectif principal se choisit dans le profil.
             </EtatVide>
           )}
         </Panneau>

@@ -6,8 +6,7 @@ export interface Profil {
   prenom: string
   nom: string
   email: string
-  // 0 = pas encore renseigné
-  age: number
+  dateNaissance: string // « AAAA-MM-JJ » ; vide = pas encore renseignée
   taille: number // cm
   poids: number // kg : fixe la catégorie de poids de la page sport
   sexe: string // « H » ou « F » : choisit les barèmes de la page sport
@@ -20,7 +19,7 @@ const PROFIL_VIDE: Profil = {
   prenom: '',
   nom: '',
   email: '',
-  age: 0,
+  dateNaissance: '',
   taille: 0,
   poids: 0,
   sexe: '',
@@ -57,6 +56,58 @@ export function enregistrerProfil(modifications: Partial<Profil>): Profil {
     // stockage indisponible (navigation privée…) : le profil ne sera pas gardé
   }
   return profil
+}
+
+// Nouveau compte : le profil gardé dans le navigateur ne lui appartient pas, il est à refaire.
+export function effacerProfil() {
+  try {
+    localStorage.removeItem(CLE_STOCKAGE)
+  } catch {
+    // stockage indisponible : rien à effacer
+  }
+}
+
+// Complet quand tout ce que demande la page de création du profil est rempli.
+// Tant qu'il ne l'est pas, l'application reste fermée (AppLayout).
+export const profilComplet = (profil: Profil | null) =>
+  profil !== null &&
+  profil.prenom !== '' &&
+  profil.nom !== '' &&
+  profil.dateNaissance !== '' &&
+  profil.sexe !== '' &&
+  profil.taille > 0 &&
+  profil.poids > 0 &&
+  profil.niveau !== '' &&
+  profil.activites.length > 0 &&
+  profil.objectif !== ''
+
+// les choix proposés, communs à la création du profil et à la page Profil
+export const SEXES = [
+  { valeur: 'H', nom: 'Homme' },
+  { valeur: 'F', nom: 'Femme' },
+]
+export const NIVEAUX = [
+  { valeur: 'novice', nom: 'Novice' },
+  { valeur: 'intermediaire', nom: 'Intermédiaire' },
+  { valeur: 'pro', nom: 'Confirmé' },
+]
+// l'objectif est gardé en toutes lettres : l'accueil l'affiche tel quel
+export const OBJECTIFS = [
+  'Gagner en force',
+  'Prendre du muscle',
+  'Améliorer mon endurance',
+  'Perdre du poids',
+  'Rester en forme',
+].map((nom) => ({ valeur: nom, nom }))
+
+// dates de naissance acceptées : entre 10 et 100 ans, au format des champs date (« AAAA-MM-JJ »)
+export function bornesNaissance(aujourdHui = new Date()) {
+  const ilYa = (ans: number) => {
+    const date = new Date(aujourdHui.getFullYear() - ans, aujourdHui.getMonth(), aujourdHui.getDate())
+    const deuxChiffres = (n: number) => String(n).padStart(2, '0')
+    return `${date.getFullYear()}-${deuxChiffres(date.getMonth() + 1)}-${deuxChiffres(date.getDate())}`
+  }
+  return { min: ilYa(100), max: ilYa(10) }
 }
 
 // premières lettres du prénom et du nom, pour l'avatar

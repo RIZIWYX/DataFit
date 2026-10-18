@@ -2,13 +2,17 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-route
 import './styles/App.css'
 import AppLayout from './components/AppLayout.tsx'
 import Cgu from './pages/Cgu.tsx'
+import Chatbot from './pages/Chatbot.tsx'
 import Connexion from './pages/Connexion.tsx'
+import CreationProfil from './pages/CreationProfil.tsx'
 import Dashboard from './pages/Dashboard.tsx'
 import DonneesPersonnelles from './pages/DonneesPersonnelles.tsx'
 import Historique from './pages/Historique.tsx'
 import Landing from './pages/Landing.tsx'
 import Montre from './pages/Montre.tsx'
+import Nutrition from './pages/Nutrition.tsx'
 import PageIntrouvable from './pages/PageIntrouvable.tsx'
+import Premium from './pages/Premium.tsx'
 import Profil from './pages/Profil.tsx'
 import Programmation from './pages/Programmation.tsx'
 import Progression from './pages/Progression.tsx'
@@ -30,6 +34,7 @@ function App() {
         {/* pages plein écran, sans navigation */}
         <Route path="/" element={<Landing />} />
         <Route path="/connexion" element={<Connexion />} />
+        <Route path="/creation-profil" element={<CreationProfil />} />
         <Route path="/donnees-personnelles" element={<DonneesPersonnelles />} />
         <Route path="/cgu" element={<Cgu />} />
 
@@ -44,6 +49,9 @@ function App() {
           <Route path="/historique/:id" element={<Seance />} />
           <Route path="/progression" element={<Progression />} />
           <Route path="/sommeil" element={<Sommeil />} />
+          <Route path="/nutrition" element={<Nutrition />} />
+          <Route path="/chatbot" element={<Chatbot />} />
+          <Route path="/premium" element={<Premium />} />
           <Route path="/profil" element={<Profil />} />
           {/* toute autre adresse */}
           <Route path="*" element={<PageIntrouvable />} />
