@@ -122,39 +122,12 @@
   gap: 1.25rem;
 }
 
-/* objectifs en cours : le titre, la jauge, l'avancement */
-.accueil-objectifs {
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.accueil-objectifs li {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-}
-.accueil-objectifs li + li {
-  padding-top: 1.1rem;
-  border-top: 1px solid var(--trait);
-}
-.accueil-objectifs strong {
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-.accueil-objectifs small {
-  font-size: 0.8rem;
-  color: var(--gris-2);
-}
-.accueil-objectifs small b {
-  font-weight: 650;
-  color: var(--blanc);
-}
+/* l'objectif principal du profil */
 .accueil-objectif-texte {
   margin: 0;
-  font-weight: 600;
+  font-size: 1.35rem;
+  font-stretch: 112%;
+  font-weight: 750;
 }
 /* rangs par discipline */
 .liste-rangs a {

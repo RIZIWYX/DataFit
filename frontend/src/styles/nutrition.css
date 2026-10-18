@@ -1,0 +1,354 @@
+/* Page nutrition : l'objectif et l'activité, les compteurs du jour, le journal des repas,
+   le calcul des besoins, l'eau et la semaine. Composants de base : charte.css */
+
+.nutrition {
+  gap: 1.75rem;
+}
+.nutrition .bouton-icone:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ---------- jour affiché ---------- */
+
+.nutrition-jour {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.nutrition-jour-nom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 10.5rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+.nutrition-jour-nom small {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--gris-2);
+}
+
+/* ---------- objectif et activité ---------- */
+
+.nutrition-reglages {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: 1.25rem;
+}
+.nutrition-reglage {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
+}
+.nutrition-reglage p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--gris);
+}
+
+/* ---------- compteurs du jour : mangé / besoin ---------- */
+
+.nutrition-compteurs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.compteur {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
+}
+.compteur-nom {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--gris);
+}
+.compteur-valeur {
+  margin: 0;
+  font-size: clamp(1.9rem, 1.3rem + 1.4vw, 2.6rem);
+  white-space: nowrap;
+}
+.compteur-besoin {
+  margin-left: 0.3em;
+  font-size: 0.42em;
+  font-weight: 600;
+  font-stretch: 100%;
+  letter-spacing: 0;
+  color: var(--gris);
+}
+.compteur-reste {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--gris-2);
+}
+/* besoin atteint : le signal turquoise */
+.compteur-reste.atteint {
+  color: var(--turquoise);
+}
+
+/* ---------- journal et colonne de droite ---------- */
+
+.nutrition-grille {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 1.25rem;
+}
+.nutrition-cote {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.nutrition-repas + .nutrition-repas {
+  margin-top: 1.5rem;
+}
+.nutrition-repas h3 {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gris-2);
+}
+.nutrition-repas h3 span {
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.nutrition-repas ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nutrition-aliment {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 56px;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--trait);
+}
+.nutrition-aliment strong {
+  display: block;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nutrition-aliment small {
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gris-2);
+}
+.nutrition-aliment-kcal {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* le calcul des besoins, ligne par ligne */
+.nutrition-calcul {
+  margin: 0;
+}
+.nutrition-calcul div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--trait);
+}
+.nutrition-calcul dt {
+  font-size: 0.875rem;
+  color: var(--gris);
+}
+.nutrition-calcul dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.nutrition-calcul .total {
+  border-bottom: 0;
+}
+.nutrition-calcul .total dt {
+  font-weight: 650;
+  color: var(--blanc);
+}
+.nutrition-calcul .total dd {
+  font-size: 1.15rem;
+  font-stretch: 110%;
+  font-weight: 750;
+}
+.nutrition-regles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0.9rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
+  color: var(--gris);
+}
+.nutrition-regles strong {
+  font-weight: 600;
+  color: var(--blanc);
+}
+.nutrition-note {
+  margin: 0.8rem 0 0;
+  font-size: 0.78rem;
+  color: var(--gris-2);
+}
+
+/* hydratation : moins, le total, plus */
+.nutrition-eau {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+.nutrition-eau p {
+  margin: 0;
+  font-size: 1.9rem;
+}
+.nutrition-eau p span {
+  font-size: 0.45em;
+  font-weight: 600;
+  font-stretch: 100%;
+  letter-spacing: 0;
+  color: var(--gris);
+}
+.nutrition-eau .bouton-icone {
+  width: 44px;
+  height: 44px;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* ---------- la semaine : une colonne par jour, le trait du besoin ---------- */
+
+.nutrition-semaine-zone {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: end;
+  gap: 0.75rem;
+  height: 170px;
+  border-bottom: 1px solid var(--trait-fort);
+}
+.nutrition-semaine-colonne {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100%;
+}
+.nutrition-semaine-colonne i {
+  width: min(36px, 70%);
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  background: var(--gris-2);
+}
+.nutrition-semaine-colonne i.atteint {
+  background: var(--blanc);
+}
+.nutrition-semaine-besoin {
+  position: absolute;
+  right: 0;
+  left: 0;
+  border-top: 1px dashed var(--turquoise);
+  pointer-events: none;
+}
+.nutrition-semaine-besoin small {
+  position: absolute;
+  right: 0;
+  bottom: 0.25rem;
+  padding: 0 0.3rem;
+  border-radius: var(--rayon-s);
+  background: var(--noir-1);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--turquoise);
+}
+.nutrition-semaine-jours {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+.nutrition-semaine-jours small {
+  font-size: 0.72rem;
+  color: var(--gris-2);
+}
+
+.nutrition-limites {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--gris-2);
+}
+.nutrition-limites .icone {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: 0.1rem;
+}
+
+.nutrition-formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* ---------- tablette et téléphone ---------- */
+
+@media (max-width: 1099px) {
+  .nutrition-reglages,
+  .nutrition-grille {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .nutrition-compteurs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .nutrition-compteurs {
+    gap: 0.75rem;
+  }
+  .compteur,
+  .nutrition-reglage {
+    padding: 1rem 1.1rem;
+  }
+  .nutrition-jour-nom {
+    min-width: 0;
+  }
+  /* objectif et activité : les choix passent à la ligne plutôt que de défiler,
+     pour que celui qui est choisi reste toujours visible */
+  .nutrition-reglage .segments {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .nutrition-semaine-zone,
+  .nutrition-semaine-jours {
+    gap: 0.35rem;
+  }
+}

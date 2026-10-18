@@ -1,27 +1,11 @@
-import { type SubmitEvent, useState } from 'react'
+import { type SubmitEvent } from 'react'
 import '../styles/profil.css'
-import EtatVide from '../components/EtatVide.tsx'
-import Fenetre from '../components/Fenetre.tsx'
 import Icone from '../components/Icone.tsx'
-import Jauge from '../components/Jauge.tsx'
-import Segments from '../components/Segments.tsx'
 import TitrePage from '../components/TitrePage.tsx'
 import { ICONES } from '../data/icones.ts'
-import { DISCIPLINES, TOUS_LES_EXERCICES } from '../data/paliers.ts'
 import { LISTE_SPORTS, SPORTS } from '../data/sports.ts'
-import useObjectifs from '../hooks/useObjectifs.ts'
 import useProfil, { type ChampProfil } from '../hooks/useProfil.ts'
 import { formatDateLongue, nombre } from '../lib/format.ts'
-import {
-  GROUPES_OBJECTIFS,
-  MESURES_VOLUME,
-  type MesureVolume,
-  type Objectif,
-  type StatutObjectif,
-  TOTAL_SBD,
-  texteEcheance,
-  titreObjectif,
-} from '../lib/objectifs.ts'
 import {
   type Profil as DonneesProfil,
   NIVEAUX,
@@ -30,7 +14,6 @@ import {
   bornesNaissance,
   initiales,
 } from '../lib/profil.ts'
-import { libelleMesure, lireTemps } from '../lib/rangs.ts'
 
 interface DefinitionChamp {
   cle: ChampProfil
@@ -153,7 +136,7 @@ function Profil() {
   return (
     <div className="ecran profil">
       <TitrePage surtitre="Compte" titre="Profil">
-        Vos informations, et les objectifs que vous vous fixez.
+        Vos informations et votre objectif principal.
       </TitrePage>
 
       <div className="profil-zones">
@@ -236,267 +219,8 @@ function Profil() {
             </dl>
           </div>
         </section>
-
-        <ZoneObjectifs />
       </div>
     </div>
-  )
-}
-
-// ---------- objectifs sportifs ----------
-
-const STATUTS: { valeur: StatutObjectif; nom: string }[] = [
-  { valeur: 'en-cours', nom: 'En cours' },
-  { valeur: 'atteint', nom: 'Atteints' },
-  { valeur: 'abandonne', nom: 'Abandonnés' },
-]
-
-function ZoneObjectifs() {
-  const o = useObjectifs()
-  const [statut, setStatut] = useState<StatutObjectif>('en-cours')
-  const [ajout, setAjout] = useState(false)
-
-  const visibles = o.objectifs.filter((objectif) => objectif.statut === statut)
-  const groupes = GROUPES_OBJECTIFS.map((g) => ({ ...g, objectifs: visibles.filter((x) => x.discipline === g.id) })).filter(
-    (g) => g.objectifs.length,
-  )
-
-  return (
-    <section className="profil-objectifs" aria-labelledby="profil-objectifs-titre">
-      <header className="profil-objectifs-tete">
-        <h2 id="profil-objectifs-titre">
-          Objectifs<span className="point">.</span>
-        </h2>
-        <button type="button" className="bouton petit" onClick={() => setAjout(true)}>
-          <Icone trace={ICONES.ajouter} />
-          Ajouter un objectif
-        </button>
-      </header>
-
-      <Segments
-        libelle="Statut des objectifs"
-        options={STATUTS.map((s) => ({ ...s, compte: o.objectifs.filter((x) => x.statut === s.valeur).length }))}
-        valeur={statut}
-        onChange={setStatut}
-      />
-
-      {groupes.length === 0 ? (
-        <EtatVide
-          icone={ICONES.cible}
-          titre={statut === 'en-cours' ? 'Aucun objectif en cours' : `Aucun objectif ${statut === 'atteint' ? 'atteint' : 'abandonné'}`}
-          action={
-            statut === 'en-cours' && (
-              <button type="button" className="bouton secondaire petit" onClick={() => setAjout(true)}>
-                Fixer un premier objectif
-              </button>
-            )
-          }
-        >
-          Un objectif par discipline : un temps sur 5 km, une charge au squat, un total SBD, un nombre de
-          séances par semaine…
-        </EtatVide>
-      ) : (
-        groupes.map((groupe) => (
-          <div key={groupe.id} className="profil-objectifs-groupe">
-            <h3>{groupe.nom}</h3>
-            <ul>
-              {groupe.objectifs.map((objectif) => (
-                <LigneObjectif key={objectif.id} objectif={objectif} o={o} />
-              ))}
-            </ul>
-          </div>
-        ))
-      )}
-
-      {ajout && <FenetreObjectif o={o} onFermer={() => setAjout(false)} />}
-    </section>
-  )
-}
-
-type DonneesObjectifs = ReturnType<typeof useObjectifs>
-
-function LigneObjectif({ objectif, o }: { objectif: Objectif; o: DonneesObjectifs }) {
-  const avancement = o.avancement(objectif)
-  const cibleAtteinte = objectif.statut === 'en-cours' && avancement && avancement.part >= 1
-
-  return (
-    <li className={`objectif ${objectif.statut}`}>
-      <div className="objectif-tete">
-        <div>
-          <strong>{titreObjectif(objectif)}</strong>
-          <small>{texteEcheance(objectif)}</small>
-        </div>
-        {cibleAtteinte && <span className="etiquette turquoise">Cible atteinte</span>}
-        {objectif.statut === 'atteint' && <span className="etiquette">Atteint</span>}
-      </div>
-
-      {avancement ? (
-        <div className="objectif-avancement">
-          <Jauge
-            part={avancement.part}
-            libelle={`Avancement : ${titreObjectif(objectif)}`}
-            couleur={avancement.part >= 1 ? 'var(--turquoise)' : undefined}
-          />
-          <p>
-            <span>{avancement.actuel}</span>
-            <strong>{Math.round(avancement.part * 100)} %</strong>
-          </p>
-        </div>
-      ) : (
-        <p className="objectif-vide">
-          Pas encore mesurable : saisissez votre record de cet exercice dans Performance.
-        </p>
-      )}
-
-      <div className="objectif-actions">
-        {objectif.statut === 'en-cours' ? (
-          <>
-            <button type="button" onClick={() => o.changerStatut(objectif.id, 'atteint')}>
-              <Icone trace={ICONES.valide} />
-              Marquer comme atteint
-            </button>
-            <button type="button" onClick={() => o.changerStatut(objectif.id, 'abandonne')}>
-              Abandonner
-            </button>
-          </>
-        ) : (
-          <button type="button" onClick={() => o.changerStatut(objectif.id, 'en-cours')}>
-            Remettre en cours
-          </button>
-        )}
-        <button type="button" className="danger" onClick={() => o.supprimer(objectif.id)}>
-          <Icone trace={ICONES.corbeille} />
-          Supprimer
-        </button>
-      </div>
-    </li>
-  )
-}
-
-// ajout d'un objectif, en trois choix : la discipline, ce qu'on vise, la valeur
-function FenetreObjectif({ o, onFermer }: { o: DonneesObjectifs; onFermer: () => void }) {
-  const [groupe, setGroupe] = useState('sbd')
-  const [cle, setCle] = useState('')
-  const [cible, setCible] = useState('')
-  const [echeance, setEcheance] = useState('')
-
-  const discipline = DISCIPLINES.find((d) => d.id === groupe)
-  const choix =
-    groupe === 'regularite'
-      ? (Object.keys(MESURES_VOLUME) as MesureVolume[]).map((m) => ({ id: m, nom: MESURES_VOLUME[m].nom }))
-      : [
-          ...(groupe === 'sbd' ? [{ id: TOTAL_SBD, nom: 'Total SBD (squat + couché + terre)' }] : []),
-          ...(discipline?.exercices ?? []).map((ex) => ({ id: ex.id, nom: ex.nom })),
-        ]
-  const exercice = TOUS_LES_EXERCICES.find((ex) => ex.id === cle)
-  const mesure = groupe === 'regularite' ? (cle as MesureVolume) : undefined
-
-  // la cible saisie, dans l'unité de l'exercice (un temps « 19:30 » devient 1170 secondes)
-  const valeurCible = exercice?.type === 'time' ? lireTemps(cible) : Number(cible.replace(',', '.'))
-  const valide = cle !== '' && cible !== '' && !Number.isNaN(valeurCible) && (exercice?.type === 'ladder' || valeurCible > 0)
-
-  const unite = mesure
-    ? MESURES_VOLUME[mesure].unite
-    : cle === TOTAL_SBD
-      ? 'kg, les trois mouvements additionnés'
-      : exercice
-        ? libelleMesure(exercice)
-        : ''
-  const record = cle && cle !== TOTAL_SBD && !mesure ? o.recordActuel(cle) : undefined
-
-  function valider(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-    if (!valide) return
-    o.ajouter({
-      discipline: groupe,
-      ...(mesure ? { mesure } : { exerciceId: cle }),
-      cible: valeurCible,
-      echeance: echeance || undefined,
-    })
-    onFermer()
-  }
-
-  return (
-    <Fenetre
-      ouverte
-      titre="Nouvel objectif"
-      onFermer={onFermer}
-      pied={
-        <>
-          <button type="button" className="bouton secondaire" onClick={onFermer}>Annuler</button>
-          <button type="submit" form="formulaire-objectif" className="bouton" disabled={!valide}>
-            Ajouter l'objectif
-          </button>
-        </>
-      }
-    >
-      <form id="formulaire-objectif" className="profil-formulaire-objectif" onSubmit={valider}>
-        <div className="champ">
-          <label htmlFor="objectif-groupe">Discipline</label>
-          <select
-            id="objectif-groupe"
-            value={groupe}
-            onChange={(e) => {
-              setGroupe(e.target.value)
-              setCle('')
-              setCible('')
-            }}
-          >
-            {GROUPES_OBJECTIFS.map((g) => (
-              <option key={g.id} value={g.id}>{g.nom}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="champ">
-          <label htmlFor="objectif-cle">Ce que vous visez</label>
-          <select
-            id="objectif-cle"
-            value={cle}
-            onChange={(e) => {
-              setCle(e.target.value)
-              setCible('')
-            }}
-          >
-            <option value="">Choisir…</option>
-            {choix.map((c) => (
-              <option key={c.id} value={c.id}>{c.nom}</option>
-            ))}
-          </select>
-        </div>
-
-        {cle && (
-          <div className="champ">
-            <label htmlFor="objectif-cible">Valeur visée</label>
-            {exercice?.type === 'ladder' ? (
-              <select id="objectif-cible" value={cible} onChange={(e) => setCible(e.target.value)}>
-                <option value="">Choisir une étape…</option>
-                {exercice.etapes?.map((etape, i) => (
-                  <option key={etape} value={i}>{etape}</option>
-                ))}
-              </select>
-            ) : (
-              <input
-                id="objectif-cible"
-                inputMode={exercice?.type === 'time' ? 'text' : 'decimal'}
-                placeholder={exercice?.type === 'time' ? 'ex. 19:30' : ''}
-                value={cible}
-                onChange={(e) => setCible(e.target.value)}
-              />
-            )}
-            <p className="champ-aide">
-              {unite}
-              {record && ` · votre record actuel : ${record}`}
-            </p>
-          </div>
-        )}
-
-        <div className="champ">
-          <label htmlFor="objectif-echeance">Échéance (facultative)</label>
-          <input id="objectif-echeance" type="date" value={echeance} onChange={(e) => setEcheance(e.target.value)} />
-        </div>
-      </form>
-    </Fenetre>
   )
 }
 
