@@ -1,3 +1,4 @@
+import '../styles/badge-rang.css'
 import { RANGS } from '../data/paliers.ts'
 
 interface Props {

@@ -1,0 +1,776 @@
+/* Charte DataFit : noir, turquoise, blanc.
+  Variables de la direction artistique et composants de base, communs à toutes les pages.
+  Chaque page (et chaque fenêtre modale) porte la classe .refonte, qui applique la charte.
+  Le détail des choix est expliqué dans docs/charte-graphique.md. */
+
+:root {
+  /* noir : structure et profondeur, du plus profond au plus clair */
+  --noir: #09090a; /* fond des pages */
+  --noir-1: #111113; /* panneaux */
+  --noir-2: #19191c; /* survol, champs, éléments posés sur un panneau */
+  --noir-3: #222226; /* éléments éteints (jours sans séance, barres neutres) */
+  --trait: #26262b; /* séparateurs et bordures fines */
+  --trait-fort: #3a3a41; /* bordures de boutons et de champs */
+
+  /* blanc : lecture */
+  --blanc: #f7f7f8;
+  --gris: #a4a4ad; /* texte secondaire : 7,6:1 sur un panneau */
+  --gris-2: #82828b; /* étiquettes, axes, notes : 5,5:1 sur un panneau */
+
+  /* turquoise : le signal, la couleur du logo. Rare, donc visible.
+    Sur fond noir, il sert aussi de texte d'accent (9,8:1 sur un panneau).
+    Sur un fond turquoise, le texte est toujours noir (10:1) : le blanc y serait illisible (1,9:1). */
+  --turquoise: #0cd0d0;
+  --turquoise-survol: #4adcdc;
+  --turquoise-voile: rgb(12 208 208 / 0.14);
+
+  /* états */
+  --vert: #3ecf8e; /* connecté, réussi */
+  --ambre: #f5b83d; /* attention */
+  --erreur: #ff5c5c; /* erreur, suppression : 6,2:1 sur un panneau */
+
+  /* sports, sur fond noir : trois teintes et trois clartés bien séparées (gris clair, orange, bleu),
+    ce qui les garde distinctes pour les daltoniens. Le turquoise est réservé au signal. */
+  --sport-musculation: #e4e4e7;
+  --sport-course: #ff8a3d;
+  --sport-natation: #6e8bff;
+
+  --police: 'Archivo Variable', system-ui, sans-serif;
+
+  --rayon-s: 6px;
+  --rayon: 10px;
+  --rayon-l: 14px;
+
+  --transition: 160ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ---------- base des zones refondues ---------- */
+
+.refonte {
+  font-family: var(--police);
+  font-stretch: 100%;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--blanc);
+  background: var(--noir);
+  color-scheme: dark; /* champs, barres de défilement… en version sombre */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* les composants de l'ancienne charte (graphiques, badges de rang…) lisent ces variables :
+  on les traduit ici, et ils passent au noir sans être réécrits */
+.refonte,
+.app-content.refonte {
+  --d-carte: var(--noir-1);
+  --d-encre: var(--blanc);
+  --d-encre-2: var(--gris);
+  --d-discret: var(--gris-2);
+  --d-bordure: var(--trait);
+  --d-grille: rgb(255 255 255 / 0.06);
+  --d-axe: rgb(255 255 255 / 0.16);
+  --d-creux: var(--noir-2);
+  --d-accent: var(--turquoise);
+}
+.refonte ::selection {
+  background: var(--turquoise);
+  color: var(--noir);
+}
+.refonte :focus-visible {
+  outline: 2px solid var(--blanc);
+  outline-offset: 2px;
+}
+
+/* ---------- typographie ----------
+  Une seule famille, Archivo, dont on fait varier la largeur :
+  large et très grasse pour les titres « affiche », normale pour le texte, étroite pour les étiquettes. */
+
+.affiche {
+  font-stretch: 125%;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+/* le point turquoise qui termine les grands titres : la signature de la charte */
+.point {
+  color: var(--turquoise);
+}
+.surtitre {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-stretch: 100%;
+  letter-spacing: 0.16em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--gris-2);
+}
+.chiffre {
+  font-stretch: 110%;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* titre d'une page de l'application (composant TitrePage) */
+.titre-page-bloc {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+.titre-page-bloc .surtitre {
+  margin-bottom: 0.85rem;
+}
+.titre-page {
+  margin: 0;
+  font-size: clamp(2rem, 1.3rem + 2.2vw, 3rem);
+  font-stretch: 118%;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.titre-page-texte {
+  margin: 0.85rem 0 0;
+  max-width: 60ch;
+  font-size: 1.05rem;
+  color: var(--gris);
+}
+.titre-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ---------- boutons ---------- */
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--rayon);
+  background: var(--turquoise);
+  color: var(--noir);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    border-color var(--transition),
+    color var(--transition);
+}
+.bouton:hover {
+  background: var(--turquoise-survol);
+}
+.bouton .icone {
+  width: 1.1rem;
+  height: 1.1rem;
+  transition: transform var(--transition);
+}
+.bouton:hover .icone {
+  transform: translateX(3px);
+}
+/* variante neutre : contour gris, pour les actions secondaires */
+.bouton.secondaire {
+  border-color: var(--trait-fort);
+  background: transparent;
+  color: var(--blanc);
+}
+.bouton.secondaire:hover {
+  border-color: var(--blanc);
+  background: rgb(255 255 255 / 0.04);
+}
+/* variante contour turquoise : action importante mais pas principale (« S'inscrire ») */
+.bouton.contour {
+  border-color: var(--turquoise);
+  background: transparent;
+  color: var(--blanc);
+}
+.bouton.contour:hover {
+  background: var(--turquoise);
+  color: var(--noir);
+}
+/* variante texte souligné */
+.bouton.fantome {
+  min-height: 0;
+  padding: 0 0 5px;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  border-radius: 0;
+  background: none;
+  color: var(--blanc);
+}
+.bouton.fantome:hover {
+  color: var(--turquoise);
+}
+.bouton.petit {
+  min-height: 36px;
+  padding: 0 0.9rem;
+  font-size: 0.875rem;
+}
+.bouton:disabled,
+.bouton[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* bouton carré, une icône seule (toujours accompagnée d'un texte caché pour les lecteurs d'écran) */
+.bouton-icone {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  padding: 0;
+  border: 1px solid var(--trait-fort);
+  border-radius: var(--rayon);
+  background: transparent;
+  color: var(--gris);
+  cursor: pointer;
+  transition:
+    color var(--transition),
+    border-color var(--transition),
+    background-color var(--transition);
+}
+.bouton-icone .icone {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+.bouton-icone:hover {
+  border-color: var(--gris-2);
+  color: var(--blanc);
+}
+.bouton-icone.discret {
+  border-color: transparent;
+}
+.bouton-icone.discret:hover {
+  background: var(--noir-2);
+}
+.bouton-icone.danger:hover {
+  border-color: var(--erreur);
+  color: var(--erreur);
+}
+
+/* lien de retour vers la page parente */
+.lien-retour {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gris);
+  transition: color var(--transition);
+}
+.lien-retour:hover {
+  color: var(--blanc);
+}
+.lien-retour .icone {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* lien d'action discret, suivi d'une flèche (composant LienFleche) */
+.lien-fleche {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--gris);
+  transition: color var(--transition);
+}
+.lien-fleche .icone {
+  width: 0.95rem;
+  height: 0.95rem;
+  transition: transform var(--transition);
+}
+.lien-fleche:hover {
+  color: var(--blanc);
+}
+.lien-fleche:hover .icone {
+  transform: translateX(3px);
+  color: var(--turquoise);
+}
+
+/* ---------- panneaux (composant Panneau) ---------- */
+
+.panneau {
+  min-width: 0;
+  padding: 1.25rem 1.5rem 1.5rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
+}
+.panneau-tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.panneau-titre {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gris);
+}
+
+/* liste de lignes cliquables, séparées par un trait (séances, disciplines…) */
+.liste-lignes {
+  margin: -0.4rem -0.75rem;
+  padding: 0;
+  list-style: none;
+}
+.liste-lignes li + li {
+  border-top: 1px solid var(--trait);
+}
+.liste-lignes a {
+  border-radius: var(--rayon);
+  transition: background-color var(--transition);
+}
+.liste-lignes a:hover {
+  background: var(--noir-2);
+}
+
+/* ---------- étiquettes et voyants ---------- */
+
+.etiquette {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 22px;
+  padding: 0 0.55rem;
+  border: 1px solid var(--trait-fort);
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 600;
+  font-stretch: 100%;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--gris);
+}
+.etiquette .icone {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+.etiquette.turquoise {
+  border-color: transparent;
+  background: var(--turquoise-voile);
+  color: var(--turquoise);
+}
+
+/* petit point d'état : éteint par défaut, vert quand c'est actif */
+.voyant {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--gris-2);
+}
+.voyant.actif {
+  background: var(--vert);
+  box-shadow: 0 0 0 4px rgb(62 207 142 / 0.15);
+}
+
+/* ---------- états : vide, erreur ---------- */
+
+/* absence de données (composant EtatVide) : un cadre pointillé, jamais une erreur */
+.etat-vide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 1.1rem 1.25rem 1.25rem;
+  border: 1px dashed var(--trait-fort);
+  border-radius: var(--rayon);
+}
+.etat-vide-icone {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 0.35rem;
+  border-radius: var(--rayon-s);
+  background: var(--noir-2);
+  color: var(--gris);
+}
+.etat-vide-titre {
+  margin: 0;
+  font-weight: 650;
+}
+.etat-vide-texte {
+  margin: 0 0 0.35rem;
+  font-size: 0.875rem;
+  color: var(--gris);
+}
+
+/* erreur : un bandeau turquoise voilé, avec un texte qui dit quoi faire */
+.alerte {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgb(255 92 92 / 0.45);
+  border-radius: var(--rayon);
+  background: rgb(255 92 92 / 0.1);
+  font-size: 0.9rem;
+}
+.alerte .icone {
+  color: var(--erreur);
+}
+
+/* ---------- choix segmentés (composant Segments) ---------- */
+
+.segments {
+  display: inline-flex;
+  align-self: flex-start;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 100%;
+  padding: 4px;
+  border: 1px solid var(--trait);
+  border-radius: calc(var(--rayon) + 4px);
+  background: var(--noir-1);
+}
+.segments button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 34px;
+  padding: 0 0.85rem;
+  border: 0;
+  border-radius: var(--rayon);
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--gris);
+  cursor: pointer;
+  transition:
+    color var(--transition),
+    background-color var(--transition);
+}
+.segments button:hover {
+  background: var(--noir-2);
+  color: var(--blanc);
+}
+/* l'option choisie : en blanc, le contraste le plus fort (le turquoise reste au signal) */
+.segments button[aria-pressed='true'] {
+  background: var(--blanc);
+  color: var(--noir);
+  font-weight: 600;
+}
+.segments .icone {
+  width: 1rem;
+  height: 1rem;
+}
+.segments small {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gris-2);
+}
+.segments button[aria-pressed='true'] small {
+  color: #55555c;
+}
+@media (max-width: 640px) {
+  /* téléphone : les options restent sur une ligne, qui défile */
+  .segments {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+}
+
+/* ---------- jauge (composant Jauge) ---------- */
+
+.jauge {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--noir-3);
+}
+.jauge i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--blanc);
+  transition: width 0.3s;
+}
+
+/* ---------- tableau de chiffres ---------- */
+
+.tableau-donnees {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+.tableau-donnees th {
+  padding: 0 0.75rem 0.6rem;
+  border-bottom: 1px solid var(--trait);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--gris-2);
+}
+.tableau-donnees td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--trait);
+}
+.tableau-donnees tr:last-child td {
+  border-bottom: 0;
+}
+.tableau-donnees .nombre {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ---------- fenêtre modale (composant Fenetre) ---------- */
+
+.fenetre {
+  width: min(560px, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 1px solid var(--trait-fort);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
+  color: var(--blanc);
+}
+.fenetre.large {
+  width: min(780px, calc(100% - 2rem));
+}
+.fenetre::backdrop {
+  background: rgb(0 0 0 / 0.65);
+}
+.fenetre-contenu {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 2rem);
+}
+.fenetre-tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem 1rem 1.4rem;
+  border-bottom: 1px solid var(--trait);
+}
+.fenetre-tete h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-stretch: 110%;
+  font-weight: 750;
+}
+.fenetre-corps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: 1.25rem 1.4rem;
+  overflow-y: auto;
+}
+.fenetre-pied {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: 1rem 1.4rem;
+  border-top: 1px solid var(--trait);
+}
+/* une action à part (supprimer…), rangée à gauche */
+.fenetre-pied .a-gauche {
+  margin-right: auto;
+}
+@media (max-width: 599px) {
+  /* téléphone : la fenêtre monte du bas de l'écran */
+  .fenetre,
+  .fenetre.large {
+    width: 100%;
+    max-width: 100%;
+    margin: auto 0 0;
+    border-radius: 18px 18px 0 0;
+  }
+}
+
+/* ---------- champs ---------- */
+
+/* un champ : son nom au-dessus, une aide éventuelle en dessous */
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.champ > label,
+.champ-nom {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--gris);
+}
+.champ-aide {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--gris-2);
+}
+/* plusieurs petits champs sur une ligne */
+.champs-ligne {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.75rem;
+}
+.refonte input[type='checkbox'],
+.refonte input[type='radio'] {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--turquoise);
+}
+/* confirmation discrète après un enregistrement */
+.message-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--vert);
+}
+.message-ok .icone {
+  width: 1rem;
+  height: 1rem;
+}
+
+.refonte select,
+.refonte input:not([type='checkbox'], [type='radio']),
+.refonte textarea {
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: 1px solid var(--trait-fort);
+  border-radius: var(--rayon);
+  background: var(--noir-2);
+  color: var(--blanc);
+  font: inherit;
+  font-size: 0.95rem;
+  transition: border-color var(--transition);
+}
+.refonte textarea {
+  padding: 0.75rem 0.9rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+.refonte select:hover,
+.refonte input:not([type='checkbox'], [type='radio']):hover,
+.refonte textarea:hover {
+  border-color: var(--gris-2);
+}
+.refonte select:focus-visible,
+.refonte input:focus-visible,
+.refonte textarea:focus-visible {
+  border-color: var(--blanc);
+  outline: none;
+}
+
+/* ---------- graphiques et badges de l'ancienne charte, sur fond noir ---------- */
+
+.refonte .graphe-colonne:hover,
+.refonte .graphe-colonne:focus-visible {
+  background: rgb(255 255 255 / 0.04);
+}
+.refonte .graphe-pile {
+  width: min(22px, 55%);
+}
+.refonte .graphe-bulle {
+  background: var(--noir-2);
+  border-color: var(--trait-fort);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.5);
+}
+.refonte .graphe-chiffres summary {
+  color: var(--gris);
+}
+.refonte .graphe-chiffres summary:hover {
+  color: var(--blanc);
+}
+
+/* ---------- logo (composant Logo) ---------- */
+
+/* le symbole « D » sert de première lettre : « ata » et « fit » se posent sur son pied */
+.logo {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--police);
+  font-size: 1.25rem;
+  font-stretch: 104%;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--blanc);
+}
+.logo img {
+  flex: none;
+  height: 1.2em;
+  width: auto;
+  margin-right: 0.03em;
+  /* comme sur le logo d'origine, le pied du D descend un peu sous la ligne du texte */
+  position: relative;
+  top: 0.14em;
+}
+/* « fit » reprend le dégradé du symbole */
+.logo-nom em {
+  font-style: normal;
+  background: linear-gradient(180deg, #1fe3d6, #0a9fb4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- utilitaires ---------- */
+
+/* lu par les lecteurs d'écran, invisible à l'écran */
+.visuellement-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* contenu d'une page refondue : largeur maximale, blocs empilés */
+.ecran {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .refonte *,
+  .refonte *::before,
+  .refonte *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

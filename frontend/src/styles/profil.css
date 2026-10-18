@@ -1,156 +1,295 @@
-/* Page profil. Le reste de la mise en page est dans pages.css. */
+/* Page profil : les informations à gauche, les objectifs à droite. Composants de base : charte.css */
 
-/* le grand avatar et le nom, au-dessus du formulaire */
-.profil-identite {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.9rem;
-  margin: 0.5rem 0 1.5rem;
+.profil {
+  gap: 1.75rem;
 }
-.profil-avatar {
-  width: 120px;
-  height: 120px;
+.profil-zones {
   display: grid;
-  place-items: center;
-  padding: 3px;
-  border-radius: 50%;
-  background: var(--gradient);
-  font-size: 2.6rem;
-  font-weight: 800;
-  color: #03120f;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  align-items: start;
+  gap: 1.25rem;
 }
-.profil-avatar img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-}
-.profil-identite h3 {
-  font-size: 1.4rem;
-}
-
-/* les cartes de droite, l'une sous l'autre */
-.profil-colonne {
+.profil-infos,
+.profil-objectifs {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  min-width: 0;
+  padding: 1.5rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
 }
 
-.profil-formulaire {
+/* ---------- informations ---------- */
+
+.profil-identite {
   display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-}
-.profil-champ {
-  display: grid;
-  gap: 0.35rem;
-}
-.profil-champ input,
-.profil-champ select {
-  width: 100%;
-}
-.profil-formulaire label,
-.profil-formulaire legend {
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-/* âge, taille et poids sur une même ligne */
-.profil-mesures {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
   gap: 1rem;
 }
-
-.profil-formulaire fieldset {
-  min-width: 0;
+.profil-avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  flex: none;
+  border: 2px solid var(--turquoise);
+  border-radius: 50%;
+  background: var(--noir-2);
+  font-size: 1.35rem;
+  font-stretch: 112%;
+  font-weight: 800;
+}
+.profil-avatar .icone {
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--gris);
+}
+.profil-identite h2 {
   margin: 0;
-  padding: 0;
-  border: 0;
+  font-size: 1.35rem;
+  font-stretch: 112%;
+  font-weight: 750;
 }
-.profil-formulaire legend {
-  margin-bottom: 0.35rem;
-  padding: 0;
+.profil-identite p {
+  margin: 0.2rem 0 0;
+  font-size: 0.9rem;
+  color: var(--gris);
+}
+.profil-message:empty {
+  display: none;
 }
 
-/* choix du sexe, du niveau et des activités : des boutons à la place des cases.
-   La vraie case reste là, invisible, pour le clavier et les lecteurs d'écran. */
-.profil-choix,
-.profil-activites {
+.profil-groupe h3,
+.profil-accueil legend {
+  margin: 0 0 0.25rem;
+  padding: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gris-2);
+}
+.profil-groupe dl {
+  margin: 0;
+}
+
+/* une information : son nom, sa valeur, le crayon */
+.profil-ligne {
+  display: grid;
+  grid-template-columns: 9.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 48px;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--trait);
+}
+.profil-ligne dt {
+  font-size: 0.875rem;
+  color: var(--gris);
+}
+.profil-ligne dd {
+  margin: 0;
+  font-weight: 600;
+}
+.profil-ligne dd.vide {
+  font-weight: 400;
+  font-style: italic;
+  color: var(--gris-2);
+}
+/* en cours de modification : un cadre net, le champ et ses deux actions */
+.profil-ligne.en-edition {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.6rem;
+  margin: 0.5rem 0;
+  padding: 1rem;
+  border: 1px solid var(--blanc);
+  border-radius: var(--rayon);
+  background: var(--noir-2);
+}
+.profil-ligne-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+.profil-options {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
-.profil-choix > div,
-.profil-activites > div {
-  position: relative;
-  flex: 1;
-}
-.profil-choix input,
-.profil-activites input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-.profil-choix label,
-.profil-activites label {
-  height: 100%;
-  display: flex;
+.profil-options label {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  padding: 0.7rem 0.8rem;
-  border: 1px solid var(--d-bordure);
-  border-radius: 10px;
-  background: var(--d-carte);
-  font-weight: 500;
-  white-space: nowrap;
+  gap: 0.5rem;
+  min-height: 40px;
+  padding: 0 0.9rem;
+  border: 1px solid var(--trait-fort);
+  border-radius: var(--rayon);
+  font-size: 0.9rem;
   cursor: pointer;
 }
-.profil-choix label:hover,
-.profil-activites label:hover {
-  border-color: var(--turquoise);
-}
-.profil-choix input:focus-visible + label,
-.profil-activites input:focus-visible + label {
-  outline: 2px solid var(--d-accent);
-  outline-offset: 2px;
-}
-/* un seul choix possible : dégradé, comme les autres éléments sélectionnés du site */
-.profil-choix input:checked + label {
-  border-color: var(--turquoise);
-  background: var(--gradient);
-  color: #03120f;
-  font-weight: bold;
-}
-/* plusieurs choix possibles : fond teinté et bordure turquoise */
-.profil-activites .icone {
-  color: var(--d-accent);
-}
-.profil-activites input:checked + label {
-  border-color: var(--turquoise);
-  background: var(--mint-pale);
-  box-shadow: inset 0 0 0 1px var(--turquoise);
-  font-weight: bold;
+.profil-options label:has(input:checked) {
+  border-color: var(--blanc);
 }
 
-/* bouton sur toute la largeur de la carte */
-.page .profil-formulaire .btn,
-.page .profil-large {
-  width: 100%;
-  padding: 0.9rem;
+/* premier passage : tout le profil d'un coup */
+.profil-accueil {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
-.profil-formulaire .pastille {
+.profil-accueil-texte {
+  margin: 0;
+  color: var(--gris);
+}
+.profil-accueil-texte strong {
+  color: var(--blanc);
+}
+.profil-accueil fieldset {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.profil-accueil legend {
+  margin-bottom: 0.6rem;
+}
+.profil-accueil .bouton {
   align-self: flex-start;
 }
-.page .profil-note {
-  margin-top: 0.75rem;
-  font-size: 0.9rem;
-  color: var(--d-encre-2);
+
+/* ---------- objectifs ---------- */
+
+.profil-objectifs-tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.profil-objectifs-tete h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-stretch: 118%;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.profil-objectifs-groupe h3 {
+  margin: 0 0 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gris-2);
+}
+.profil-objectifs-groupe ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-@media (max-width: 520px) {
-  .profil-mesures {
+.objectif {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  background: var(--noir-2);
+}
+.objectif.abandonne {
+  opacity: 0.6;
+}
+.objectif-tete {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.objectif-tete strong {
+  display: block;
+  font-weight: 650;
+}
+.objectif-tete small {
+  font-size: 0.8rem;
+  color: var(--gris-2);
+}
+.objectif-avancement p {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  color: var(--gris);
+}
+.objectif-avancement p strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--blanc);
+}
+.objectif-vide {
+  margin: 0;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--gris-2);
+}
+.objectif-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.1rem;
+}
+.objectif-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--gris);
+  cursor: pointer;
+}
+.objectif-actions button:hover {
+  color: var(--blanc);
+}
+.objectif-actions button.danger {
+  margin-left: auto;
+}
+.objectif-actions button.danger:hover {
+  color: var(--turquoise);
+}
+.objectif-actions .icone {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.profil-formulaire-objectif {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+@media (max-width: 1099px) {
+  .profil-zones {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 520px) {
+  .profil-infos,
+  .profil-objectifs {
+    padding: 1.1rem;
+  }
+  .profil-ligne {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .profil-ligne dt {
+    grid-column: 1 / -1;
+    margin-bottom: -0.4rem;
+    font-size: 0.78rem;
   }
 }

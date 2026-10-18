@@ -1,14 +1,15 @@
-import { Link } from 'react-router'
 import '../styles/sport.css'
 import BadgeRang from '../components/BadgeRang.tsx'
 import CarteExercice from '../components/CarteExercice.tsx'
-import EntetePage from '../components/EntetePage.tsx'
-import Icone from '../components/Icone.tsx'
+import EtatVide from '../components/EtatVide.tsx'
+import LienFleche from '../components/LienFleche.tsx'
+import TitrePage from '../components/TitrePage.tsx'
 import { ICONES } from '../data/icones.ts'
-import { DISCIPLINES, NOMS_RANGS, RANGS } from '../data/paliers.ts'
+import { NOMS_RANGS, RANGS } from '../data/paliers.ts'
 import useSport from '../hooks/useSport.ts'
 import { nombre } from '../lib/format.ts'
 
+// Performance (ex-« Sport ») : les records par exercice et leur rang, de E à Z.
 function Sport() {
   const {
     profilRempli,
@@ -27,66 +28,55 @@ function Sport() {
   } = useSport()
 
   return (
-    <div className="page sport">
-      <EntetePage titre="Sport" sousTitre="Vos performances par discipline." />
+    <div className="ecran sport">
+      <TitrePage surtitre="Entraînement" titre="Performance">
+        Vos records par exercice, convertis en rangs.
+      </TitrePage>
 
-      <div className="sport-echelle">
+      {/* l'échelle des huit rangs, en rappel */}
+      <ol className="sport-echelle" aria-label="Les rangs, du plus bas au plus haut">
         {RANGS.map((r, i) => (
-          <div key={r}>
+          <li key={r} className={r === 'Z' ? 'z' : undefined}>
             <b>{r}</b>
-            <i style={{ background: `var(--rang-${r})` }} />
+            <i style={r === 'Z' ? undefined : { background: `var(--rang-${r})` }} />
             <span>{NOMS_RANGS[i]}</span>
-          </div>
+          </li>
         ))}
-      </div>
+      </ol>
 
       {profilRempli ? (
         <>
-          <p className="bandeau-info">
-            <Icone trace={ICONES.info} />
-            Entre tes perfs : chaque exercice te donne un rang, selon ton sexe et ta catégorie de poids.
-            Elles restent enregistrées dans ton navigateur.
-          </p>
-
           {/* le sexe et la catégorie viennent du profil : ils ne se modifient pas ici */}
-          <section className="carte sport-profil" aria-label="Profil">
-            <div className="sport-champ">
-              <span className="sport-label">Sexe</span>
-              <span className="sport-valeur">{sexe === 'H' ? 'Homme' : 'Femme'}</span>
-            </div>
-            <div className="sport-champ">
-              <span className="sport-label">Poids</span>
-              <span className="sport-valeur">{nombre(poids)} kg</span>
-            </div>
-            <div className="sport-champ">
-              <span className="sport-label">Catégorie</span>
-              <span className="sport-valeur">{nomCategorie} kg</span>
-            </div>
-            <div className="sport-champ">
-              <span className="sport-label">Poids de référence</span>
-              <span className="sport-valeur">{poidsRef} kg</span>
-            </div>
-            <div className="sport-espace" />
-            <Link to="/profil" className="lien">Modifier mon profil</Link>
-            <button type="button" className="btn ghost petit" onClick={toutEffacer}>
-              Tout effacer
-            </button>
-          </section>
-
-          <section className="sport-resume" aria-label="Résumé par discipline">
-            {resume.map((d) => (
-              <button key={d.id} type="button" className="sport-resume-carte" onClick={() => choisirOnglet(d.id)}>
-                <BadgeRang rang={d.rang} petit />
-                <span>
-                  {d.nom}
-                  <small>{d.remplis}/{d.total} renseignés</small>
-                </span>
+          <section className="sport-profil" aria-label="Votre catégorie">
+            <dl>
+              <div>
+                <dt>Sexe</dt>
+                <dd>{sexe === 'H' ? 'Homme' : 'Femme'}</dd>
+              </div>
+              <div>
+                <dt>Poids</dt>
+                <dd>{nombre(poids)} kg</dd>
+              </div>
+              <div>
+                <dt>Catégorie</dt>
+                <dd>{nomCategorie} kg</dd>
+              </div>
+              <div>
+                <dt>Poids de référence</dt>
+                <dd>{poidsRef} kg</dd>
+              </div>
+            </dl>
+            <div className="sport-profil-actions">
+              <LienFleche to="/profil">Modifier mon profil</LienFleche>
+              <button type="button" className="bouton secondaire petit" onClick={toutEffacer}>
+                Tout effacer
               </button>
-            ))}
+            </div>
           </section>
 
-          <nav className="sport-onglets" role="tablist" aria-label="Disciplines">
-            {DISCIPLINES.map((d) => (
+          {/* une discipline par bouton : son rang moyen et le nombre d'exercices renseignés */}
+          <div className="sport-disciplines" role="tablist" aria-label="Disciplines">
+            {resume.map((d) => (
               <button
                 key={d.id}
                 type="button"
@@ -94,33 +84,46 @@ function Sport() {
                 aria-selected={d.id === discipline.id}
                 onClick={() => choisirOnglet(d.id)}
               >
-                {d.nom}
+                <span>
+                  <strong>{d.nom}</strong>
+                  <small>
+                    {d.remplis}/{d.total} renseignés
+                  </small>
+                </span>
+                <BadgeRang rang={d.rang} petit />
               </button>
             ))}
-          </nav>
+          </div>
 
-          <section className="sport-panneau" role="tabpanel" aria-label={discipline.nom}>
-            <div className="sport-panneau-titre">
-              <h2>{discipline.nom}</h2>
+          <section className="sport-panneau" role="tabpanel" aria-labelledby="sport-discipline">
+            <header className="sport-panneau-titre">
+              <h2 id="sport-discipline">
+                {discipline.nom}
+                <span className="point">.</span>
+              </h2>
               <span className="sport-note">
                 {parCategorie
-                  ? `Seuils pour ${sexe === 'H' ? 'homme' : 'femme'} ${nomCategorie} kg`
+                  ? `Seuils pour ${sexe === 'H' ? 'homme' : 'femme'}, catégorie ${nomCategorie} kg`
                   : `Seuils ${sexe === 'H' ? 'hommes' : 'femmes'}, toutes catégories`}
               </span>
-            </div>
+            </header>
             {discipline.exercices.map((ex) => (
               <CarteExercice key={ex.id} exercice={ex} perfs={perfs} profil={profil} onChange={majPerf} />
             ))}
+            <p className="sport-note">
+              Vos records restent enregistrés dans ce navigateur, datés : la page Progression en trace
+              l'évolution.
+            </p>
           </section>
         </>
       ) : (
-        <section className="carte">
-          <h2>Complète ton profil pour voir tes rangs</h2>
-          <p className="sous-titre">
-            Ton sexe et ton poids fixent ta catégorie, et les seuils de chaque exercice en dépendent.
-          </p>
-          <Link to="/profil" className="btn">Compléter mon profil</Link>
-        </section>
+        <EtatVide
+          icone={ICONES.profil}
+          titre="Complétez votre profil pour voir vos rangs"
+          action={<LienFleche to="/profil">Compléter mon profil</LienFleche>}
+        >
+          Votre sexe et votre poids fixent votre catégorie, et les seuils de chaque exercice en dépendent.
+        </EtatVide>
       )}
     </div>
   )

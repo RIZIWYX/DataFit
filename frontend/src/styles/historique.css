@@ -1,46 +1,185 @@
-/* Historique des séances. Le reste de la mise en page est dans pages.css. */
+/* Historique des séances. Composants de base : charte.css */
 
-/* les trois filtres, côte à côte */
-.historique-filtres {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.9rem;
-  padding: 1rem 1.1rem;
+.historique {
+  gap: 1.5rem;
 }
 
-/* sous le tableau : le nombre de séances à gauche, les pages à droite */
-.historique-pied {
+/* recherche, période et ordre sur une ligne */
+.historique-outils {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 0.75rem;
+}
+.historique-recherche {
+  position: relative;
+  display: flex;
+}
+.historique-recherche .icone {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  color: var(--gris-2);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.historique-recherche input {
+  flex: 1;
+  min-width: 0;
+  padding-left: 2.6rem !important;
+}
+.historique-recherche input::placeholder {
+  color: var(--gris-2);
+}
+
+.historique-total {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem 1rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--d-bordure);
-  color: var(--d-encre-2);
+  align-items: baseline;
+  gap: 0.25rem 1.25rem;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--gris);
 }
-.historique-pages {
+.historique-total strong {
+  font-size: 1rem;
+  font-weight: 650;
+  color: var(--blanc);
+}
+
+/* un mois : son nom, puis ses séances */
+.historique-groupe {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.historique-mois {
+  display: flex;
+  align-items: baseline;
   gap: 0.75rem;
+  margin: 0.5rem 0 0;
+  font-size: 1.15rem;
+  font-stretch: 112%;
+  font-weight: 750;
+}
+.historique-mois small {
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-stretch: 100%;
+  color: var(--gris-2);
+}
+.historique-liste {
+  margin: 0;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
+  overflow: hidden;
+}
+.historique-liste a {
+  border-radius: 0;
+}
+
+/* une séance : le jour, l'icône, le titre, les mesures */
+.ligne-historique {
+  display: grid;
+  grid-template-columns: 2.6rem 40px minmax(0, 1fr) 6.5rem 4.75rem 4.75rem 16px;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1.1rem;
+}
+.ligne-historique-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+.ligne-historique-date strong {
+  font-size: 1.3rem;
+  font-stretch: 112%;
+  font-weight: 750;
   font-variant-numeric: tabular-nums;
 }
-.historique-pages button {
+.ligne-historique-date small {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gris-2);
+}
+.ligne-historique-icone {
+  display: grid;
+  place-items: center;
   width: 40px;
   height: 40px;
-  border: 1px solid var(--d-bordure);
-  border-radius: 10px;
-  background: var(--d-carte);
-  font: inherit;
-  font-size: 1.2rem;
-  color: var(--d-encre);
-  cursor: pointer;
+  border-radius: var(--rayon);
+  background: var(--noir-2);
 }
-.historique-pages button:hover:not(:disabled) {
-  border-color: var(--turquoise);
+.ligne-historique-titre {
+  min-width: 0;
 }
-.historique-pages button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.ligne-historique-titre strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.ligne-historique-titre small {
+  display: block;
+  overflow: hidden;
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--gris-2);
+}
+.ligne-historique-mesure {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+.ligne-historique-mesure.secondaire {
+  font-weight: 500;
+  color: var(--gris);
+}
+.ligne-historique > .icone:last-child {
+  color: var(--gris-2);
+  transition:
+    transform var(--transition),
+    color var(--transition);
+}
+.ligne-historique:hover > .icone:last-child {
+  color: var(--blanc);
+  transform: translateX(2px);
+}
+
+.historique-plus {
+  align-self: center;
+}
+.historique-plus small {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--gris-2);
+}
+
+@media (max-width: 860px) {
+  .historique-outils {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .historique-recherche {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  /* la durée et la fréquence cardiaque restent dans le détail */
+  .ligne-historique {
+    grid-template-columns: 2.2rem 36px minmax(0, 1fr) auto 14px;
+    gap: 0.75rem;
+    padding: 0.75rem 0.85rem;
+  }
+  .ligne-historique-icone {
+    width: 36px;
+    height: 36px;
+  }
+  .ligne-historique-mesure.secondaire {
+    display: none;
+  }
 }

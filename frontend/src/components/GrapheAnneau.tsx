@@ -34,7 +34,7 @@ function GrapheAnneau({ parts, unite }: Props) {
               cx="50"
               cy="50"
               r={RAYON}
-              stroke={arc.couleur}
+              style={{ stroke: arc.couleur }}
               strokeDasharray={`${Math.max(arc.longueur - ecart, 0.01)} ${TOUR}`}
               strokeDashoffset={-(arc.debut + ecart / 2)}
             >

@@ -1,11 +1,16 @@
 import { Link } from 'react-router'
 import '../styles/connexion.css'
 import Icone from '../components/Icone.tsx'
+import Logo from '../components/Logo.tsx'
+import Orbites from '../components/Orbites.tsx'
+import Segments from '../components/Segments.tsx'
 import { ICONES } from '../data/icones.ts'
 import useConnexion from '../hooks/useConnexion.ts'
 
+// Connexion et inscription : à gauche l'identité de la page de garde, à droite le formulaire.
 function Connexion() {
   const {
+    mode,
     isInscription,
     basculerMode,
     mdpVisible,
@@ -17,61 +22,80 @@ function Connexion() {
   } = useConnexion()
 
   return (
-    <div className="cnx">
-      <aside className="cnx-photo">
-        <Link to="/">
-          <img src="/logo.jpeg" alt="DataFit" className="nav-logo" />
+    <div className="cnx refonte">
+      <aside className="cnx-visuel">
+        <Link to="/" aria-label="DataFit, page de garde">
+          <Logo />
         </Link>
-        <div>
-          <h2>
+        <div className="cnx-accroche">
+          <p className="surtitre">DataFit · Votre activité en chiffres</p>
+          <h2 className="affiche">
             Chaque séance
             <br />
-            raconte <span>une histoire.</span>
+            compte<span className="point">.</span>
           </h2>
-          <p>Analysez vos performances. Suivez votre progression.</p>
         </div>
+        <Orbites />
       </aside>
 
       <main className="cnx-panneau">
         <section className="cnx-carte" aria-labelledby="cnx-titre">
-          <h1 id="cnx-titre">{isInscription ? 'Créez votre compte' : 'Heureux de vous revoir'}</h1>
+          <Link to="/" className="lien-retour cnx-retour">
+            <Icone trace={ICONES.retour} />
+            Page de garde
+          </Link>
+
+          <h1 id="cnx-titre" className="titre-page">
+            {isInscription ? 'Créer un compte' : 'Se connecter'}
+            <span className="point">.</span>
+          </h1>
           <p className="cnx-sous-titre">
-            {isInscription
-              ? 'Quelques secondes suffisent pour commencer.'
-              : 'Connectez-vous à votre espace sportif.'}
+            {isInscription ? 'Quelques secondes suffisent pour commencer.' : 'Heureux de vous revoir.'}
           </p>
 
+          <Segments
+            libelle="Connexion ou inscription"
+            options={[
+              { valeur: 'connexion', nom: 'Connexion' },
+              { valeur: 'inscription', nom: 'Inscription' },
+            ]}
+            valeur={mode}
+            onChange={(choix) => choix !== mode && basculerMode()}
+          />
+
           <form onSubmit={handleSubmit}>
-            <label htmlFor="email">Adresse e-mail</label>
-            <div className="cnx-champ">
-              <Icone trace={ICONES.enveloppe} />
-              <input id="email" name="email" type="email" autoComplete="email" placeholder="exemple@email.com" required />
+            <div className="champ">
+              <label htmlFor="email">Adresse e-mail</label>
+              <div className="cnx-champ">
+                <Icone trace={ICONES.enveloppe} />
+                <input id="email" name="email" type="email" autoComplete="email" placeholder="exemple@email.com" required />
+              </div>
             </div>
 
-            <label htmlFor="mdp">Mot de passe</label>
-            <div className="cnx-champ">
-              <Icone trace={ICONES.cadenas} />
-              <input
-                id="mdp"
-                name="mdp"
-                type={mdpVisible ? 'text' : 'password'}
-                autoComplete={isInscription ? 'new-password' : 'current-password'}
-                minLength={isInscription ? 8 : undefined}
-                required
-              />
-              <button
-                type="button"
-                aria-label={mdpVisible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-                aria-pressed={mdpVisible}
-                onClick={basculerMdp}
-              >
-                <Icone trace={ICONES.oeil} />
-              </button>
+            <div className="champ">
+              <label htmlFor="mdp">Mot de passe</label>
+              <div className="cnx-champ">
+                <Icone trace={ICONES.cadenas} />
+                <input
+                  id="mdp"
+                  name="mdp"
+                  type={mdpVisible ? 'text' : 'password'}
+                  autoComplete={isInscription ? 'new-password' : 'current-password'}
+                  minLength={isInscription ? 8 : undefined}
+                  required
+                />
+                <button type="button" className="cnx-oeil" aria-pressed={mdpVisible} onClick={basculerMdp}>
+                  <Icone trace={ICONES.oeil} />
+                  <span className="visuellement-cache">
+                    {mdpVisible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                  </span>
+                </button>
+              </div>
+              {isInscription && <p className="champ-aide">8 caractères minimum.</p>}
             </div>
-            {isInscription && <p className="cnx-aide">8 caractères minimum.</p>}
 
             {isInscription && (
-              <>
+              <div className="champ">
                 <label htmlFor="mdp2">Confirmer le mot de passe</label>
                 <div className="cnx-champ">
                   <Icone trace={ICONES.cadenas} />
@@ -84,7 +108,7 @@ function Connexion() {
                     required
                   />
                 </div>
-              </>
+              </div>
             )}
 
             {!isInscription && (
@@ -99,20 +123,25 @@ function Connexion() {
               </div>
             )}
 
-            {erreur && <p className="cnx-erreur" role="alert">{erreur}</p>}
-            {message && <p className="cnx-message" role="status">{message}</p>}
+            {erreur && (
+              <p className="alerte" role="alert">
+                <Icone trace={ICONES.info} />
+                {erreur}
+              </p>
+            )}
+            {message && (
+              <p className="cnx-message" role="status">
+                <Icone trace={ICONES.info} />
+                {message}
+              </p>
+            )}
 
-            <button type="submit" className="btn">
-              {isInscription ? 'Créer mon compte' : 'Se connecter'} →
+            <button type="submit" className="bouton cnx-envoyer">
+              {isInscription ? 'Créer mon compte' : 'Se connecter'}
+              <Icone trace={ICONES.fleche} />
             </button>
           </form>
 
-          <p className="cnx-bascule">
-            {isInscription ? 'Déjà un compte ?' : 'Pas encore de compte ?'}{' '}
-            <button type="button" className="cnx-lien" onClick={basculerMode}>
-              {isInscription ? 'Se connecter' : 'Créer un compte'}
-            </button>
-          </p>
         </section>
       </main>
     </div>
