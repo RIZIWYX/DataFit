@@ -24,8 +24,17 @@ function Sport() {
     resume,
     choisirOnglet,
     majPerf,
-    toutEffacer,
+     seanceSBD,
+  chargementSBD,
+  sauvegardeSBD,
+  messageSBD,
+  erreurSBD,
+  validerSBD,
+  modifierSBD,
   } = useSport()
+
+ 
+
 
   return (
     <div className="ecran sport">
@@ -68,9 +77,6 @@ function Sport() {
             </dl>
             <div className="sport-profil-actions">
               <LienFleche to="/profil">Modifier mon profil</LienFleche>
-              <button type="button" className="bouton secondaire petit" onClick={toutEffacer}>
-                Tout effacer
-              </button>
             </div>
           </section>
 
@@ -109,11 +115,71 @@ function Sport() {
             </header>
             {discipline.exercices.map((ex) => (
               <CarteExercice key={ex.id} exercice={ex} perfs={perfs} profil={profil} onChange={majPerf} />
+              
             ))}
-            <p className="sport-note">
-              Vos records restent enregistrés dans ce navigateur, datés : la page Progression en trace
-              l'évolution.
-            </p>
+                      
+          {discipline.id === 'sbd' && (
+            <div className="sport-sbd-actions">
+              {chargementSBD && (
+                <p role="status">Chargement de votre séance...</p>
+              )}
+
+              <div className="sport-sbd-boutons">
+                <button
+                  type="button"
+                  className="sport-sbd-valider"
+                  disabled={
+                    chargementSBD ||
+                    sauvegardeSBD ||
+                    !!seanceSBD
+                  }
+                  onClick={validerSBD}
+                >
+                  {sauvegardeSBD && !seanceSBD
+                    ? 'Enregistrement...'
+                    : 'Valider'}
+                </button>
+
+                <button
+                  type="button"
+                  className="sport-sbd-modifier"
+                  disabled={
+                    chargementSBD ||
+                    sauvegardeSBD ||
+                    !seanceSBD
+                  }
+                  onClick={modifierSBD}
+                >
+                  {sauvegardeSBD && seanceSBD
+                    ? 'Modification...'
+                    : 'Modifier'}
+                </button>
+              </div>
+
+              {messageSBD && (
+                <p
+                  className={
+                    erreurSBD
+                      ? 'sport-sbd-message erreur'
+                      : 'sport-sbd-message'
+                  }
+                  role="status"
+                  aria-live="polite"
+                >
+                  {messageSBD}
+                </p>
+              )}
+
+              {seanceSBD && (
+                <p className="sport-sbd-etat">
+                  Une séance SBD est enregistrée pour aujourd'hui.
+                </p>
+              )}
+            </div>
+          )}
+            
+
+            
           </section>
         </>
       ) : (
