@@ -2,6 +2,7 @@ package com.datafit.backend.sport.sbd;
 
 import com.datafit.backend.utilisateur.Utilisateur;
 import com.datafit.backend.utilisateur.UtilisateurRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public SBDController(SBDService service,
 // Bouton "Valider"
 @PostMapping("/{utilisateurId}")
 public SBD valider(@PathVariable Long utilisateurId,
-    @RequestBody SBDRequest req) {
+    @Valid @RequestBody SBDRequest req) {
   Utilisateur user = utilisateurRepo.findById(utilisateurId).orElseThrow();
   return service.valider(user, req);
 }
@@ -30,7 +31,7 @@ public SBD valider(@PathVariable Long utilisateurId,
 // Bouton "Modifier"
 @PutMapping("/{utilisateurId}/aujourdhui")
 public SBD modifier(@PathVariable Long utilisateurId,
-    @RequestBody SBDRequest req) {
+    @Valid @RequestBody SBDRequest req) {
   Utilisateur user = utilisateurRepo.findById(utilisateurId).orElseThrow();
   return service.modifierCelleDuJour(user, req);
 }

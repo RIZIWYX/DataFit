@@ -43,19 +43,22 @@ public SBD modifierCelleDuJour(Utilisateur user, SBDRequest req) {
   sbd.setBench(req.bench());
   sbd.setSquat(req.squat());
   sbd.setDeadlift(req.deadlift());
-  return sbd;
+  return repo.save(sbd);
 }
 
 // Pour pré-remplir le formulaire au chargement de la page
+@Transactional(readOnly = true)
 public Optional<SBD> dernierePerf(Utilisateur user) {
   return repo.findFirstByUtilisateurOrderByDateDesc(user);
 }
 
 // Pour savoir si on affiche "Valider" ou "Modifier"
+@Transactional(readOnly = true)
 public Optional<SBD> celleDuJour(Utilisateur user) {
   return repo.findByUtilisateurAndDate(user, LocalDate.now());
 }
 
+@Transactional(readOnly = true)
 public List<SBD> historique(Utilisateur user) {
   return repo.findByUtilisateurOrderByDateDesc(user);
 }

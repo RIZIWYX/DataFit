@@ -7,7 +7,8 @@ import java.time.LocalDate;
 
 // Une ligne de la table "sbd" (voir db/init.sql) :
 // un enregistrement des perfs Bench/Squat/Deadlift d'un utilisateur.
-// La date est automatiquement celle du jour de création ou de modification.
+// Une ligne = une séance = un jour (UNIQUE (utilisateur_id, date)).
+// La date est posée à la création et ne change plus, même si on corrige les perfs.
 @Entity
 @Table(name = "sbd")
 public class SBD {
@@ -19,8 +20,8 @@ private Long id;
 @JoinColumn(name = "utilisateur_id", nullable = false)
 private Utilisateur utilisateur;
 
-// mise à jour automatiquement par @PrePersist / @PreUpdate
-@Column(nullable = false)
+// posée automatiquement à la création par @PrePersist ; non modifiable ensuite
+@Column(nullable = false, updatable = false)
 private LocalDate date;
 
 @Column(nullable = false) private Double bench;

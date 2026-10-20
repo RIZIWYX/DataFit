@@ -1,14 +1,28 @@
+// Service pour la discipline « SBD » : appels REST vers /api/sbd.
+// Les champs renvoyés par le backend correspondent aux colonnes de la table.
+import {
+  envoyerSeance,
+  recupererAujourdhui,
+  type IdentifiantUtilisateur,
+} from './http.ts'
 
-const API_URL = (
-  import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
-).replace(/\/$/, '')
+const CHEMIN = '/api/sbd'
+
+// Correspondance (champ back -> id exercice front) : utilisée par useSport
+// pour pré-remplir les bons champs quand une séance existe déjà aujourd'hui, et
+// pour construire la requête à partir des valeurs saisies.
+export const CHAMPS_SBD: Record<string, string> = {
+  bench: 'bench',
+  squat: 'squat',
+  deadlift: 'dead',
+}
 
 export interface SeanceSBD {
   id?: number
+  date?: string
   bench: number
   squat: number
   deadlift: number
-  date?: string
 }
 
 export interface SBDRequest {
@@ -17,51 +31,21 @@ export interface SBDRequest {
   deadlift: number
 }
 
-export type IdentifiantUtilisateur = string | number
+export type { IdentifiantUtilisateur }
 
-async function envoyer(
-  url: string,
-  methode: 'POST' | 'PUT',
-  donnees: SBDRequest,
-): Promise<SeanceSBD> {
-  const response = await fetch(`${API_URL}${url}`, {
-    method: methode,
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(donnees),
-  })
-
-  if (!response.ok) {
-    const detail = await response.text()
-    throw new Error(
-      detail || `Erreur HTTP ${response.status}`,
-    )
-  }
-
-  return response.json() as Promise<SeanceSBD>
-}
-
-export async function recupererSBD(
+export function recupererSBD(
   utilisateurId: IdentifiantUtilisateur,
 ): Promise<SeanceSBD | null> {
-  const response = await fetch(
-    `${API_URL}/api/sbd/${utilisateurId}/aujourdhui`,
-  )
-
-  if (response.status === 204) return null
-
-  if (!response.ok) {
-    throw new Error(`Erreur HTTP ${response.status}`)
-  }
-
-  return response.json() as Promise<SeanceSBD>
+  return recupererAujourdhui<SeanceSBD>(CHEMIN, utilisateurId)
 }
 
 export function validerSBD(
   utilisateurId: IdentifiantUtilisateur,
   donnees: SBDRequest,
 ): Promise<SeanceSBD> {
-  return envoyer(
-    `/api/sbd/${utilisateurId}`,
+  return envoyerSeance<SBDRequest, SeanceSBD>(
+    CHEMIN,
+    utilisateurId,
     'POST',
     donnees,
   )
@@ -71,8 +55,9 @@ export function modifierSBD(
   utilisateurId: IdentifiantUtilisateur,
   donnees: SBDRequest,
 ): Promise<SeanceSBD> {
-  return envoyer(
-    `/api/sbd/${utilisateurId}/aujourdhui`,
+  return envoyerSeance<SBDRequest, SeanceSBD>(
+    CHEMIN,
+    utilisateurId,
     'PUT',
     donnees,
   )
