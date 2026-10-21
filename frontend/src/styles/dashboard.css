@@ -1,0 +1,225 @@
+/* Accueil (tableau de bord). Panneaux, étiquettes, états et typographie : charte.css */
+
+.accueil {
+  gap: 2.25rem;
+}
+
+/* ---------- les 7 derniers jours : chiffres clés et bande des jours, sans encadré ---------- */
+
+.accueil-semaine {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 2rem 3.5rem;
+  padding: 1.75rem 0 2rem;
+  border-block: 1px solid var(--trait);
+}
+.accueil-semaine .indicateurs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1.5rem;
+}
+.accueil-note {
+  margin: 1.5rem 0 0;
+  font-size: 0.78rem;
+  color: var(--gris-2);
+}
+
+/* bande des jours (composant BandeJours) */
+.bande-jours {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bande-jours li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+.bande-piste {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 112px;
+  margin-bottom: 0.5rem;
+}
+.bande-barre {
+  display: flex;
+  flex-direction: column-reverse; /* la première séance du jour en bas */
+  gap: 2px;
+  width: min(100%, 30px);
+  height: calc(var(--part) * 100%);
+}
+.bande-segment {
+  flex-basis: 0;
+  min-height: 8px;
+  border-radius: 4px;
+  transition: filter var(--transition);
+}
+.bande-segment:hover {
+  filter: brightness(1.2);
+}
+.bande-repos {
+  width: min(100%, 30px);
+  height: 3px;
+  border-radius: 2px;
+  background: var(--noir-3);
+}
+.bande-jour {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gris-2);
+}
+.bande-date {
+  position: relative;
+  font-size: 0.95rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--gris);
+}
+.aujourdhui .bande-jour,
+.aujourdhui .bande-date {
+  color: var(--blanc);
+}
+/* aujourd'hui : le point turquoise de la charte, sous la date */
+.aujourdhui .bande-date::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--turquoise);
+  transform: translateX(-50%);
+}
+/* sous la bande des jours, la légende est centrée (styles de base : legende-sports.css) */
+.bande .legende-sports {
+  justify-content: center;
+  margin-top: 1.4rem;
+}
+
+/* ---------- la dernière séance et la prochaine, côte à côte ---------- */
+
+.accueil-cartes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+/* ---------- l'état du moment : trois panneaux de même hauteur ---------- */
+
+.accueil-etat {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 1.25rem;
+}
+
+/* l'objectif principal du profil */
+.accueil-objectif-texte {
+  margin: 0;
+  font-size: 1.35rem;
+  font-stretch: 112%;
+  font-weight: 750;
+}
+/* rangs par discipline */
+.liste-rangs a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0.75rem;
+}
+.liste-rangs strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.liste-rangs small {
+  font-size: 0.8rem;
+  color: var(--gris-2);
+}
+
+/* montre */
+.accueil-montre {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.accueil-montre strong {
+  display: block;
+  font-weight: 650;
+}
+.accueil-montre small {
+  font-size: 0.8rem;
+  color: var(--gris-2);
+}
+.accueil-details {
+  margin: 1.1rem 0 0;
+}
+.accueil-details div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--trait);
+  font-size: 0.875rem;
+}
+.accueil-details div:last-child {
+  padding-bottom: 0;
+}
+.accueil-details dt {
+  color: var(--gris);
+}
+.accueil-details dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+.accueil-sommeil {
+  color: var(--gris-2);
+  font-weight: 500;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+.accueil-sommeil:hover {
+  color: var(--blanc);
+}
+
+/* ---------- tablette : les cartes l'une sous l'autre ---------- */
+
+@media (max-width: 1099px) {
+  .accueil-semaine {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .accueil-cartes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .accueil-etat {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+}
+
+/* ---------- téléphone ---------- */
+
+@media (max-width: 699px) {
+  .accueil {
+    gap: 1.75rem;
+  }
+  .accueil-semaine {
+    padding: 1.25rem 0 1.5rem;
+  }
+  .accueil-etat {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .panneau {
+    padding: 1.1rem 1.1rem 1.25rem;
+  }
+}

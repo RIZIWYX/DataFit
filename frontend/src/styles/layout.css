@@ -1,0 +1,28 @@
+/* cadre de l'application : la navigation (navigation.css) et la zone de page à côté.
+   Couleurs et police : charte.css */
+
+.app {
+  height: 100vh;
+  height: 100dvh; /* hauteur réellement visible : les onglets du bas restent collés au bord */
+  display: flex;
+  background: var(--noir);
+}
+
+/* la zone de page : c'est elle qui défile, la navigation reste en place */
+.app-content {
+  flex: 1;
+  min-width: 0;
+  padding: 2.5rem clamp(1rem, 3.5vw, 3rem) 4rem;
+  overflow-y: auto;
+}
+
+/* téléphone : barre du haut, page, onglets en bas */
+@media (max-width: 699px) {
+  .app {
+    flex-direction: column;
+  }
+  .app-content {
+    order: 2;
+    padding: 1.5rem 1rem 2.5rem;
+  }
+}

@@ -1,0 +1,22 @@
+/* légende des couleurs des sports (composant LegendeSports) */
+
+.legende-sports {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+  color: var(--gris);
+}
+.legende-sports li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.legende-sports i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}

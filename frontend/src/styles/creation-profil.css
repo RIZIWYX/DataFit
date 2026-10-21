@@ -1,0 +1,219 @@
+/* Création du profil, juste après l'inscription : page plein écran, sans la navigation.
+   Composants de base (champs, boutons, alerte) : charte.css */
+
+.creation {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+/* ---------- en-tête : le logo et les deux étapes de l'inscription ---------- */
+
+.creation-tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding: 1.25rem clamp(1rem, 4vw, 3.5rem);
+  border-bottom: 1px solid var(--trait);
+}
+.creation-tete .logo {
+  font-size: 1.2rem;
+}
+.creation-etapes {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  color: var(--gris-2);
+}
+.creation-etapes li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+/* un trait entre les deux étapes */
+.creation-etapes li + li::before {
+  content: '';
+  width: 1.5rem;
+  height: 1px;
+  background: var(--trait-fort);
+}
+.creation-etape-numero {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1px solid var(--trait-fort);
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.creation-etape-numero .icone {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+.creation-etapes .faite {
+  color: var(--gris);
+}
+.creation-etapes .faite .creation-etape-numero {
+  border-color: var(--vert);
+  color: var(--vert);
+}
+.creation-etapes [aria-current='step'] {
+  font-weight: 600;
+  color: var(--blanc);
+}
+/* l'étape en cours : le signal turquoise, avec un chiffre noir (le blanc y serait illisible) */
+.creation-etapes [aria-current='step'] .creation-etape-numero {
+  border-color: var(--turquoise);
+  background: var(--turquoise);
+  color: var(--noir);
+}
+
+/* ---------- contenu ---------- */
+
+.creation-contenu {
+  gap: 1.75rem;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 3.5rem) 1rem 4rem;
+}
+.creation-contenu .surtitre {
+  margin-bottom: 0.85rem;
+}
+.creation-intro {
+  margin: 0.85rem 0 0;
+  max-width: 62ch;
+  font-size: 1.05rem;
+  color: var(--gris);
+}
+.creation-intro strong {
+  font-weight: 600;
+  color: var(--blanc);
+  overflow-wrap: anywhere;
+}
+
+.creation-formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* un groupe d'informations : un panneau, son titre, ses champs sur deux colonnes */
+.creation-groupe {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
+}
+.creation-groupe h2 {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gris-2);
+}
+.creation-groupe-texte {
+  margin: -0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--gris);
+}
+.creation-champs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem 1.25rem;
+}
+.creation-champs .large {
+  grid-column: 1 / -1;
+}
+
+/* les choix (sexe, niveau, activités, objectif) : des boutons à cocher */
+.creation-choix {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.creation-choix legend {
+  margin-bottom: 0.4rem;
+  padding: 0;
+}
+.creation-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.creation-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 0.95rem;
+  border: 1px solid var(--trait-fort);
+  border-radius: var(--rayon);
+  background: var(--noir-2);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+.creation-options label:hover {
+  border-color: var(--gris-2);
+}
+.creation-options label:has(input:checked) {
+  border-color: var(--blanc);
+}
+.creation-options label:has(input:focus-visible) {
+  outline: 2px solid var(--blanc);
+  outline-offset: 2px;
+}
+.creation-options .icone {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--gris);
+}
+
+.creation-formulaire .alerte {
+  margin: 0;
+}
+.creation-envoyer {
+  align-self: flex-start;
+  min-height: 52px;
+  padding: 0 1.75rem;
+}
+
+/* arrivé sans compte : un mot et le lien vers l'inscription */
+.creation-sans-compte {
+  align-items: flex-start;
+}
+.creation-sans-compte p {
+  margin: 0;
+  color: var(--gris);
+}
+
+/* ---------- téléphone : une colonne ---------- */
+
+@media (max-width: 599px) {
+  .creation-groupe {
+    padding: 1.1rem;
+  }
+  .creation-champs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .creation-envoyer {
+    align-self: stretch;
+  }
+}
