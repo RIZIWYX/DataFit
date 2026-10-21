@@ -1,45 +1,4 @@
--- Script exécuté une seule fois, à la création de la base.
--- Les tables du projet viendront ici (ex : utilisateur).
-CREATE TABLE IF NOT EXISTS utilisateur (
-    id            SERIAL PRIMARY KEY,
-    email         VARCHAR(255) NOT NULL UNIQUE,
-    mot_de_passe  VARCHAR(255) NOT NULL,
-    cree_le       TIMESTAMP NOT NULL DEFAULT now()
-);
-
-CREATE TABLE IF NOT EXISTS profil (
-    utilisateur_id INT PRIMARY KEY REFERENCES utilisateur(id) ON DELETE CASCADE,
-    nom            VARCHAR(255) NOT NULL,
-    prenom         VARCHAR(255) NOT NULL,
-    sexe           VARCHAR(10)  NOT NULL,
-    poids          FLOAT        NOT NULL,
-    taille         FLOAT        NOT NULL,
-    objectif       VARCHAR(255) NOT NULL,
-    niveau         VARCHAR(50)  NOT NULL,
-    activite       VARCHAR(50)  NOT NULL,
-    date_naissance DATE         NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS nutrition (
-    id             SERIAL PRIMARY KEY,
-    utilisateur_id INT          NOT NULL REFERENCES utilisateur(id) ON DELETE CASCADE,
-    date           DATE         NOT NULL,
-    objectif       VARCHAR(255) NOT NULL,
-    calories       FLOAT        NOT NULL,
-    proteines      FLOAT        NOT NULL,
-    glucides       FLOAT        NOT NULL,
-    lipides        FLOAT        NOT NULL,
-    UNIQUE (utilisateur_id, date)
-);
-CREATE INDEX IF NOT EXISTS idx_nutrition_user_date ON nutrition (utilisateur_id, date);
-
-CREATE TABLE IF NOT EXISTS historique_seance (
-    id             SERIAL PRIMARY KEY,
-    utilisateur_id INT          NOT NULL REFERENCES utilisateur(id) ON DELETE CASCADE,
-    date           DATE         NOT NULL,
-    nom            VARCHAR(255) NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_historique_user_date ON historique_seance (utilisateur_id, date);
+-- Toutes les disciplines sportives (chaque ligne = un releve date par utilisateur).
 
 CREATE TABLE IF NOT EXISTS sbd (
     id             SERIAL PRIMARY KEY,
