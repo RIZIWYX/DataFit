@@ -8,6 +8,7 @@ import { ICONES } from '../data/icones.ts'
 import { NOMS_RANGS, RANGS } from '../data/paliers.ts'
 import useSport from '../hooks/useSport.ts'
 import { nombre } from '../lib/format.ts'
+import { MIN_DISCIPLINES_RANG_GLOBAL } from '../lib/rangs.ts'
 
 // Performance (ex-« Sport ») : les records par exercice et leur rang, de E à Z.
 function Sport() {
@@ -22,6 +23,7 @@ function Sport() {
     discipline,
     parCategorie,
     resume,
+    rangAthlete,
     choisirOnglet,
     majPerf,
 
@@ -77,6 +79,20 @@ function Sport() {
             </dl>
             <div className="sport-profil-actions">
               <LienFleche to="/profil">Modifier mon profil</LienFleche>
+            </div>
+          </section>
+
+          {/* le rang global : la moyenne des rangs des disciplines travaillées */}
+          <section className="sport-global" aria-label="Votre rang global">
+            <BadgeRang rang={rangAthlete.rang} />
+            <div>
+              <span className="sport-global-etiquette">Rang global</span>
+              <strong>{rangAthlete.rang >= 0 ? NOMS_RANGS[rangAthlete.rang] : 'Pas encore de rang'}</strong>
+              <p className="sport-note">
+                {rangAthlete.rang >= 0
+                  ? `Moyenne de vos rangs sur ${rangAthlete.disciplines} ${rangAthlete.disciplines > 1 ? 'disciplines travaillées' : 'discipline travaillée'}.`
+                  : `Travaillez au moins ${MIN_DISCIPLINES_RANG_GLOBAL} disciplines sur ${resume.length} pour l’obtenir (${rangAthlete.disciplines}/${MIN_DISCIPLINES_RANG_GLOBAL}).`}
+              </p>
             </div>
           </section>
 

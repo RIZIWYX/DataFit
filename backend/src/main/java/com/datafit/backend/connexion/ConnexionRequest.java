@@ -1,20 +1,26 @@
+
 package com.datafit.backend.connexion;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-// Ce que le formulaire de connexion envoie
 public record ConnexionRequest(
+
+    @NotNull(message = "Le compte est obligatoire")
+    Long utilisateurId,
 
     @NotBlank(message = "L'adresse e-mail est obligatoire")
     @Email(message = "L'adresse e-mail est invalide")
     @Size(max = 255)
     String email,
 
-    // pas de longueur minimale ici : la règle des 8 caractères s'applique à l'inscription,
-    // à la connexion on vérifie seulement que le mot de passe correspond
     @NotBlank(message = "Le mot de passe est obligatoire")
+    @Size(min = 8, max = 72,
+          message = "Le mot de passe doit contenir entre 8 et 72 caractères")
     String password
 
 ) {}
+
+

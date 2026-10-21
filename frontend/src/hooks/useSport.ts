@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router'
 import { CATEGORIES, DISCIPLINES, type Sexe } from '../data/paliers.ts'
 import { lireProfil } from '../lib/profil.ts'
 import { noterRecord } from '../lib/records.ts'
-import { type Perfs, type Profil, type ResumeDiscipline, categoriePourPoids, resumeDisciplines } from '../lib/rangs.ts'
+import { type Perfs, type Profil, type ResumeDiscipline, categoriePourPoids, rangGlobal, resumeDisciplines } from '../lib/rangs.ts'
 
 
 const CLE_STOCKAGE = 'datafit-rangs'
@@ -165,6 +165,8 @@ function useSport() {
   )
 
   const resume = resumeDisciplines(etat.perfs, profil)
+  // le rang global, calculé à partir des rangs de chaque discipline
+  const rangAthlete = rangGlobal(resume)
 
   const choisirOnglet = (onglet: string) => {
     setEtat((e) => ({ ...e, onglet }))
@@ -271,6 +273,7 @@ function useSport() {
     discipline,
     parCategorie,
     resume,
+    rangAthlete,
     choisirOnglet,
     majPerf,
 
