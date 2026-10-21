@@ -101,6 +101,21 @@ export function resumeDisciplines(perfs: Perfs, profil: Profil) {
 
 export type ResumeDiscipline = ReturnType<typeof resumeDisciplines>[number]
 
+// Nombre minimum de disciplines travaillées (sur 7) pour obtenir un rang global.
+export const MIN_DISCIPLINES_RANG_GLOBAL = 5
+
+// Rang global de l'athlète : moyenne des rangs des disciplines travaillées.
+// Une discipline sans exercice renseigné (rang -1) est ignorée, sinon elle ferait baisser la moyenne.
+// rang = -1 tant que moins de 5 disciplines sur 7 sont travaillées.
+export function rangGlobal(resume: ResumeDiscipline[]) {
+  const rangs = resume.map((d) => d.rang).filter((r) => r >= 0)
+  const rang =
+    rangs.length < MIN_DISCIPLINES_RANG_GLOBAL
+      ? -1
+      : Math.round(rangs.reduce((a, b) => a + b, 0) / rangs.length)
+  return { rang, disciplines: rangs.length }
+}
+
 // ---------- affichage ----------
 
 const nombre = (n: number, decimales = 1) =>

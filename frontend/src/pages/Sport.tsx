@@ -8,6 +8,7 @@ import { ICONES } from '../data/icones.ts'
 import { NOMS_RANGS, RANGS } from '../data/paliers.ts'
 import useSport from '../hooks/useSport.ts'
 import { nombre } from '../lib/format.ts'
+import { MIN_DISCIPLINES_RANG_GLOBAL } from '../lib/rangs.ts'
 
 // Performance (ex-« Sport ») : les records par exercice et leur rang, de E à Z.
 function Sport() {
@@ -22,9 +23,19 @@ function Sport() {
     discipline,
     parCategorie,
     resume,
+    rangAthlete,
     choisirOnglet,
     majPerf,
-    toutEffacer,
+
+    // Boutons Valider / Modifier (générique pour toutes les disciplines).
+    disciplineBranchee,
+    seanceDuJour,
+    chargement,
+    sauvegarde,
+    message,
+    erreur,
+    valider,
+    modifier,
   } = useSport()
 
   return (
@@ -68,9 +79,20 @@ function Sport() {
             </dl>
             <div className="sport-profil-actions">
               <LienFleche to="/profil">Modifier mon profil</LienFleche>
-              <button type="button" className="bouton secondaire petit" onClick={toutEffacer}>
-                Tout effacer
-              </button>
+            </div>
+          </section>
+
+          {/* le rang global : la moyenne des rangs des disciplines travaillées */}
+          <section className="sport-global" aria-label="Votre rang global">
+            <BadgeRang rang={rangAthlete.rang} />
+            <div>
+              <span className="sport-global-etiquette">Rang global</span>
+              <strong>{rangAthlete.rang >= 0 ? NOMS_RANGS[rangAthlete.rang] : 'Pas encore de rang'}</strong>
+              <p className="sport-note">
+                {rangAthlete.rang >= 0
+                  ? `Moyenne de vos rangs sur ${rangAthlete.disciplines} ${rangAthlete.disciplines > 1 ? 'disciplines travaillées' : 'discipline travaillée'}.`
+                  : `Travaillez au moins ${MIN_DISCIPLINES_RANG_GLOBAL} disciplines sur ${resume.length} pour l’obtenir (${rangAthlete.disciplines}/${MIN_DISCIPLINES_RANG_GLOBAL}).`}
+              </p>
             </div>
           </section>
 
@@ -110,10 +132,57 @@ function Sport() {
             {discipline.exercices.map((ex) => (
               <CarteExercice key={ex.id} exercice={ex} perfs={perfs} profil={profil} onChange={majPerf} />
             ))}
-            <p className="sport-note">
-              Vos records restent enregistrés dans ce navigateur, datés : la page Progression en trace
-              l'évolution.
-            </p>
+
+            {/* Boutons Valider / Modifier pour la discipline affichée */}
+            {disciplineBranchee && (
+              <div className="sport-sbd-actions">
+                {chargement && (
+                  <p role="status">Chargement de votre séance...</p>
+                )}
+
+                <div className="sport-sbd-boutons">
+                  <button
+                    type="button"
+                    className="sport-sbd-valider"
+                    disabled={chargement || sauvegarde || !!seanceDuJour}
+                    onClick={valider}
+                  >
+                    {sauvegarde && !seanceDuJour
+                      ? 'Enregistrement...'
+                      : 'Valider'}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="sport-sbd-modifier"
+                    disabled={chargement || sauvegarde || !seanceDuJour}
+                    onClick={modifier}
+                  >
+                    {sauvegarde && seanceDuJour
+                      ? 'Modification...'
+                      : 'Modifier'}
+                  </button>
+                </div>
+
+                {message && (
+                  <p
+                    className={
+                      erreur ? 'sport-sbd-message erreur' : 'sport-sbd-message'
+                    }
+                    role="status"
+                    aria-live="polite"
+                  >
+                    {message}
+                  </p>
+                )}
+
+                {seanceDuJour && (
+                  <p className="sport-sbd-etat">
+                    Une séance {discipline.nom} est enregistrée pour aujourd'hui.
+                  </p>
+                )}
+              </div>
+            )}
           </section>
         </>
       ) : (

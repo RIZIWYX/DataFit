@@ -82,6 +82,41 @@
   gap: 1.25rem;
 }
 
+/* le rang global : un badge plus grand, son nom et d'où il vient */
+.sport-global {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
+}
+.sport-global .sport-badge {
+  min-width: 56px;
+  height: 56px;
+  border-radius: var(--rayon);
+  font-size: 1.5rem;
+}
+.sport-global div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+.sport-global-etiquette {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gris-2);
+}
+.sport-global strong {
+  font-size: 1.15rem;
+  font-stretch: 108%;
+  font-weight: 700;
+}
+
 /* les disciplines : chacune est un onglet, avec son rang moyen */
 /* les sept disciplines toujours sur une ligne ; si l'écran est trop étroit, la ligne défile */
 .sport-disciplines {
@@ -114,7 +149,7 @@
   border-color: var(--trait-fort);
   background: var(--noir-2);
 }
-.sport-disciplines button[aria-selected='true'] {
+.sport-disciplines button[aria-selected="true"] {
   border-color: var(--blanc);
   background: var(--noir-2);
 }
@@ -276,12 +311,92 @@
   color: var(--blanc);
 }
 
+/* Valider / Modifier : la séance du jour de la discipline (mêmes boutons que .bouton de charte.css) */
+.sport-sbd-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--trait);
+}
+.sport-sbd-actions p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--gris);
+}
+.sport-sbd-boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.sport-sbd-valider,
+.sport-sbd-modifier {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--rayon);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    border-color var(--transition),
+    color var(--transition);
+}
+/* action principale : fond turquoise, texte noir */
+.sport-sbd-valider {
+  background: var(--turquoise);
+  color: var(--noir);
+}
+.sport-sbd-valider:hover {
+  background: var(--turquoise-survol);
+}
+/* action secondaire : contour gris, comme .bouton.secondaire */
+.sport-sbd-modifier {
+  border-color: var(--trait-fort);
+  background: transparent;
+  color: var(--blanc);
+}
+.sport-sbd-modifier:hover {
+  border-color: var(--blanc);
+  background: rgb(255 255 255 / 0.04);
+}
+.sport-sbd-valider:disabled,
+.sport-sbd-modifier:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+/* confirmation en vert, erreur en rouge (comme .message-ok et .alerte) */
+.sport-sbd-actions .sport-sbd-message {
+  color: var(--vert);
+}
+.sport-sbd-actions .sport-sbd-message.erreur {
+  color: var(--erreur);
+}
+.sport-sbd-actions .sport-sbd-etat {
+  font-size: 0.8rem;
+  color: var(--gris-2);
+}
+
 @media (max-width: 640px) {
   .sport-echelle span {
     display: none;
   }
   .sport-ex {
     padding: 1rem;
+  }
+  /* sur téléphone, les deux boutons se partagent la largeur */
+  .sport-sbd-valider,
+  .sport-sbd-modifier {
+    flex: 1;
   }
 }
 
