@@ -8,7 +8,12 @@ export default defineConfig({
     // les appels /api/... sont transmis au backend, comme le fait nginx dans Docker :
     // le site et l'API partagent la même adresse, donc pas de souci de CORS
     proxy: {
-      '/api': 'http://localhost:8080',
+      '/api': {
+        target: 'http://localhost:8080',
+        // on garde l'adresse du site (localhost:5173), comme nginx avec « Host $http_host » :
+        // sinon Spring voit arriver « localhost:8080 » et refuse les POST et PUT (CORS)
+        changeOrigin: false,
+      },
     },
   },
 })

@@ -6,6 +6,7 @@
 //
 // Démonstration : tout est gardé dans le navigateur, en attendant le backend.
 import { TOUS_LES_EXERCICES, type Exercice } from '../data/paliers.ts'
+import { cleDuCompte } from './compte.ts'
 
 export interface ExercicePrevu {
   id: string
@@ -181,11 +182,12 @@ export function seancesAVenir(planning: Planning, maintenant: Date): SeancePlani
 
 // ---------- stockage ----------
 
+// un planning par compte (voir cleDuCompte)
 const CLE_STOCKAGE = 'datafit-programmation'
 
 export function chargerPlanning(): Planning {
   try {
-    const garde = JSON.parse(localStorage.getItem(CLE_STOCKAGE) ?? '{}')
+    const garde = JSON.parse(localStorage.getItem(cleDuCompte(CLE_STOCKAGE)) ?? '{}')
     return { programmes: garde.programmes ?? [], seances: garde.seances ?? [] }
   } catch {
     return { programmes: [], seances: [] }
@@ -194,7 +196,7 @@ export function chargerPlanning(): Planning {
 
 export function enregistrerPlanning(planning: Planning) {
   try {
-    localStorage.setItem(CLE_STOCKAGE, JSON.stringify(planning))
+    localStorage.setItem(cleDuCompte(CLE_STOCKAGE), JSON.stringify(planning))
   } catch {
     // stockage indisponible (navigation privée…) : le planning ne sera pas gardé
   }

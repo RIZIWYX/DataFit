@@ -110,6 +110,14 @@ function Nutrition() {
         ))}
       </section>
 
+      {n.erreurEnvoi && (
+        <p className="alerte" role="alert">
+          <Icone trace={ICONES.info} />
+          Les repas d'aujourd'hui n'ont pas pu être enregistrés sur votre compte : ils restent gardés sur cet
+          appareil, et seront renvoyés au prochain changement.
+        </p>
+      )}
+
       <div className="nutrition-grille">
         <Panneau
           titre={`Journal · ${libelleJour}`}
