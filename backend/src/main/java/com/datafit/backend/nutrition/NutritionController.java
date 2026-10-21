@@ -3,13 +3,14 @@ package com.datafit.backend.nutrition;
 import com.datafit.backend.utilisateur.Utilisateur;
 import com.datafit.backend.utilisateur.UtilisateurRepository;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
-// Mêmes routes que les disciplines (voir SBDController) : le front peut réutiliser services/sport/http.ts.
-// Utilisateur inconnu → 404, déjà saisi aujourd'hui ou rien à modifier → 409 (voir ApiExceptionHandler).
+// Un repas = une ligne (voir Nutrition). Utilisateur inconnu → 404, données invalides → 400.
 @RestController
 @RequestMapping("/api/nutrition")
 public class NutritionController {
@@ -22,38 +23,28 @@ public class NutritionController {
         this.utilisateurRepo = utilisateurRepo;
     }
 
-    // Bouton "Valider"
+    // Un repas noté : renvoie la ligne créée, avec son id (pour pouvoir la supprimer ensuite)
     @PostMapping("/{utilisateurId}")
-    public Nutrition valider(@PathVariable Long utilisateurId,
+    public Nutrition ajouter(@PathVariable Long utilisateurId,
             @Valid @RequestBody NutritionRequest req) {
         Utilisateur user = utilisateurRepo.findById(utilisateurId).orElseThrow();
-        return service.valider(user, req);
+        return service.ajouter(user, req);
     }
 
-    // Bouton "Modifier"
-    @PutMapping("/{utilisateurId}/aujourdhui")
-    public Nutrition modifier(@PathVariable Long utilisateurId,
-            @Valid @RequestBody NutritionRequest req) {
+    // Un repas retiré du journal
+    @DeleteMapping("/{utilisateurId}/{id}")
+    public ResponseEntity<Void> supprimer(@PathVariable Long utilisateurId, @PathVariable Long id) {
         Utilisateur user = utilisateurRepo.findById(utilisateurId).orElseThrow();
-        return service.modifierCelleDuJour(user, req);
+        service.supprimer(user, id);
+        return ResponseEntity.noContent().build();
     }
 
-    // Pour pré-remplir le formulaire
-    @GetMapping("/{utilisateurId}/dernier")
-    public ResponseEntity<Nutrition> dernier(@PathVariable Long utilisateurId) {
+    // Les repas d'un jour, ex. /api/nutrition/3/jour/2026-10-21
+    @GetMapping("/{utilisateurId}/jour/{date}")
+    public List<Nutrition> duJour(@PathVariable Long utilisateurId,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         Utilisateur user = utilisateurRepo.findById(utilisateurId).orElseThrow();
-        return service.derniereSaisie(user)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.noContent().build());
-    }
-
-    // Pour savoir si on affiche "Valider" ou "Modifier"
-    @GetMapping("/{utilisateurId}/aujourdhui")
-    public ResponseEntity<Nutrition> aujourdhui(@PathVariable Long utilisateurId) {
-        Utilisateur user = utilisateurRepo.findById(utilisateurId).orElseThrow();
-        return service.celleDuJour(user)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.noContent().build());
+        return service.duJour(user, date);
     }
 
     // Historique pour un graphique (du plus récent au plus ancien)

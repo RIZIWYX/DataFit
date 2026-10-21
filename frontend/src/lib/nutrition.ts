@@ -128,6 +128,7 @@ export interface Aliment {
   proteines: number // g
   glucides: number // g
   lipides: number // g
+  idServeur?: number // l'id de sa ligne en base, une fois envoyé (voir useNutrition)
 }
 
 export interface Journal {
@@ -136,6 +137,7 @@ export interface Journal {
   // choisis sur la page ; sinon, ceux du profil
   objectif?: string
   activite?: NiveauActivite
+  aSupprimer: number[] // lignes en base des repas retirés du journal, pas encore supprimées
 }
 
 export interface Totaux {
@@ -145,7 +147,7 @@ export interface Totaux {
   lipides: number
 }
 
-const JOURNAL_VIDE: Journal = { aliments: [], verres: {} }
+const JOURNAL_VIDE: Journal = { aliments: [], verres: {}, aSupprimer: [] }
 // un journal par compte (voir cleDuCompte)
 const CLE_STOCKAGE = 'datafit-nutrition'
 

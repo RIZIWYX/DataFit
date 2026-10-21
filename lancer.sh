@@ -5,7 +5,7 @@
 #   ./lancer.sh --reinitialiser   repartir d'une base vide (efface les comptes et profils de test)
 #
 # À chaque lancement, la base est remise d'accord avec .env (mot de passe) et avec
-# db/init.sql (tables manquantes), sans rien effacer.
+# les fichiers .sql de db/ (tables manquantes), sans rien effacer.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -49,7 +49,8 @@ echo "→ Démarrage de la base…"
 compose up -d --wait db
 
 # La base garde le mot de passe donné à sa création : on lui redonne celui de .env,
-# puis on crée les tables de db/init.sql qui manqueraient (CREATE TABLE IF NOT EXISTS).
+# puis on crée les tables des fichiers de db/ qui manqueraient (CREATE TABLE IF NOT EXISTS),
+# dans l'ordre de leur numéro : 01_utilisateur_profil.sql d'abord, les autres tables en dépendent.
 # À l'intérieur du conteneur, psql se connecte sans mot de passe.
 psql_base() {
   compose exec -T db sh -c \
@@ -57,7 +58,7 @@ psql_base() {
 }
 mot_de_passe_sql=${DB_PASSWORD//\'/\'\'} # une apostrophe s'écrit '' en SQL
 if ! psql_base <<< "ALTER ROLE \"$DB_USER\" WITH PASSWORD '$mot_de_passe_sql';" \
-  || ! psql_base < db/init.sql; then
+  || ! cat db/*.sql | psql_base; then
   echo "La base n'a pas pu être mise à jour. Pour repartir d'une base neuve : ./lancer.sh --reinitialiser"
   exit 1
 fi

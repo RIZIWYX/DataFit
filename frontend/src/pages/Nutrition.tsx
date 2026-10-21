@@ -113,8 +113,8 @@ function Nutrition() {
       {n.erreurEnvoi && (
         <p className="alerte" role="alert">
           <Icone trace={ICONES.info} />
-          Les repas d'aujourd'hui n'ont pas pu être enregistrés sur votre compte : ils restent gardés sur cet
-          appareil, et seront renvoyés au prochain changement.
+          Certains repas n'ont pas pu être enregistrés sur votre compte : ils restent gardés sur cet appareil,
+          et seront renvoyés au prochain changement ou à la prochaine ouverture de la page.
         </p>
       )}
 

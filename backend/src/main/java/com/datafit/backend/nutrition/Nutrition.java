@@ -6,10 +6,10 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
-// Une ligne de la table "nutrition" (voir le dossier db/) :
-// les apports d'une journée pour un utilisateur.
-// Une ligne = un jour (UNIQUE (utilisateur_id, date)) : un utilisateur a donc plusieurs lignes.
-// La date est posée à la création et ne change plus, même si on corrige les valeurs.
+// Une ligne de la table "nutrition" (voir db/02_nutrition.sql) : un repas noté par un utilisateur,
+// avec son jour, son moment (petit-dejeuner, dejeuner, diner ou collation), son nom et ses apports.
+// Un utilisateur a donc plusieurs lignes par jour. Un repas ne se modifie pas : on le supprime
+// et on en note un autre, comme sur la page Nutrition.
 @Entity
 @Table(name = "nutrition")
 public class Nutrition {
@@ -17,14 +17,21 @@ public class Nutrition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // plusieurs journées pour un même utilisateur (pas de @MapsId : la clé reste la colonne id)
+    // plusieurs repas pour un même utilisateur (pas de @MapsId : la clé reste la
+    // colonne id)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "utilisateur_id", nullable = false)
     private Utilisateur utilisateur;
 
-    // posée automatiquement à la création par @PrePersist ; non modifiable ensuite
+    // le jour où le repas a été mangé, choisi sur la page (pas forcément aujourd'hui)
     @Column(name = "date", nullable = false, updatable = false)
     private LocalDate date;
+
+    @Column(name = "repas", nullable = false, length = 20)
+    private String repas;
+
+    @Column(name = "nom", nullable = false, length = 255)
+    private String nom;
 
     @Column(name = "calories", nullable = false)
     private double calories;
@@ -47,12 +54,18 @@ public class Nutrition {
 
     public Nutrition(
             Utilisateur utilisateur,
+            LocalDate date,
+            String repas,
+            String nom,
             double calories,
             double proteines,
             double glucides,
             double lipides,
             String objectif) {
         this.utilisateur = utilisateur;
+        this.date = date;
+        this.repas = repas;
+        this.nom = nom;
         this.calories = calories;
         this.proteines = proteines;
         this.glucides = glucides;
@@ -60,17 +73,12 @@ public class Nutrition {
         this.objectif = objectif;
     }
 
-    // Hibernate appelle cette méthode juste avant l'INSERT en base
-    @PrePersist
-    protected void avantCreation() {
-        this.date = LocalDate.now();
-    }
-
     public Long getId() {
         return id;
     }
 
-    // jamais renvoyé dans le JSON : l'utilisateur n'est pas chargé, et il contient le mot de passe
+    // jamais renvoyé dans le JSON : l'utilisateur n'est pas chargé, et il contient
+    // le mot de passe
     @JsonIgnore
     public Utilisateur getUtilisateur() {
         return utilisateur;
@@ -78,6 +86,14 @@ public class Nutrition {
 
     public LocalDate getDate() {
         return date;
+    }
+
+    public String getRepas() {
+        return repas;
+    }
+
+    public String getNom() {
+        return nom;
     }
 
     public double getCalories() {
@@ -98,25 +114,5 @@ public class Nutrition {
 
     public String getObjectif() {
         return objectif;
-    }
-
-    public void setCalories(double calories) {
-        this.calories = calories;
-    }
-
-    public void setProteines(double proteines) {
-        this.proteines = proteines;
-    }
-
-    public void setGlucides(double glucides) {
-        this.glucides = glucides;
-    }
-
-    public void setLipides(double lipides) {
-        this.lipides = lipides;
-    }
-
-    public void setObjectif(String objectif) {
-        this.objectif = objectif;
     }
 }

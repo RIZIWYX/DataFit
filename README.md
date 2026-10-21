@@ -26,7 +26,7 @@ Le site est sur http://localhost:3000. Le script s'occupe du reste :
 
 - il crée `.env` s'il n'existe pas encore : c'est lui qui donne le mot de passe de la base, à Docker comme au backend ;
 - si Docker demande les droits administrateur, il passe par `sudo` (ton mot de passe Ubuntu est demandé une fois) ;
-- à chaque lancement, il redonne à la base le mot de passe de `.env` et crée les tables de `db/init.sql` qui manqueraient, sans rien effacer.
+- à chaque lancement, il redonne à la base le mot de passe de `.env` et crée les tables des fichiers `.sql` de `db/` qui manqueraient, sans rien effacer.
 
 Pour repartir d'une base vide (comptes de test effacés) : `./lancer.sh --reinitialiser`.
 
