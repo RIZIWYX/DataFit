@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+// Nom de bean explicite pour ne pas entrer en conflit avec
+// sport.natation.NatationController.
+@RestController("seanceNatationController")
 @RequestMapping("/api/seances/natation")
 public class NatationController {
 private final NatationService service;

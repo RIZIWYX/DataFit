@@ -6,8 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 
 // Une seance de natation capturee depuis la montre (simulateur).
-// Une ligne = une seance. Plusieurs seances possibles le meme jour.
-@Entity
+// name = "SeanceNatation" pour ne pas entrer en conflit avec l'entite
+// sport.natation.Natation (meme nom court de classe).
+@Entity(name = "SeanceNatation")
 @Table(name = "seance_natation")
 public class Natation {
 
