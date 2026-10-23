@@ -25,5 +25,4 @@ dist-ssr
 
 # Secrets
 .env
-!.vscode/settings.json
-!.vscode/settings.json
+
