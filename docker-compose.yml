@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - donnees-postgres:/var/lib/postgresql/data   # les données survivent aux redémarrages
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro  # exécuté au 1er démarrage
+      - ./db:/docker-entrypoint-initdb.d:ro  # les .sql de db/, exécutés dans l'ordre (01_, 02_…) au 1er démarrage
     ports:
       - "5433:5432"
     healthcheck:

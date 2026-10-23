@@ -1,4 +1,4 @@
-import { lireCompte } from '../lib/compte.ts'
+import { cleDuCompte, lireCompte } from '../lib/compte.ts'
 import { SERVICES_SPORT, type SeanceSport } from '../services/sport/index.ts'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
@@ -8,6 +8,7 @@ import { noterRecord } from '../lib/records.ts'
 import { type Perfs, type Profil, type ResumeDiscipline, categoriePourPoids, rangGlobal, resumeDisciplines } from '../lib/rangs.ts'
 
 
+// un état par compte (voir cleDuCompte)
 const CLE_STOCKAGE = 'datafit-rangs'
 
 interface Etat {
@@ -21,7 +22,7 @@ const ETAT_INITIAL: Etat = { onglet: 'sbd', perfs: {} }
 // À remplacer par un appel au backend quand l'API sera prête.
 export function chargerEtat(): Etat {
   try {
-    const garde = JSON.parse(localStorage.getItem(CLE_STOCKAGE) ?? '{}')
+    const garde = JSON.parse(localStorage.getItem(cleDuCompte(CLE_STOCKAGE)) ?? '{}')
     return { onglet: garde.onglet ?? ETAT_INITIAL.onglet, perfs: garde.perfs ?? {} }
   } catch {
     return ETAT_INITIAL
@@ -75,7 +76,7 @@ function useSport() {
   // Conserve la sauvegarde locale des performances et des onglets.
   useEffect(() => {
     try {
-      localStorage.setItem(CLE_STOCKAGE, JSON.stringify(etat))
+      localStorage.setItem(cleDuCompte(CLE_STOCKAGE), JSON.stringify(etat))
     } catch {
       // Le stockage local peut être indisponible.
     }

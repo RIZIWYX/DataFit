@@ -1,9 +1,10 @@
 // Helpers partagés entre les services de sport.
 // Chaque service garde son typage ; cette couche ne gère que les appels HTTP.
 
-export const API_URL = (
-  import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
-).replace(/\/$/, '')
+// Vide par défaut : les appels partent vers /api/... sur l'adresse du site, que Vite (en dev, :5173)
+// et nginx (dans Docker, :3000) transmettent au backend. Même adresse pour le site et l'API,
+// donc pas de souci de CORS. VITE_API_URL ne sert que pour viser un autre backend.
+export const API_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
 
 export type IdentifiantUtilisateur = string | number
 

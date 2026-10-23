@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react'
 import { SEANCES_DEMO } from '../data/seances.ts'
+import { cleDuCompte } from '../lib/compte.ts'
 import { detailSeance } from '../lib/detail-seance.ts'
 
+// des notes par compte (voir cleDuCompte)
 const CLE_STOCKAGE = 'datafit-notes'
 
 // Démonstration : les notes sont gardées dans le navigateur, une par séance.
 function lireNotes(): Record<string, string> {
   try {
-    return JSON.parse(localStorage.getItem(CLE_STOCKAGE) ?? '{}')
+    return JSON.parse(localStorage.getItem(cleDuCompte(CLE_STOCKAGE)) ?? '{}')
   } catch {
     return {}
   }
@@ -29,7 +31,7 @@ function useSeance(id: string | undefined) {
     const suivantes = { ...notes, [seance.id]: texte }
     setNotes(suivantes)
     try {
-      localStorage.setItem(CLE_STOCKAGE, JSON.stringify(suivantes))
+      localStorage.setItem(cleDuCompte(CLE_STOCKAGE), JSON.stringify(suivantes))
     } catch {
       // stockage indisponible (navigation privée…) : la note ne sera pas gardée
     }

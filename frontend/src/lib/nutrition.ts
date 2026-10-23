@@ -2,6 +2,7 @@
 // Fonctions pures, sauf la lecture et l'écriture du journal (gardé dans le navigateur).
 // Les besoins sont des estimations (équation de Mifflin-St Jeor), pas une prescription.
 
+import { cleDuCompte } from './compte.ts'
 import { type Profil } from './profil.ts'
 import { nouvelId } from './programmation.ts'
 
@@ -127,6 +128,7 @@ export interface Aliment {
   proteines: number // g
   glucides: number // g
   lipides: number // g
+  idServeur?: number // l'id de sa ligne en base, une fois envoyé (voir useNutrition)
 }
 
 export interface Journal {
@@ -135,6 +137,7 @@ export interface Journal {
   // choisis sur la page ; sinon, ceux du profil
   objectif?: string
   activite?: NiveauActivite
+  aSupprimer: number[] // lignes en base des repas retirés du journal, pas encore supprimées
 }
 
 export interface Totaux {
@@ -144,12 +147,13 @@ export interface Totaux {
   lipides: number
 }
 
-const JOURNAL_VIDE: Journal = { aliments: [], verres: {} }
+const JOURNAL_VIDE: Journal = { aliments: [], verres: {}, aSupprimer: [] }
+// un journal par compte (voir cleDuCompte)
 const CLE_STOCKAGE = 'datafit-nutrition'
 
 export function lireJournal(): Journal {
   try {
-    return { ...JOURNAL_VIDE, ...JSON.parse(localStorage.getItem(CLE_STOCKAGE) ?? '{}') }
+    return { ...JOURNAL_VIDE, ...JSON.parse(localStorage.getItem(cleDuCompte(CLE_STOCKAGE)) ?? '{}') }
   } catch {
     return JOURNAL_VIDE
   }
@@ -157,7 +161,7 @@ export function lireJournal(): Journal {
 
 export function enregistrerJournal(journal: Journal) {
   try {
-    localStorage.setItem(CLE_STOCKAGE, JSON.stringify(journal))
+    localStorage.setItem(cleDuCompte(CLE_STOCKAGE), JSON.stringify(journal))
   } catch {
     // stockage indisponible (navigation privée…) : le journal ne sera pas gardé
   }
