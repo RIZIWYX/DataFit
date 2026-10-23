@@ -56,12 +56,12 @@ Ce que fait le script, dans l'ordre :
 1. crée `.env` depuis `.env.example` s'il n'existe pas ;
 2. passe par `sudo` si Docker l'exige ;
 3. arrête un éventuel ancien conteneur qui occuperait déjà le port 5433 (ses données sont gardées) ;
-4. démarre la base, lui redonne le mot de passe de `.env` et crée les tables de `db/init.sql` qui manquent (rien n'est effacé) ;
+4. démarre la base, lui redonne le mot de passe de `.env` et crée les tables des fichiers `.sql` de `db/` qui manquent, dans l'ordre de leur numéro (rien n'est effacé) ;
 5. reconstruit les images si le code a changé et lance le back et le site (`docker compose up --build`).
 
 Pour arrêter : `Ctrl+C`, puis `docker compose down`.
 
-`./lancer.sh --reinitialiser` supprime la base locale avant de tout relancer : elle est recréée vide, avec toutes les tables de `db/init.sql`. Les comptes et profils de test sont effacés.
+`./lancer.sh --reinitialiser` supprime la base locale avant de tout relancer : elle est recréée vide, avec toutes les tables des fichiers de `db/`. Les comptes et profils de test sont effacés.
 
 C'est le mode à utiliser pour **vérifier que tout marche ensemble** avant d'ouvrir une PR. Pour coder au quotidien, le mode suivant est plus rapide.
 
@@ -129,7 +129,7 @@ Toute nouvelle variable doit être ajoutée **ici et dans `.env.example`**, avec
 
 **`permission denied while trying to connect to the docker API`** : voir [Utiliser Docker sans sudo](#utiliser-docker-sans-sudo).
 
-**J'ai modifié `db/init.sql` et rien n'a changé** : PostgreSQL ne l'exécute qu'à la création de la base. `./lancer.sh` crée les **nouvelles** tables à chaque lancement, mais ne modifie pas une table qui existe déjà (ajout de colonne…) : pour ça, `./lancer.sh --reinitialiser`, ou une commande `ALTER TABLE`. Voir [Base de données](base-de-donnees.md#faire-évoluer-le-schéma).
+**J'ai modifié un fichier de `db/` et rien n'a changé** : PostgreSQL ne les exécute qu'à la création de la base. `./lancer.sh` crée les **nouvelles** tables à chaque lancement, mais ne modifie pas une table qui existe déjà (ajout de colonne…) : pour ça, `./lancer.sh --reinitialiser`, ou une commande `ALTER TABLE`. Voir [Base de données](base-de-donnees.md#faire-évoluer-le-schéma).
 
 **Après un `git pull`, le front ne compile plus** : `package.json` a sans doute changé. Relance `npm install` dans `frontend/`.
 

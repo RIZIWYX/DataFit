@@ -26,3 +26,11 @@ export function enregistrerCompte(compte: Compte) {
     // stockage indisponible (navigation privée…) : le compte ne sera pas gardé
   }
 }
+
+// Ce que l'application garde dans le navigateur (journal nutrition, programmes, records, notes, rangs)
+// est rangé par compte : « datafit-nutrition:12 » pour le compte 12. Un nouveau compte part donc
+// de zéro, et chacun retrouve ses données en se reconnectant. Sans compte : le nom seul.
+export function cleDuCompte(nom: string): string {
+  const compte = lireCompte()
+  return compte ? `${nom}:${compte.id}` : nom
+}

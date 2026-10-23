@@ -1,16 +1,18 @@
 // Historique des records saisis sur la page Performance : une valeur par exercice et par jour.
 // C'est lui qui permet de tracer l'évolution d'un record et de son rang (page Progression).
 // Démonstration : gardé dans le navigateur, en attendant le backend.
+import { cleDuCompte } from './compte.ts'
 import { cleJour } from './programmation.ts'
 
 // { exercice : { « 2026-10-15 » : « 102,5 » } } ; la valeur est le texte saisi, comme dans Performance
 export type HistoriqueRecords = Record<string, Record<string, string>>
 
+// un historique par compte (voir cleDuCompte)
 const CLE_STOCKAGE = 'datafit-records'
 
 export function lireHistoriqueRecords(): HistoriqueRecords {
   try {
-    return JSON.parse(localStorage.getItem(CLE_STOCKAGE) ?? '{}')
+    return JSON.parse(localStorage.getItem(cleDuCompte(CLE_STOCKAGE)) ?? '{}')
   } catch {
     return {}
   }
@@ -35,7 +37,7 @@ export function noterRecord(exerciceId: string, brut: string, jour = new Date())
   else delete valeurs[cleJour(jour)]
   historique[exerciceId] = valeurs
   try {
-    localStorage.setItem(CLE_STOCKAGE, JSON.stringify(historique))
+    localStorage.setItem(cleDuCompte(CLE_STOCKAGE), JSON.stringify(historique))
   } catch {
     // stockage indisponible : l'historique ne sera pas gardé
   }
