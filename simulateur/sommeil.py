@@ -1,249 +1,325 @@
-import numpy as np
-import pandas as pd
-from datetime import datetime, timedelta
-
-
-def simuler_sommeil(
-    type_sommeil,
-    regularite,
-    activite_avant,
-    heure_coucher,
-    nb_nuits,
-    seed=None
-):
-    rng = np.random.default_rng(seed)
-
-    profils = {
-        "bon": {
-            "duree": (450, 540),
-            "reveils": (0, 2),
-            "agitation": 0.7
-        },
-        "normal": {
-            "duree": (390, 510),
-            "reveils": (1, 4),
-            "agitation": 1.0
-        },
-        "agite": {
-            "duree": (360, 510),
-            "reveils": (4, 9),
-            "agitation": 2.0
-        },
-        "court": {
-            "duree": (240, 360),
-            "reveils": (1, 4),
-            "agitation": 1.0
-        }
-    }
-
-    if type_sommeil not in profils:
-        raise ValueError("Type : bon, normal, agite ou court")
-
-    if regularite not in ["regulier", "irregulier"]:
-        raise ValueError("Régularité invalide")
-
-    if activite_avant not in ["faible", "moyenne", "elevee"]:
-        raise ValueError("Activité invalide")
-
-    if nb_nuits < 1:
-        raise ValueError("nb_nuits doit être >= 1")
-
-    # Vérification de l'heure donnée par l'utilisateur
-    try:
-        heure, minute = map(int, heure_coucher.split(":"))
-        if not (0 <= heure <= 23 and 0 <= minute <= 59):
-            raise ValueError
-    except (ValueError, AttributeError):
-        raise ValueError("L'heure doit être au format HH:MM, ex : 22:30")
-
-    profil = profils[type_sommeil]
-
-    effet_activite = {
-        "faible": 0,
-        "moyenne": 3,
-        "elevee": 6
-    }
-
-    fc_base = rng.uniform(58, 72)
-
-    mesures = []
-
-    date_depart = datetime.now().date() - timedelta(days=nb_nuits)
-
-    for nuit in range(nb_nuits):
-
-        # Heure de coucher choisie par l'utilisateur
-        variation = 25 if regularite == "regulier" else 120
-
-        coucher_min = heure * 60 + minute + int(
-            rng.integers(-variation, variation + 1)
-        )
-
-        date_nuit = date_depart + timedelta(days=nuit)
-
-        coucher = datetime.combine(
-            date_nuit, datetime.min.time()
-        ) + timedelta(minutes=coucher_min)
-
-        duree_lit = int(rng.integers(
-            profil["duree"][0],
-            profil["duree"][1] + 1
-        ))
-
-        # États cachés :
-        # 0 = éveil, 1 = léger, 2 = profond, 3 = REM
-        etats = np.ones(duree_lit, dtype=int)
-
-        latence = int(rng.integers(5, 21))
-
-        if type_sommeil == "agite":
-            latence += int(rng.integers(5, 21))
-
-        latence = min(latence, duree_lit // 4)
-        etats[:latence] = 0
-
-        
-        position = latence
-        cycle = 0
-
-        while position < duree_lit:
-
-            profond = max(5, 30 - cycle * 5)
-            rem = min(35, 12 + cycle * 5)
-
-            phases = [
-                (1, int(rng.integers(15, 26))),
-                (2, profond),
-                (1, int(rng.integers(10, 21))),
-                (3, rem)
-            ]
-
-            for phase, longueur in phases:
-                fin = min(position + longueur, duree_lit)
-                etats[position:fin] = phase
-                position = fin
-
-            cycle += 1
-
-       
-        nb_reveils = int(rng.integers(
-            profil["reveils"][0],
-            profil["reveils"][1] + 1
-        ))
-
-        for _ in range(nb_reveils):
-
-            debut = int(rng.integers(
-                latence,
-                max(latence + 1, duree_lit - 5)
-            ))
-
-            duree_reveil = int(rng.integers(2, 11))
-            fin = min(debut + duree_reveil, duree_lit)
-
-            etats[debut:fin] = 0
-
-       
-        fc_precedente = fc_base + 8
-        mouvement_precedent = 0.3
-
-        parametres = {
-            0: (10, 0.65),
-            1: (0, 0.18),
-            2: (-8, 0.04),
-            3: (3, 0.12)
-        }
-
-        for minute_nuit, etat in enumerate(etats):
-
-            decalage_fc, niveau_mouvement = parametres[etat]
-
-            fc_cible = (
-                fc_base
-                + decalage_fc
-                + effet_activite[activite_avant]
-            )
-
-            fc = (
-                0.75 * fc_precedente
-                + 0.25 * fc_cible
-                + rng.normal(0, 1.8)
-            )
-
-            fc = float(np.clip(fc, 42, 110))
-            fc_precedente = fc
-
-            mouvement_cible = (
-                niveau_mouvement
-                * profil["agitation"]
-            )
-
-            mouvement = (
-                0.4 * mouvement_precedent
-                + 0.6 * mouvement_cible
-                + rng.normal(0, 0.06)
-            )
-
-            if rng.random() < 0.025:
-                mouvement += rng.uniform(0.1, 0.4)
-
-            mouvement = float(np.clip(mouvement, 0, 1))
-            mouvement_precedent = mouvement
-
-            instant = coucher + timedelta(minutes=minute_nuit)
-
-            mesures.append({
-                "id_nuit": nuit + 1,
-                "date_heure": instant,
-                "fc_bpm": round(fc, 1),
-                "mouvement": round(mouvement, 3)
-            })
-
-  
-    df = pd.DataFrame(mesures)
-    df.to_csv("sommeil_mesures.csv", index=False)
-
-    print("Simulation terminée !")
-    print("Nombre de nuits :", nb_nuits)
-    print("Nombre de mesures :", len(df))
-
-    return df
-
-
-# Exemple d'utilisation
-df = simuler_sommeil(
-    type_sommeil="agite",
-    regularite="irregulier",
-    activite_avant="moyenne",
-    heure_coucher="22:30",
-    nb_nuits=2
-)
-
-display(df.head(10))
-
-
-
-#type_sommeil = bon ,normal , agite 
-#regularite = irregulier , regulier 
-#activité-avant = faible , moyenne ,elevee
-df = simuler_sommeil(
-    type_sommeil="bon",
-    regularite="regulier",
-    activite_avant="faible",
-    nb_nuits=1
-)
-
-display(df.head(10))
-
-
-#utilisé dans un autre fichier 
-#from simulateur_sommeil_datafit import simuler_sommeil
-
-#mesures, verite = simuler_sommeil(
-    #type_sommeil="agite",
-    #regularite="irregulier",
-    #activite_avant="moyenne",
-    #nb_nuits=30
-#)
-
-#display(mesures.head(10))
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "8a16e9ec-5e01-4514-b12a-c5aa36a15352",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "from datetime import datetime, timedelta\n",
+    "\n",
+    "\n",
+    "def simuler_sommeil(profil):\n",
+    "    rng = np.random.default_rng()\n",
+    "\n",
+    "    niveau = profil.get(\"niveau\")\n",
+    "\n",
+    "    parametres_niveaux = {\n",
+    "        \"novice\": {\n",
+    "            \"probabilites\": [0.20, 0.40, 0.30, 0.10],\n",
+    "            \"probabilite_regulier\": 0.40,\n",
+    "            \"coucher\": (22 * 60, 25 * 60),\n",
+    "            \"fc_base\": (62, 74)\n",
+    "        },\n",
+    "        \"intermediaire\": {\n",
+    "            \"probabilites\": [0.45, 0.35, 0.15, 0.05],\n",
+    "            \"probabilite_regulier\": 0.65,\n",
+    "            \"coucher\": (21 * 60 + 30, 24 * 60),\n",
+    "            \"fc_base\": (56, 68)\n",
+    "        },\n",
+    "        \"confirmer\": {\n",
+    "            \"probabilites\": [0.65, 0.25, 0.07, 0.03],\n",
+    "            \"probabilite_regulier\": 0.85,\n",
+    "            \"coucher\": (21 * 60, 23 * 60 + 30),\n",
+    "            \"fc_base\": (48, 62)\n",
+    "        }\n",
+    "    }\n",
+    "\n",
+    "    profils_sommeil = {\n",
+    "        \"bon\": {\n",
+    "            \"duree\": (450, 540),\n",
+    "            \"reveils\": (0, 2),\n",
+    "            \"agitation\": 0.7\n",
+    "        },\n",
+    "        \"normal\": {\n",
+    "            \"duree\": (390, 510),\n",
+    "            \"reveils\": (1, 4),\n",
+    "            \"agitation\": 1.0\n",
+    "        },\n",
+    "        \"agite\": {\n",
+    "            \"duree\": (360, 510),\n",
+    "            \"reveils\": (4, 9),\n",
+    "            \"agitation\": 2.0\n",
+    "        },\n",
+    "        \"court\": {\n",
+    "            \"duree\": (240, 360),\n",
+    "            \"reveils\": (1, 4),\n",
+    "            \"agitation\": 1.0\n",
+    "        }\n",
+    "    }\n",
+    "\n",
+    "    if niveau not in parametres_niveaux:\n",
+    "        raise ValueError(\n",
+    "            \"Le niveau doit être novice, intermediaire ou confirmer.\"\n",
+    "        )\n",
+    "\n",
+    "    configuration = parametres_niveaux[niveau]\n",
+    "\n",
+    "    type_sommeil = str(\n",
+    "        rng.choice(\n",
+    "            [\"bon\", \"normal\", \"agite\", \"court\"],\n",
+    "            p=configuration[\"probabilites\"]\n",
+    "        )\n",
+    "    )\n",
+    "\n",
+    "    regularite = (\n",
+    "        \"regulier\"\n",
+    "        if rng.random() < configuration[\"probabilite_regulier\"]\n",
+    "        else \"irregulier\"\n",
+    "    )\n",
+    "\n",
+    "    profil_sommeil = profils_sommeil[type_sommeil]\n",
+    "\n",
+    "    coucher_reference_min = int(\n",
+    "        rng.integers(\n",
+    "            configuration[\"coucher\"][0],\n",
+    "            configuration[\"coucher\"][1] + 1\n",
+    "        )\n",
+    "    )\n",
+    "\n",
+    "    variation = 25 if regularite == \"regulier\" else 120\n",
+    "\n",
+    "    coucher_min = coucher_reference_min + int(\n",
+    "        rng.integers(-variation, variation + 1)\n",
+    "    )\n",
+    "\n",
+    "    date_depart = datetime.now().date() - timedelta(days=1)\n",
+    "\n",
+    "    coucher = datetime.combine(\n",
+    "        date_depart,\n",
+    "        datetime.min.time()\n",
+    "    ) + timedelta(minutes=coucher_min)\n",
+    "\n",
+    "    duree_lit = int(\n",
+    "        rng.integers(\n",
+    "            profil_sommeil[\"duree\"][0],\n",
+    "            profil_sommeil[\"duree\"][1] + 1\n",
+    "        )\n",
+    "    )\n",
+    "\n",
+    "    etats = np.ones(duree_lit, dtype=int)\n",
+    "\n",
+    "    latence = int(rng.integers(5, 21))\n",
+    "\n",
+    "    if type_sommeil == \"agite\":\n",
+    "        latence += int(rng.integers(5, 21))\n",
+    "\n",
+    "    latence = min(latence, duree_lit // 4)\n",
+    "\n",
+    "    etats[:latence] = 0\n",
+    "\n",
+    "    position = latence\n",
+    "    cycle = 0\n",
+    "\n",
+    "    while position < duree_lit:\n",
+    "        profond = max(5, 30 - cycle * 5)\n",
+    "        rem = min(35, 12 + cycle * 5)\n",
+    "\n",
+    "        phases = [\n",
+    "            (1, int(rng.integers(15, 26))),\n",
+    "            (2, profond),\n",
+    "            (1, int(rng.integers(10, 21))),\n",
+    "            (3, rem)\n",
+    "        ]\n",
+    "\n",
+    "        for phase, longueur in phases:\n",
+    "            fin = min(position + longueur, duree_lit)\n",
+    "            etats[position:fin] = phase\n",
+    "            position = fin\n",
+    "\n",
+    "        cycle += 1\n",
+    "\n",
+    "    nb_reveils_tires = int(\n",
+    "        rng.integers(\n",
+    "            profil_sommeil[\"reveils\"][0],\n",
+    "            profil_sommeil[\"reveils\"][1] + 1\n",
+    "        )\n",
+    "    )\n",
+    "\n",
+    "    for _ in range(nb_reveils_tires):\n",
+    "        debut = int(\n",
+    "            rng.integers(\n",
+    "                latence + 1,\n",
+    "                duree_lit - 5\n",
+    "            )\n",
+    "        )\n",
+    "\n",
+    "        duree_reveil = int(rng.integers(2, 11))\n",
+    "\n",
+    "        fin = min(debut + duree_reveil, duree_lit)\n",
+    "\n",
+    "        etats[debut:fin] = 0\n",
+    "\n",
+    "    fc_base = float(\n",
+    "        rng.uniform(\n",
+    "            configuration[\"fc_base\"][0],\n",
+    "            configuration[\"fc_base\"][1]\n",
+    "        )\n",
+    "    )\n",
+    "\n",
+    "    fc_precedente = fc_base + 8\n",
+    "    mouvement_precedent = 0.3\n",
+    "\n",
+    "    parametres_etats = {\n",
+    "        0: (10, 0.65),\n",
+    "        1: (0, 0.18),\n",
+    "        2: (-8, 0.04),\n",
+    "        3: (3, 0.12)\n",
+    "    }\n",
+    "\n",
+    "    mesures = []\n",
+    "\n",
+    "    for minute_nuit, etat in enumerate(etats):\n",
+    "        decalage_fc, niveau_mouvement = parametres_etats[\n",
+    "            int(etat)\n",
+    "        ]\n",
+    "\n",
+    "        fc_cible = fc_base + decalage_fc\n",
+    "\n",
+    "        fc = (\n",
+    "            0.75 * fc_precedente\n",
+    "            + 0.25 * fc_cible\n",
+    "            + rng.normal(0, 1.8)\n",
+    "        )\n",
+    "\n",
+    "        fc = float(np.clip(fc, 42, 110))\n",
+    "\n",
+    "        fc_precedente = fc\n",
+    "\n",
+    "        mouvement_cible = (\n",
+    "            niveau_mouvement\n",
+    "            * profil_sommeil[\"agitation\"]\n",
+    "        )\n",
+    "\n",
+    "        mouvement = (\n",
+    "            0.4 * mouvement_precedent\n",
+    "            + 0.6 * mouvement_cible\n",
+    "            + rng.normal(0, 0.06)\n",
+    "        )\n",
+    "\n",
+    "        if rng.random() < 0.025:\n",
+    "            mouvement += rng.uniform(0.1, 0.4)\n",
+    "\n",
+    "        mouvement = float(np.clip(mouvement, 0, 1))\n",
+    "\n",
+    "        mouvement_precedent = mouvement\n",
+    "\n",
+    "        instant = coucher + timedelta(minutes=minute_nuit)\n",
+    "\n",
+    "        mesures.append({\n",
+    "            \"id_nuit\": 1,\n",
+    "            \"date_heure\": instant.isoformat(),\n",
+    "            \"fc_bpm\": round(fc, 1),\n",
+    "            \"mouvement\": round(mouvement, 3)\n",
+    "        })\n",
+    "\n",
+    "    duree_eveil_min = int(\n",
+    "        np.count_nonzero(etats == 0)\n",
+    "    )\n",
+    "\n",
+    "    duree_sommeil_min = duree_lit - duree_eveil_min\n",
+    "\n",
+    "    eveil_nocturne_min = duree_eveil_min - latence\n",
+    "\n",
+    "    reveils_reels = int(\n",
+    "        np.count_nonzero(\n",
+    "            (etats[1:] == 0)\n",
+    "            & (etats[:-1] != 0)\n",
+    "        )\n",
+    "    )\n",
+    "\n",
+    "    fc_mesures = [\n",
+    "        mesure[\"fc_bpm\"]\n",
+    "        for mesure in mesures\n",
+    "    ]\n",
+    "\n",
+    "    reveil = coucher + timedelta(minutes=duree_lit)\n",
+    "\n",
+    "    return {\n",
+    "        \"niveau\": niveau,\n",
+    "        \"source\": \"simulation\",\n",
+    "        \"frequence_mesure_s\": 60,\n",
+    "        \"parametres_generes\": {\n",
+    "            \"type_sommeil_simule\": type_sommeil,\n",
+    "            \"regularite_simulee\": regularite,\n",
+    "            \"fc_base_simulee\": round(fc_base, 1)\n",
+    "        },\n",
+    "        \"bilan\": {\n",
+    "            \"heure_coucher\": coucher.isoformat(),\n",
+    "            \"heure_reveil\": reveil.isoformat(),\n",
+    "            \"temps_au_lit_s\": duree_lit * 60,\n",
+    "            \"duree_sommeil_s\": duree_sommeil_min * 60,\n",
+    "            \"latence_endormissement_s\": latence * 60,\n",
+    "            \"duree_eveil_totale_s\": duree_eveil_min * 60,\n",
+    "            \"eveil_nocturne_s\": eveil_nocturne_min * 60,\n",
+    "            \"reveils_nb\": reveils_reels,\n",
+    "            \"efficacite_sommeil_pct\": round(\n",
+    "                100 * duree_sommeil_min / duree_lit,\n",
+    "                2\n",
+    "            ),\n",
+    "            \"fc_moyenne\": round(\n",
+    "                float(np.mean(fc_mesures)),\n",
+    "                1\n",
+    "            ),\n",
+    "            \"fc_min\": min(fc_mesures),\n",
+    "            \"fc_max\": max(fc_mesures),\n",
+    "            \"phases_simulees_s\": {\n",
+    "                \"eveil\": duree_eveil_min * 60,\n",
+    "                \"leger\": int(\n",
+    "                    np.count_nonzero(etats == 1)\n",
+    "                ) * 60,\n",
+    "                \"profond\": int(\n",
+    "                    np.count_nonzero(etats == 2)\n",
+    "                ) * 60,\n",
+    "                \"paradoxal\": int(\n",
+    "                    np.count_nonzero(etats == 3)\n",
+    "                ) * 60\n",
+    "            }\n",
+    "        },\n",
+    "        \"mesures\": mesures\n",
+    "    }"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "15ffe037-2556-43e1-8778-24368ecff7c2",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

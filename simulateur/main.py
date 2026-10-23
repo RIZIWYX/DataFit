@@ -25,7 +25,7 @@ class Profil(BaseModel):
 
 
 class Seance(BaseModel):
-    type: Literal["cardio", "natation", "muscu", "velo"]
+    type: Literal["cardio", "natation", "muscu", "velo", "sommeil"]
     nom: str = Field(min_length=1, max_length=255)
     date: date
 
@@ -39,7 +39,8 @@ SIMULATEURS = {
     "cardio": ("cardio", "simuler_cardio"),
     "natation": ("natation", "simuler_natation"),
     "muscu": ("muscu", "simuler_muscu"),
-    "velo": ("velo", "simuler_velo")
+    "velo": ("velo", "simuler_velo"),
+    "sommeil": ("sommeil", "simuler_sommeil")
 }
 
 
