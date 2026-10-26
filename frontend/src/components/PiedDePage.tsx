@@ -1,6 +1,5 @@
 import { Link } from 'react-router'
 import '../styles/pied-de-page.css'
-import { DEPOT_GITHUB } from '../data/projet.ts'
 import Logo from './Logo.tsx'
 
 // lue une fois, au chargement du site (et pas à chaque affichage)
@@ -47,9 +46,9 @@ function PiedDePage() {
             Projet de fin de licence réalisé par des étudiants de L3 Informatique et Sciences des
             données de l'Université de Rouen Normandie.
           </p>
-          <a href={DEPOT_GITHUB} target="_blank" rel="noopener noreferrer" className="pied-github">
-            Voir le code sur GitHub
-          </a>
+          <Link to="/contact" className="pied-github">
+            Nous contacter
+          </Link>
         </div>
       </div>
 

@@ -5,8 +5,11 @@ CREATE TABLE IF NOT EXISTS utilisateur (
     id            SERIAL PRIMARY KEY,
     email         VARCHAR(255) NOT NULL UNIQUE,
     mot_de_passe  VARCHAR(255) NOT NULL,
-    cree_le       TIMESTAMP NOT NULL DEFAULT now()
+    cree_le       TIMESTAMP NOT NULL DEFAULT now(),
+    cgu_acceptees_le TIMESTAMP  -- date d'acceptation des CGU, vide pour les comptes plus anciens
 );
+-- bases créées avant cette colonne (CREATE TABLE IF NOT EXISTS ne modifie pas une table existante)
+ALTER TABLE utilisateur ADD COLUMN IF NOT EXISTS cgu_acceptees_le TIMESTAMP;
 
 CREATE TABLE IF NOT EXISTS profil (
     utilisateur_id INT PRIMARY KEY REFERENCES utilisateur(id) ON DELETE CASCADE,

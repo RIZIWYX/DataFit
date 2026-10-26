@@ -88,7 +88,9 @@ export function rangMoyen(exercices: Exercice[], perfs: Perfs, profil: Profil): 
   return Math.round(rangs.reduce((a, b) => a + b, 0) / rangs.length)
 }
 
-// Résumé de chaque discipline : rang moyen et nombre d'exercices renseignés.
+// Résumé de chaque discipline : rang moyen, nombre d'exercices renseignés,
+// et les exercices classés (renseignés et non verrouillés), du meilleur au moins bon.
+// À rang égal, celui qui est le plus près du rang suivant passe devant.
 export function resumeDisciplines(perfs: Perfs, profil: Profil) {
   return DISCIPLINES.map((d) => ({
     id: d.id,
@@ -96,6 +98,16 @@ export function resumeDisciplines(perfs: Perfs, profil: Profil) {
     total: d.exercices.length,
     remplis: d.exercices.filter((ex) => (perfs[ex.id] ?? '') !== '').length,
     rang: rangMoyen(d.exercices, perfs, profil),
+    exercices: d.exercices
+      .filter((ex) => !estVerrouille(ex, perfs, profil))
+      .map((ex) => ({
+        id: ex.id,
+        nom: ex.nom,
+        rang: rang(ex, perfs, profil),
+        progression: progression(ex, perfs, profil),
+      }))
+      .filter((ex) => ex.rang >= 0)
+      .sort((a, b) => b.rang - a.rang || b.progression - a.progression),
   }))
 }
 

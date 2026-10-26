@@ -18,7 +18,6 @@ function useConnexion() {
 
   const [mdpVisible, setMdpVisible] = useState(false)
   const [erreur, setErreur] = useState('')
-  const [message, setMessage] = useState('')
   const navigate = useNavigate()
 
   const isInscription = mode === 'inscription'
@@ -26,11 +25,9 @@ function useConnexion() {
   function basculerMode() {
     setMode(isInscription ? 'connexion' : 'inscription')
     setErreur('')
-    setMessage('')
   }async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
   event.preventDefault()
   setErreur('')
-  setMessage('')
 
   const formData = new FormData(event.currentTarget)
 
@@ -52,16 +49,20 @@ function useConnexion() {
       body: JSON.stringify({
         email: formData.get('email'),
         password: formData.get('mdp'),
+        // à l'inscription seulement : la case des conditions d'utilisation (le backend la vérifie aussi)
+        ...(isInscription && { cguAcceptees: formData.get('cgu') === 'on' }),
       }),
     })
 
-    const data = await response.json()
+    const data = await response.json().catch(() => ({}))
 
     if (!response.ok) {
       const parDefaut = isInscription
         ? "Impossible de créer le compte."
         : "Impossible de se connecter."
-      setErreur(data.error || data.message || parDefaut)
+      // nos contrôleurs renvoient { error: "message en français" } ; les erreurs produites par
+      // Spring lui-même (validation…) ont un champ path et un texte technique
+      setErreur(data.error && !data.path ? data.error : parDefaut)
       return
     }
 
@@ -83,12 +84,6 @@ function useConnexion() {
     )
   }
 }
-  function motDePasseOublie() {
-    setMessage(
-      'La réinitialisation du mot de passe n’est pas encore disponible.'
-    )
-  }
-
   return {
     mode,
     isInscription,
@@ -96,9 +91,7 @@ function useConnexion() {
     mdpVisible,
     basculerMdp: () => setMdpVisible(!mdpVisible),
     erreur,
-    message,
     handleSubmit,
-    motDePasseOublie,
   }
 }
 

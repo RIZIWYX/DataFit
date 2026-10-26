@@ -9,6 +9,7 @@ import ListeSeances from '../components/ListeSeances.tsx'
 import Panneau from '../components/Panneau.tsx'
 import TitrePage from '../components/TitrePage.tsx'
 import { ICONES } from '../data/icones.ts'
+import { NOMS_RANGS } from '../data/paliers.ts'
 import { photoDesExercices } from '../data/photos.ts'
 import { SPORTS, couleurSport } from '../data/sports.ts'
 import useDashboard from '../hooks/useDashboard.ts'
@@ -22,6 +23,7 @@ import {
   resumeSeance,
 } from '../lib/format.ts'
 import { couleurSeance, depuisIso } from '../lib/programmation.ts'
+import type { ResumeDiscipline } from '../lib/rangs.ts'
 
 // L'accueil : une synthèse, pas un inventaire. Ce que j'ai fait (la semaine, la dernière séance)
 // et ce qui m'attend (la prochaine séance, mon objectif) ; le détail est dans les pages dédiées.
@@ -41,6 +43,12 @@ function Dashboard() {
   const debutProchaine = prochaine && depuisIso(prochaine.debut)
   const quand = (date: Date) =>
     `${formatJourRelatif(date, aujourdHui)} · ${formatHeure(date)}`
+
+  // les sports classés vont du meilleur rang au moins bon : le premier et le dernier
+  // (le « pire » seulement s'il y a au moins deux sports, sinon ce serait le même)
+  const classes = d.rangs?.filter((discipline) => discipline.rang >= 0) ?? []
+  const meilleure = classes.at(0)
+  const pire = classes.length > 1 ? classes.at(-1) : undefined
 
   return (
     <div className="ecran accueil">
@@ -152,26 +160,9 @@ function Dashboard() {
         )}
       </div>
 
-      {/* Objectif, rangs et montre */}
+      {/* Le sport où j'ai le meilleur rang, celui où j'ai le moins bon, et la montre */}
       <div className="accueil-etat">
-        <Panneau titre="Objectif" action={<LienFleche to="/profil">Modifier</LienFleche>}>
-          {d.objectif ? (
-            <p className="accueil-objectif-texte">{d.objectif}</p>
-          ) : (
-            <EtatVide
-              icone={ICONES.cible}
-              titre="Aucun objectif choisi"
-              action={<LienFleche to="/profil">Choisir mon objectif</LienFleche>}
-            >
-              Votre objectif principal se choisit dans le profil.
-            </EtatVide>
-          )}
-        </Panneau>
-
-        <Panneau
-          titre="Performance"
-          action={d.rangs?.length ? <LienFleche to="/performance">Tous les rangs</LienFleche> : undefined}
-        >
+        <Panneau titre="Meilleure performance">
           {d.rangs === null ? (
             <EtatVide
               icone={ICONES.profil}
@@ -180,7 +171,9 @@ function Dashboard() {
             >
               Votre sexe et votre poids servent à calculer vos rangs, de E à Z.
             </EtatVide>
-          ) : d.rangs.length === 0 ? (
+          ) : meilleure ? (
+            <RangDuSport discipline={meilleure} exercice={meilleure.exercices.at(0)} libelle="Meilleur exercice" />
+          ) : (
             <EtatVide
               icone={ICONES.trophee}
               titre="Aucun record enregistré"
@@ -188,23 +181,18 @@ function Dashboard() {
             >
               Entrez vos meilleures performances : chaque exercice vous donnera un rang.
             </EtatVide>
+          )}
+        </Panneau>
+
+        <Panneau titre="Pire performance">
+          {pire ? (
+            <RangDuSport discipline={pire} exercice={pire.exercices.at(-1)} libelle="Exercice le plus faible" />
           ) : (
-            <ul className="liste-lignes liste-rangs">
-              {d.rangs.slice(0, 4).map((discipline) => (
-                <li key={discipline.id}>
-                  <Link to={`/performance?discipline=${discipline.id}`}>
-                    <span>
-                      <strong>{discipline.nom}</strong>
-                      <small>
-                        {discipline.remplis} / {discipline.total} exercice
-                        {discipline.total > 1 ? 's' : ''}
-                      </small>
-                    </span>
-                    <BadgeRang rang={discipline.rang} petit />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <EtatVide icone={ICONES.tendance} titre="Rien à comparer">
+              {meilleure
+                ? 'Saisissez un record dans un autre sport : celui où votre rang est le plus bas apparaîtra ici.'
+                : 'Dès que deux sports auront un rang, celui où il est le plus bas apparaîtra ici.'}
+            </EtatVide>
           )}
         </Panneau>
 
@@ -252,6 +240,38 @@ function Dashboard() {
         </Panneau>
       )}
     </div>
+  )
+}
+
+// un sport et son rang (la lettre en grand, le nom du rang), puis, en dessous, un de ses exercices
+function RangDuSport({
+  discipline,
+  exercice,
+  libelle,
+}: {
+  discipline: ResumeDiscipline
+  exercice?: ResumeDiscipline['exercices'][number]
+  libelle: string // ce que l'exercice représente : « Meilleur exercice »…
+}) {
+  return (
+    <Link to={`/performance?discipline=${discipline.id}`} className="accueil-rang">
+      <span className="accueil-rang-sport">
+        <BadgeRang rang={discipline.rang} />
+        <span>
+          <strong>{discipline.nom}</strong>
+          <span className="accueil-rang-nom">{NOMS_RANGS[discipline.rang]}</span>
+        </span>
+      </span>
+      {exercice && (
+        <span className="accueil-rang-exercice">
+          <span>
+            <small>{libelle}</small>
+            <span>{exercice.nom}</span>
+          </span>
+          <BadgeRang rang={exercice.rang} petit />
+        </span>
+      )}
+    </Link>
   )
 }
 

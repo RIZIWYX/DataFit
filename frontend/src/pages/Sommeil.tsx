@@ -95,7 +95,6 @@ function Sommeil() {
             couleur="var(--turquoise)"
             format={(v) => `${Math.round(v)} bpm`}
             formatAxe={(v) => String(Math.round(v))}
-            entetes={['Heure', 'Fréquence']}
           />
           <p className="sommeil-note">
             Moyenne par tranche de 5 minutes. La plus basse de la nuit : <strong>{nuit.fcMin} bpm</strong>.
@@ -110,7 +109,6 @@ function Sommeil() {
             format={(v) => `${Math.round(v * 100)} %`}
             formatAxe={(v) => `${Math.round(v * 100)} %`}
             depuisZero
-            entetes={['Heure', 'Mouvement']}
           />
           <p className="sommeil-note">
             Mouvement mesuré par la montre (0 % : immobile). Au-dessus de {Math.round(SEUIL_AGITATION * 100)} %

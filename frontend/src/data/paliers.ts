@@ -30,6 +30,8 @@ export interface Discipline {
   exercices: Exercice[]
 }
 
+// Les lettres servent d'identifiants (index 0 à 7 dans les calculs) ; les noms ne sont qu'affichés,
+// et ce tableau est leur seule source : page de garde, performance, progression, cartes d'exercice.
 export const RANGS = ['E', 'D', 'C', 'B', 'A', 'S', 'SS', 'Z'] as const
 export const NOMS_RANGS = [
   'Éclaté au sol',

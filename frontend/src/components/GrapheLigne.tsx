@@ -16,7 +16,7 @@ type Props = {
   inverse?: boolean // petites valeurs en haut (pour une allure : plus bas = plus rapide)
   depuisZero?: boolean // l'axe vertical part de 0
   marqueurs?: boolean // un point visible sur chaque valeur (pour les séries courtes)
-  entetes: [string, string] // titres des deux colonnes du tableau
+  entetes?: [string, string] // titres des deux colonnes du tableau ; sans eux, pas de tableau
 }
 
 // une courbe sur un fond légèrement teinté, avec une ligne de lecture au survol
@@ -128,25 +128,27 @@ function GrapheLigne({
       </div>
 
       {/* les mêmes chiffres en tableau, lisibles sans survoler le graphique */}
-      <details className="graphe-chiffres">
-        <summary>Voir les chiffres</summary>
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">{entetes[0]}</th>
-              <th scope="col">{entetes[1]}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {points.map((point) => (
-              <tr key={point.libelle}>
-                <th scope="row">{point.libelle}</th>
-                <td>{format(point.valeur)}</td>
+      {entetes && (
+        <details className="graphe-chiffres">
+          <summary>Voir les chiffres</summary>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">{entetes[0]}</th>
+                <th scope="col">{entetes[1]}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </details>
+            </thead>
+            <tbody>
+              {points.map((point) => (
+                <tr key={point.libelle}>
+                  <th scope="row">{point.libelle}</th>
+                  <td>{format(point.valeur)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </details>
+      )}
     </figure>
   )
 }

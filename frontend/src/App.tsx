@@ -4,12 +4,14 @@ import AppLayout from './components/AppLayout.tsx'
 import Cgu from './pages/Cgu.tsx'
 import Chatbot from './pages/Chatbot.tsx'
 import Connexion from './pages/Connexion.tsx'
+import Contact from './pages/Contact.tsx'
 import CreationProfil from './pages/CreationProfil.tsx'
 import Dashboard from './pages/Dashboard.tsx'
 import DonneesPersonnelles from './pages/DonneesPersonnelles.tsx'
 import Historique from './pages/Historique.tsx'
 import Landing from './pages/Landing.tsx'
 import Montre from './pages/Montre.tsx'
+import MotDePasseOublie from './pages/MotDePasseOublie.tsx'
 import Nutrition from './pages/Nutrition.tsx'
 import PageIntrouvable from './pages/PageIntrouvable.tsx'
 import Premium from './pages/Premium.tsx'
@@ -34,6 +36,8 @@ function App() {
         {/* pages plein écran, sans navigation */}
         <Route path="/" element={<Landing />} />
         <Route path="/connexion" element={<Connexion />} />
+        <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/creation-profil" element={<CreationProfil />} />
         <Route path="/donnees-personnelles" element={<DonneesPersonnelles />} />
         <Route path="/cgu" element={<Cgu />} />

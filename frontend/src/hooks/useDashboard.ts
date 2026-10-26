@@ -6,7 +6,7 @@ import { chargerPlanning, seancesAVenir } from '../lib/programmation.ts'
 import { lireResumeRangs } from './useSport.ts'
 
 // logique de l'accueil : les 7 derniers jours, la dernière séance faite et la prochaine prévue,
-// l'objectif principal, les rangs et les séances précédentes
+// les rangs par sport et les séances précédentes
 function useDashboard() {
   const [profil] = useState(lireProfil)
   const [rangs] = useState(lireResumeRangs)
@@ -32,8 +32,6 @@ function useDashboard() {
     seancesPrecedentes: seances.slice(1, 6),
     programmes: planning.programmes,
     prochaines: seancesAVenir(planning, aujourdHui).slice(0, 3),
-    // l'objectif principal du profil
-    objectif: profil?.objectif ?? '',
     // null : profil incomplet ; sinon les disciplines où au moins un record est saisi, les meilleures d'abord
     rangs: rangs && rangs.filter((d) => d.remplis > 0).sort((a, b) => b.rang - a.rang || b.remplis - a.remplis),
   }
