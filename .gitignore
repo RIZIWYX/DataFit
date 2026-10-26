@@ -25,4 +25,10 @@ dist-ssr
 
 # Secrets
 .env
+<<<<<<< Updated upstream
 
+=======
+!.vscode/settings.json
+!.vscode/settings.json
+.venv/
+>>>>>>> Stashed changes
