@@ -20,14 +20,22 @@ public class Utilisateur {
     @Column(name = "cree_le", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // quand les conditions d'utilisation ont été acceptées (vide pour les comptes plus anciens)
+    @Column(name = "cgu_acceptees_le")
+    private LocalDateTime cguAccepteesLe;
+
     protected Utilisateur() {
         // Constructeur par défaut requis par JPA
     }
-    
+
     public Utilisateur(String email, String passwordHash) {
         this.email = email;
         this.passwordHash = passwordHash;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void accepterCgu() {
+        this.cguAccepteesLe = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -44,5 +52,9 @@ public class Utilisateur {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public LocalDateTime getCguAccepteesLe() {
+        return cguAccepteesLe;
     }
 }

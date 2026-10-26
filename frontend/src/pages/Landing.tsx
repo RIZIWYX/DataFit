@@ -62,6 +62,12 @@ const FONCTIONNALITES = [
     titre: 'Sommeil',
     texte: 'Horaires, durée, régularité et fréquence cardiaque de vos nuits, mesurés par la montre.',
   },
+  {
+    icone: ICONES.nutrition,
+    titre: 'Nutrition',
+    texte:
+      'Vos besoins en calories, protéines, glucides, lipides et eau, calculés selon votre objectif, face à ce que vous mangez et buvez.',
+  },
 ]
 
 const ENGAGEMENTS = [
@@ -102,20 +108,15 @@ function Landing() {
       <main>
         <section className="vitrine-hero">
           <div className="hero-texte">
-            <p className="surtitre">DataFit · Votre activité en chiffres</p>
+            {/* le logo complet, au-dessus du titre (le nom est déjà annoncé par celui de l'en-tête) */}
+            <img className="hero-logo" src="/logo-complet.svg" alt="" width="1455" height="415" />
             <h1 className="hero-titre affiche">
-              Chaque sport.
+              La science
               <br />
-              Vos progrès<span className="point">.</span>
+              de votre
+              <br />
+              progression<span className="point">.</span>
             </h1>
-            <p className="hero-intro">Suivez vos séances et visualisez vos progrès.</p>
-            <div className="hero-actions">
-              <Link to="/connexion?mode=inscription" className="bouton">
-                Découvrir mon espace
-                <Icone trace={ICONES.fleche} />
-              </Link>
-              <a href="#fonctionnement" className="bouton fantome">Explorer DataFit</a>
-            </div>
             {/* des chiffres tirés des barèmes de l'application, pas des statistiques inventées */}
             <ul className="hero-faits">
               <li><strong>{DISCIPLINES.length}</strong> disciplines</li>
@@ -144,16 +145,15 @@ function Landing() {
         <section id="fonctionnalites" className="vitrine-section vitrine-fonctions">
           <div className="fonctions-intro">
             <p className="surtitre">Fonctionnalités</p>
-            <h2 className="titre-section affiche">
-              Tout ce qui compte<span className="point">.</span>
-              <br />
-              Rien de plus.
+            {/* une phrase par ligne */}
+            <h2 className="titre-section affiche fonctions-titre">
+              <span>Analysez vos séances.</span>
+              <span>Mesurez vos progrès.</span>
+              <span>
+                Repoussez vos limites<span className="point">.</span>
+              </span>
             </h2>
-            <p>
-              Vos séances, vos records et votre progression réunis dans un seul espace, pensé pour se
-              lire en quelques secondes.
-            </p>
-            <Link to="/connexion?mode=inscription" className="bouton secondaire">Créer mon compte</Link>
+            <Link to="/connexion?mode=inscription" className="bouton">Créer mon compte</Link>
           </div>
           <ul className="fonctions-liste">
             {FONCTIONNALITES.map((f) => (
@@ -198,12 +198,6 @@ function Landing() {
                 </li>
               ))}
             </ol>
-
-            <ul className="vitrine-disciplines" aria-label="Disciplines classées">
-              {DISCIPLINES.map((d) => (
-                <li key={d.id}>{d.nom}</li>
-              ))}
-            </ul>
           </div>
         </section>
 
@@ -231,9 +225,10 @@ function Landing() {
 
         <section className="vitrine-appel">
           <h2 className="affiche">
-            Votre prochaine séance
-            <br />
-            compte<span className="point">.</span>
+            <span>À vous de jouer maintenant&nbsp;!</span>
+            <span>
+              DataFit mesure la suite<span className="point">.</span>
+            </span>
           </h2>
           <Link to="/connexion?mode=inscription" className="bouton">
             Créer mon compte

@@ -34,6 +34,8 @@ public class AuthService {
 
         Utilisateur utilisateur =
             new Utilisateur(email, passwordHash);
+        // RegisterRequest refuse déjà une inscription sans la case cochée : on note la date
+        utilisateur.accepterCgu();
 
         return utilisateurRepository.save(utilisateur);
     }

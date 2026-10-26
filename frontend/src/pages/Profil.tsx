@@ -28,16 +28,23 @@ interface DefinitionChamp {
   autoComplete?: string
 }
 
-// les informations du profil, en trois groupes
-const GROUPES_CHAMPS: { titre: string; champs: DefinitionChamp[] }[] = [
-  {
-    titre: 'Identité',
-    champs: [
-      { cle: 'prenom', nom: 'Prénom', type: 'texte', autoComplete: 'given-name' },
-      { cle: 'nom', nom: 'Nom', type: 'texte', autoComplete: 'family-name' },
-      { cle: 'email', nom: 'Adresse e-mail', type: 'email', autoComplete: 'email' },
-    ],
-  },
+interface GroupeChamps {
+  titre: string
+  champs: DefinitionChamp[]
+}
+
+// panneau de gauche : l'identité (le mot de passe suit, à part)
+const IDENTITE: GroupeChamps = {
+  titre: 'Identité',
+  champs: [
+    { cle: 'prenom', nom: 'Prénom', type: 'texte', autoComplete: 'given-name' },
+    { cle: 'nom', nom: 'Nom', type: 'texte', autoComplete: 'family-name' },
+    { cle: 'email', nom: 'Adresse e-mail', type: 'email', autoComplete: 'email' },
+  ],
+}
+
+// panneau de droite : le profil sportif, en deux groupes
+const PROFIL_SPORTIF: GroupeChamps[] = [
   {
     titre: 'Corps',
     champs: [
@@ -133,16 +140,77 @@ function Profil() {
     enregistrer(lireChamp(champ, new FormData(event.currentTarget)), `${champ.nom} enregistré.`)
   }
 
+  // un groupe d'informations : tout est en lecture, un crayon par information
+  // (le premier remplissage se fait sur la page de création du profil)
+  const afficherGroupe = (groupe: GroupeChamps) => (
+    <div key={groupe.titre} className="profil-groupe">
+      <h3>{groupe.titre}</h3>
+      <dl>
+        {groupe.champs.map((champ) => {
+          const valeur = valeurAffichee(champ, profil)
+          return enEdition === champ.cle ? (
+            <form
+              key={champ.cle}
+              className="profil-ligne en-edition"
+              onSubmit={(e) => enregistrerChamp(champ, e)}
+              onKeyDown={(e) => e.key === 'Escape' && annuler()}
+            >
+              {champ.type === 'choix' || champ.type === 'multi' ? (
+                <span className="champ-nom">{champ.nom}</span>
+              ) : (
+                <label htmlFor={`profil-${champ.cle}`} className="champ-nom">
+                  {champ.nom}
+                  {champ.unite && ` (${champ.unite})`}
+                </label>
+              )}
+              <Saisie champ={champ} profil={profil} autoFocus />
+              {champ.aide && <p className="champ-aide">{champ.aide}</p>}
+              <div className="profil-ligne-actions">
+                <button type="submit" className="bouton petit">Enregistrer</button>
+                <button type="button" className="bouton secondaire petit" onClick={annuler}>
+                  Annuler
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div key={champ.cle} className="profil-ligne">
+              <dt>{champ.nom}</dt>
+              <dd className={valeur ? undefined : 'vide'}>{valeur || 'Non renseigné'}</dd>
+              <button type="button" className="bouton-icone discret" onClick={() => editer(champ.cle)}>
+                <Icone trace={ICONES.crayon} />
+                <span className="visuellement-cache">Modifier : {champ.nom}</span>
+              </button>
+            </div>
+          )
+        })}
+      </dl>
+    </div>
+  )
+
   return (
     <div className="ecran profil">
-      <TitrePage surtitre="Compte" titre="Profil">
+      <TitrePage
+        surtitre="Compte"
+        titre="Profil"
+        actions={
+          // à côté du titre : visible quel que soit le panneau modifié, sans décaler les panneaux
+          <p className="message-ok profil-message" role="status">
+            {message && (
+              <>
+                <Icone trace={ICONES.valide} />
+                {message}
+              </>
+            )}
+          </p>
+        }
+      >
         Vos informations et votre objectif principal.
       </TitrePage>
 
+      {/* deux panneaux de même largeur : la personne à gauche, le sportif à droite */}
       <div className="profil-zones">
-        {/* ---------- informations personnelles ---------- */}
-        <section className="profil-infos" aria-labelledby="profil-infos-titre">
-          <header className="profil-identite">
+        <section className="profil-panneau" aria-labelledby="profil-infos-titre">
+          <header className="profil-tete">
             <span className="profil-avatar" aria-hidden="true">
               {profil ? initiales(profil) || <Icone trace={ICONES.profil} /> : <Icone trace={ICONES.profil} />}
             </span>
@@ -152,63 +220,9 @@ function Profil() {
             </div>
           </header>
 
-          <p className="message-ok profil-message" role="status">
-            {message && (
-              <>
-                <Icone trace={ICONES.valide} />
-                {message}
-              </>
-            )}
-          </p>
+          {afficherGroupe(IDENTITE)}
 
-          {/* tout est en lecture, un crayon par information
-              (le premier remplissage se fait sur la page de création du profil) */}
-          {GROUPES_CHAMPS.map((groupe) => (
-            <div key={groupe.titre} className="profil-groupe">
-              <h3>{groupe.titre}</h3>
-              <dl>
-                {groupe.champs.map((champ) => {
-                  const valeur = valeurAffichee(champ, profil)
-                  return enEdition === champ.cle ? (
-                    <form
-                      key={champ.cle}
-                      className="profil-ligne en-edition"
-                      onSubmit={(e) => enregistrerChamp(champ, e)}
-                      onKeyDown={(e) => e.key === 'Escape' && annuler()}
-                    >
-                      {champ.type === 'choix' || champ.type === 'multi' ? (
-                        <span className="champ-nom">{champ.nom}</span>
-                      ) : (
-                        <label htmlFor={`profil-${champ.cle}`} className="champ-nom">
-                          {champ.nom}
-                          {champ.unite && ` (${champ.unite})`}
-                        </label>
-                      )}
-                      <Saisie champ={champ} profil={profil} autoFocus />
-                      {champ.aide && <p className="champ-aide">{champ.aide}</p>}
-                      <div className="profil-ligne-actions">
-                        <button type="submit" className="bouton petit">Enregistrer</button>
-                        <button type="button" className="bouton secondaire petit" onClick={annuler}>
-                          Annuler
-                        </button>
-                      </div>
-                    </form>
-                  ) : (
-                    <div key={champ.cle} className="profil-ligne">
-                      <dt>{champ.nom}</dt>
-                      <dd className={valeur ? undefined : 'vide'}>{valeur || 'Non renseigné'}</dd>
-                      <button type="button" className="bouton-icone discret" onClick={() => editer(champ.cle)}>
-                        <Icone trace={ICONES.crayon} />
-                        <span className="visuellement-cache">Modifier : {champ.nom}</span>
-                      </button>
-                    </div>
-                  )
-                })}
-              </dl>
-            </div>
-          ))}
-
-          <div className="profil-groupe">
+          <div className="profil-groupe profil-securite">
             <h3>Sécurité</h3>
             <dl>
               <div className="profil-ligne">
@@ -218,6 +232,20 @@ function Profil() {
               </div>
             </dl>
           </div>
+        </section>
+
+        <section className="profil-panneau" aria-labelledby="profil-sport-titre">
+          <header className="profil-tete">
+            <span className="profil-avatar discret" aria-hidden="true">
+              <Icone trace={ICONES.trophee} />
+            </span>
+            <div>
+              <h2 id="profil-sport-titre">Profil sportif</h2>
+              <p>Ce qui sert à calculer vos rangs et à personnaliser DataFit.</p>
+            </div>
+          </header>
+
+          {PROFIL_SPORTIF.map(afficherGroupe)}
         </section>
       </div>
     </div>

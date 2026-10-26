@@ -12,17 +12,6 @@
   border-radius: var(--rayon-l);
   background: var(--noir-1);
 }
-/* le trait de couleur du sport ou du programme, contre le bord gauche */
-.carte-seance::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-  width: 3px;
-  background: var(--couleur);
-}
 /* le voile : noir à gauche sous le texte, presque transparent à droite sur le sportif */
 .carte-seance-voile {
   position: absolute;

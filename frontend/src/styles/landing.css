@@ -84,41 +84,29 @@
   margin: 0 auto;
   padding: clamp(2.5rem, 7vh, 5rem) var(--marge);
 }
+/* le bloc du titre, un peu rentré vers le centre de sa colonne */
 .hero-texte {
-  container-type: inline-size; /* le titre se règle sur la largeur de cette colonne */
+  container-type: inline-size; /* le titre se règle sur la largeur de ce bloc */
+  justify-self: center;
+  width: min(100%, 40rem);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1.6rem;
 }
-.hero-texte .surtitre {
-  letter-spacing: 0.28em;
-  color: var(--gris);
+/* le logo complet (public/logo-complet.svg) au-dessus du titre, aligné sur lui ;
+   sa largeur suit celle du bloc, comme la taille du titre */
+.hero-logo {
+  display: block;
+  width: clamp(11rem, 46cqi, 19rem);
+  height: auto;
+  margin-bottom: 0.4rem;
 }
 .hero-titre {
   margin: 0;
-  /* taille relative à la colonne (cqi) : « Chaque sport. » tient sur une ligne,
-     du téléphone au grand écran */
-  font-size: clamp(2.25rem, 10.8cqi, 6.25rem);
-}
-.hero-intro {
-  max-width: 34ch;
-  margin: 0;
-  font-size: clamp(1.05rem, 0.95rem + 0.45vw, 1.35rem);
-  line-height: 1.45;
-  color: var(--gris);
-}
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1.25rem 2.25rem;
-  margin-top: 0.4rem;
-}
-.hero-actions .bouton:not(.fantome) {
-  min-height: 54px;
-  padding: 0 1.6rem;
-  font-size: 1rem;
+  /* taille relative au bloc (cqi) : « progression. » (7,5 fois la taille du texte)
+     tient sur une ligne, du téléphone au grand écran */
+  font-size: clamp(2.25rem, 12.5cqi, 6.25rem);
 }
 .hero-faits {
   display: flex;
@@ -194,31 +182,25 @@
   color: var(--gris);
 }
 
-/* fonctionnalités : l'intro reste en place pendant que la liste défile */
+/* fonctionnalités : le titre sur toute la largeur (une phrase par ligne), la liste en deux colonnes dessous */
 .vitrine-fonctions {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  align-items: start;
-  gap: 3rem 5rem;
   border-top: 1px solid var(--trait);
 }
 .fonctions-intro {
-  position: sticky;
-  top: 116px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1.4rem;
 }
-.fonctions-intro p:not(.surtitre) {
-  max-width: 40ch;
-  margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.6;
-  color: var(--gris);
+.fonctions-titre > span {
+  display: block;
+  text-wrap: balance; /* si une phrase doit se couper (téléphone), en deux moitiés égales */
 }
 .fonctions-liste {
-  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 4rem;
+  margin: 4rem 0 0;
   padding: 0;
   list-style: none;
   border-top: 1px solid var(--trait);
@@ -325,20 +307,6 @@
   border-color: var(--turquoise);
   background: var(--turquoise);
 }
-.vitrine-disciplines {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  margin: 3.5rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-.vitrine-disciplines li {
-  padding: 0.55rem 1.1rem;
-  border: 1px solid var(--trait-fort);
-  border-radius: 999px;
-  font-size: 0.9rem;
-}
 
 /* données personnelles */
 .vitrine-donnees {
@@ -386,7 +354,12 @@
 }
 .vitrine-appel h2 {
   margin: 0;
-  font-size: clamp(2.4rem, 1rem + 4.8vw, 5.2rem);
+  font-size: clamp(2.2rem, 0.8rem + 4.2vw, 4.6rem);
+}
+/* deux phrases, chacune sur sa ligne (équilibrée si elle doit se couper) */
+.vitrine-appel h2 > span {
+  display: block;
+  text-wrap: balance;
 }
 .vitrine-appel .bouton {
   min-height: 54px;
@@ -410,13 +383,13 @@
   .orbites {
     max-width: 520px;
   }
-  .vitrine-fonctions,
+  .fonctions-liste,
   .rangs-tete,
   .vitrine-donnees {
     grid-template-columns: minmax(0, 1fr);
   }
-  .fonctions-intro {
-    position: static;
+  .fonctions-liste {
+    margin-top: 3rem;
   }
 }
 

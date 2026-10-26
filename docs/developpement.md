@@ -29,15 +29,17 @@ C'est tout : au premier lancement, `./lancer.sh` crée `.env` à partir de `.env
 
 ### Utiliser Docker sans sudo
 
-Si Docker demande les droits administrateur, `./lancer.sh` passe par `sudo` et te demande ton mot de passe Ubuntu. Pour ne plus avoir à le taper, ajoute-toi une fois pour toutes au groupe `docker` :
+`./lancer.sh` n'utilise jamais `sudo docker`. Si tu n'es pas encore dans le groupe `docker`, il t'y ajoute **au premier lancement** : ton mot de passe Ubuntu est demandé cette fois-là seulement, puis le script continue sans redémarrage. Les lancements suivants ne demandent plus rien.
+
+Pour le faire à la main (même effet) :
 
 ```bash
 sudo groupadd -f docker
 sudo usermod -aG docker $USER
-sudo snap restart docker   # si Docker est installé avec snap ; sinon : sudo service docker restart
+sudo snap disable docker && sudo snap enable docker   # si Docker est installé avec snap ; sinon : sudo service docker restart
 ```
 
-Puis ferme et rouvre ton terminal (sous WSL : `wsl --shutdown` depuis Windows, puis rouvre Ubuntu). Être dans ce groupe revient à avoir les droits administrateur sur Docker : c'est l'usage normal sur une machine de développement.
+Avec le Docker de snap, `snap restart` ne suffit pas : le snap garde une copie figée de `/etc/group` et ne voit le nouveau groupe qu'après `disable` / `enable` (ou un redémarrage de WSL : `wsl --shutdown` depuis Windows). Ensuite, ouvre un nouveau terminal pour que `docker` marche aussi en dehors du script. Ubuntu 26.04 n'a plus les commandes `sg` ni `newgrp`. Être dans ce groupe revient à avoir les droits administrateur sur Docker : c'est l'usage normal sur une machine de développement.
 
 ## Lancer tout le projet (Docker)
 
@@ -53,8 +55,8 @@ Puis ferme et rouvre ton terminal (sous WSL : `wsl --shutdown` depuis Windows, p
 
 Ce que fait le script, dans l'ordre :
 
-1. crée `.env` depuis `.env.example` s'il n'existe pas ;
-2. passe par `sudo` si Docker l'exige ;
+1. t'ajoute au groupe `docker` si ce n'est pas encore fait (une seule fois), pour utiliser Docker sans `sudo` ;
+2. crée `.env` depuis `.env.example` s'il n'existe pas ;
 3. arrête un éventuel ancien conteneur qui occuperait déjà le port 5433 (ses données sont gardées) ;
 4. démarre la base, lui redonne le mot de passe de `.env` et crée les tables des fichiers `.sql` de `db/` qui manquent, dans l'ordre de leur numéro (rien n'est effacé) ;
 5. reconstruit les images si le code a changé et lance le back et le site (`docker compose up --build`).
