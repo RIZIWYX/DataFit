@@ -25,10 +25,9 @@ dist-ssr
 
 # Secrets
 .env
-<<<<<<< Updated upstream
 
-=======
+# Réglages VS Code partagés par l'équipe
 !.vscode/settings.json
-!.vscode/settings.json
+
+# Environnements virtuels Python
 .venv/
->>>>>>> Stashed changes
