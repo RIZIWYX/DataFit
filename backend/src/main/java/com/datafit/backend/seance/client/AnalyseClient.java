@@ -12,20 +12,20 @@ import org.springframework.web.client.RestClient;
 @Component
 public class AnalyseClient {
 
-private final RestClient http;
+  private final RestClient http;
 
-public AnalyseClient(@Value("${analyse.url:http://localhost:8001}") String url) {
-  this.http = RestClient.create(url);
-}
+  public AnalyseClient(@Value("${analyse.url:http://localhost:8001}") String url) {
+    this.http = RestClient.create(url);
+  }
 
-// Envoie le resultat brut du simulateur, recupere les metriques typees.
-// <T> = le type de resultat attendu (ResultatCardio, ResultatMuscu, ...),
-// decide par le service appelant.
-public <T> T analyser(Object donneesSimulation, Class<T> typeResultat) {
-  return http.post()
-    .uri("/analyser")
-    .body(donneesSimulation)
-    .retrieve()
-    .body(typeResultat);
-}
+  // Envoie le resultat brut du simulateur, recupere les metriques typees.
+  // <T> = le type de resultat attendu (ResultatCardio, ResultatMuscu, ...),
+  // decide par le service appelant.
+  public <T> T analyser(Object donneesSimulation, Class<T> typeResultat) {
+    return http.post()
+        .uri("/analyser")
+        .body(donneesSimulation)
+        .retrieve()
+        .body(typeResultat);
+  }
 }

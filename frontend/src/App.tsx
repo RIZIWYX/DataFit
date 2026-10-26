@@ -9,6 +9,7 @@ import CreationProfil from './pages/CreationProfil.tsx'
 import Dashboard from './pages/Dashboard.tsx'
 import DonneesPersonnelles from './pages/DonneesPersonnelles.tsx'
 import Historique from './pages/Historique.tsx'
+import Installer from './pages/Installer.tsx'
 import Landing from './pages/Landing.tsx'
 import Montre from './pages/Montre.tsx'
 import MotDePasseOublie from './pages/MotDePasseOublie.tsx'
@@ -21,6 +22,7 @@ import Progression from './pages/Progression.tsx'
 import Seance from './pages/Seance.tsx'
 import Sommeil from './pages/Sommeil.tsx'
 import Sport from './pages/Sport.tsx'
+import VerifierEmail from './pages/VerifierEmail.tsx'
 
 // l'onglet « Sport » s'appelle désormais « Performance » : les anciens liens
 // (/sport?discipline=nat…) mènent à la nouvelle adresse, paramètres compris
@@ -37,6 +39,8 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/connexion" element={<Connexion />} />
         <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
+        <Route path="/verifier-email" element={<VerifierEmail />} />
+        <Route path="/installer" element={<Installer />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/creation-profil" element={<CreationProfil />} />
         <Route path="/donnees-personnelles" element={<DonneesPersonnelles />} />

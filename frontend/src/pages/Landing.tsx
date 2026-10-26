@@ -1,13 +1,13 @@
 import { type CSSProperties, useEffect } from 'react'
 import { Link, useLocation } from 'react-router'
 import '../styles/landing.css'
+import EnteteVitrine from '../components/EnteteVitrine.tsx'
 import Icone from '../components/Icone.tsx'
 import LienFleche from '../components/LienFleche.tsx'
-import Logo from '../components/Logo.tsx'
 import Orbites from '../components/Orbites.tsx'
 import PiedDePage from '../components/PiedDePage.tsx'
 import { ICONES } from '../data/icones.ts'
-import { DISCIPLINES, NOMS_RANGS, RANGS, TOUS_LES_EXERCICES } from '../data/paliers.ts'
+import { NOMS_RANGS, RANGS } from '../data/paliers.ts'
 
 // les trois temps d'une séance
 const ETAPES = [
@@ -90,20 +90,7 @@ function Landing() {
 
   return (
     <div className="vitrine refonte">
-      <header className="vitrine-entete">
-        <Link to="/" aria-label="DataFit, accueil">
-          <Logo />
-        </Link>
-        <nav className="vitrine-menu" aria-label="Découvrir DataFit">
-          <a href="#fonctionnement">Fonctionnement</a>
-          <a href="#fonctionnalites">Fonctionnalités</a>
-          <a href="#rangs">Rangs</a>
-        </nav>
-        <div className="vitrine-compte">
-          <Link to="/connexion" className="vitrine-connexion">Se connecter</Link>
-          <Link to="/connexion?mode=inscription" className="bouton contour petit">S'inscrire</Link>
-        </div>
-      </header>
+      <EnteteVitrine />
 
       <main>
         <section className="vitrine-hero">
@@ -111,18 +98,15 @@ function Landing() {
             {/* le logo complet, au-dessus du titre (le nom est déjà annoncé par celui de l'en-tête) */}
             <img className="hero-logo" src="/logo-complet.svg" alt="" width="1455" height="415" />
             <h1 className="hero-titre affiche">
-              La science
+              Au-delà
               <br />
-              de votre
-              <br />
-              progression<span className="point">.</span>
+              de vos <span className="hero-limites">limites</span>
+              <span className="point">.</span>
             </h1>
-            {/* des chiffres tirés des barèmes de l'application, pas des statistiques inventées */}
-            <ul className="hero-faits">
-              <li><strong>{DISCIPLINES.length}</strong> disciplines</li>
-              <li><strong>{TOUS_LES_EXERCICES.length}</strong> exercices classés</li>
-              <li><strong>{RANGS.length}</strong> rangs, de E à Z</li>
-            </ul>
+            <Link to="/installer" className="bouton hero-application">
+              <Icone trace={ICONES.telecharger} />
+              Télécharger l'application
+            </Link>
           </div>
           <Orbites />
         </section>

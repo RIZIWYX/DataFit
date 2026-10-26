@@ -41,6 +41,11 @@ public class ConnexionService {
             throw new IllegalArgumentException(IDENTIFIANTS_INCORRECTS);
         }
 
+        // vérifié après le mot de passe : sans lui, on ne dit rien de l'état du compte
+        if (!utilisateur.emailVerifie()) {
+            throw new EmailNonVerifieException();
+        }
+
         return utilisateur;
     }
 }

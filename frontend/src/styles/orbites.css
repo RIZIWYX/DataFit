@@ -78,15 +78,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 0;
-  text-align: center;
-  font-size: clamp(1.25rem, 0.7rem + 1.5vw, 2.1rem);
-  font-weight: 300;
-  line-height: 1.25;
   pointer-events: none;
 }
-.orbites-centre em {
-  font-style: normal;
-  font-weight: 400;
-  color: var(--turquoise);
+.orbites-centre img {
+  width: 16%;
+  height: auto;
 }

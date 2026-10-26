@@ -27,7 +27,7 @@ public class AuthController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(
                 Map.of(
-                    "message", "Inscription réussie",
+                    "message", "Compte créé : confirmez votre adresse e-mail avec le lien reçu",
                     "id", utilisateur.getId(),
                     "email", utilisateur.getEmail()
                 )

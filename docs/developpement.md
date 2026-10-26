@@ -118,8 +118,30 @@ Un **environnement virtuel** (`.venv`) garde les bibliothèques du projet sépar
 | `DB_USER` | base, back | `datafit_user` (back) | utilisateur PostgreSQL |
 | `DB_PASSWORD` | base, back | **aucun**, obligatoire | mot de passe PostgreSQL |
 | `DB_URL` | back | `jdbc:postgresql://localhost:5433/datafit` | adresse de la base |
+| `RESEND_API_KEY` | back | vide | clé Resend pour envoyer les mails ; vide = pas d'envoi, le lien s'affiche dans les logs du back |
+| `MAIL_EXPEDITEUR` | back | `DataFit <onboarding@resend.dev>` | expéditeur des mails (entre guillemets dans `.env`) |
+| `APP_URL` | back | `http://localhost:3000` | adresse du site, pour le lien des mails (`http://localhost:5173` avec Vite) |
 
 Toute nouvelle variable doit être ajoutée **ici et dans `.env.example`**, avec une valeur d'exemple sans danger.
+
+## Confirmation de l'adresse e-mail (Resend)
+
+Un compte créé reste **inactif** tant que son adresse n'est pas confirmée : à l'inscription, le back envoie un mail avec un lien `APP_URL/verifier-email?jeton=…`, valable 24 heures et utilisable une seule fois. Tant que le lien n'a pas été ouvert, la connexion est refusée et la page de connexion propose de renvoyer le mail (un envoi par minute au plus). Les comptes créés avant cette fonctionnalité sont considérés comme confirmés.
+
+Seule l'empreinte SHA-256 du jeton est enregistrée en base (colonnes `email_verifie_le`, `jeton_verification_hash`, `jeton_expire_le`, `verification_envoyee_le` de `utilisateur`) : si la base fuit, les liens ne sont pas utilisables.
+
+**Sans clé Resend** (le cas par défaut), aucun mail ne part : le lien est écrit dans les logs du back. Avec Docker :
+
+```bash
+docker compose logs backend | grep verifier-email
+```
+
+**Pour envoyer de vrais mails :**
+
+1. Crée un compte sur [resend.com](https://resend.com), puis une clé dans **API Keys** (elle n'est affichée qu'une fois).
+2. Mets-la dans `.env` : `RESEND_API_KEY=re_…`, puis relance `./lancer.sh`.
+3. Avec l'expéditeur par défaut `onboarding@resend.dev`, Resend n'envoie **qu'à l'adresse de ton compte Resend** (les autres sont refusées, l'erreur s'affiche dans les logs du back). Pour écrire à n'importe qui, ajoute ton domaine dans **Domains**, pose les enregistrements DNS demandés, puis mets une adresse de ce domaine dans `MAIL_EXPEDITEUR`.
+4. Pour tester sans vraie boîte, Resend fournit des adresses de test : `delivered@resend.dev` (livré), `bounced@resend.dev` (rejeté), `complained@resend.dev` (signalé comme spam).
 
 ## Problèmes fréquents
 

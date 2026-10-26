@@ -1,0 +1,114 @@
+/* Télécharger l'application (page /installer). En-tête et marges : landing.css ; couleurs et police : charte.css */
+
+.installer {
+  display: flex;
+  flex-direction: column;
+  gap: 2.75rem;
+  width: 100%;
+  max-width: 1680px;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 4.5rem) var(--marge) 5rem;
+}
+
+.installer-tete h1 {
+  margin: 0.9rem 0 1.1rem;
+  font-size: clamp(2.4rem, 1.2rem + 4vw, 4.6rem);
+}
+/* « DataFit. » en turquoise, comme sur la maquette */
+.installer-marque {
+  color: var(--turquoise);
+}
+.installer-tete > p:last-child {
+  max-width: 40rem;
+  margin: 0;
+  font-size: clamp(1rem, 0.9rem + 0.3vw, 1.15rem);
+  line-height: 1.6;
+  color: var(--gris);
+  text-wrap: pretty;
+}
+
+/* ---------- une case par téléchargement, toutes sur la même ligne ---------- */
+
+.installer-plateformes {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.installer-plateformes > li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-width: 0;
+  padding: 1.4rem 1.25rem 1.25rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
+  transition: border-color var(--transition);
+}
+.installer-plateformes > li:hover {
+  border-color: var(--trait-fort);
+}
+/* le logo de la plateforme, en grand, en haut de la case */
+.installer-logo {
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 0.6rem;
+  object-fit: contain;
+}
+.installer-plateformes h2 {
+  margin: 0;
+  font-size: 1.45rem;
+  font-stretch: 112%;
+  font-weight: 800;
+}
+.installer-plateformes p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--gris);
+}
+/* le bouton en bas de la case, sur toute sa largeur */
+.installer-plateformes .bouton {
+  width: 100%;
+  margin-top: auto;
+  padding-inline: 0.85rem;
+  font-size: 0.875rem;
+}
+/* « pour Windows » : le texte complet demande environ 240 px. Il est masqué quand les cases sont
+   plus étroites (5 cases sur un écran de moins de 1580 px, 3 cases sous 960 px, 2 cases), le nom
+   de la plateforme étant déjà juste au-dessus ; il reste lu par les lecteurs d'écran */
+@media (min-width: 1181px) and (max-width: 1579px), (min-width: 481px) and (max-width: 959px) {
+  .installer-pour {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+.installer-plateformes > li > p {
+  margin-bottom: 0.6rem;
+}
+
+/* ---------- écrans plus étroits : les cases passent sur plusieurs lignes ---------- */
+
+@media (max-width: 1180px) {
+  .installer-plateformes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .installer-plateformes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 480px) {
+  .installer-plateformes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

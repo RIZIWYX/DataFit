@@ -9,19 +9,20 @@ import org.springframework.web.client.RestClient;
 @Component
 public class SimulateurClient {
 
-private final RestClient http;
+  private final RestClient http;
 
-public SimulateurClient(@Value("${simulateur.url:http://localhost:8000}") String url) {
-  this.http = RestClient.create(url);
-}
+  public SimulateurClient(@Value("${simulateur.url:http://localhost:8000}") String url) {
+    this.http = RestClient.create(url);
+  }
 
-// Envoie profil + seance, renvoie le JSON brut (contient "mesures" + metadonnees).
-// Le backend ne lit pas dedans : il le transmet tel quel a l'analyse.
-public Object simuler(DemandeSimulation demande) {
-  return http.post()
-    .uri("/simuler")
-    .body(demande)
-    .retrieve()
-    .body(Object.class);
-}
+  // Envoie profil + seance, renvoie le JSON brut (contient "mesures" +
+  // metadonnees).
+  // Le backend ne lit pas dedans : il le transmet tel quel a l'analyse.
+  public Object simuler(DemandeSimulation demande) {
+    return http.post()
+        .uri("/simuler")
+        .body(demande)
+        .retrieve()
+        .body(Object.class);
+  }
 }

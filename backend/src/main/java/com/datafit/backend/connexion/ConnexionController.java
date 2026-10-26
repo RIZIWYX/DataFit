@@ -2,6 +2,7 @@ package com.datafit.backend.connexion;
 
 import com.datafit.backend.utilisateur.Utilisateur;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +38,11 @@ public class ConnexionController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(
                 Map.of("error", e.getMessage())
+            );
+        } catch (EmailNonVerifieException e) {
+            // 403 et un code : le site propose alors de renvoyer le mail de confirmation
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                Map.of("error", e.getMessage(), "code", "EMAIL_NON_VERIFIE")
             );
         }
     }

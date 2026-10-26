@@ -102,31 +102,18 @@
   height: auto;
   margin-bottom: 0.4rem;
 }
+/* le titre est le slogan : « limites » en turquoise */
+.hero-limites {
+  color: var(--turquoise);
+}
 .hero-titre {
   margin: 0;
-  /* taille relative au bloc (cqi) : « progression. » (7,5 fois la taille du texte)
-     tient sur une ligne, du téléphone au grand écran */
+  /* taille relative au bloc (cqi) : le titre suit la largeur, du téléphone au grand écran */
   font-size: clamp(2.25rem, 12.5cqi, 6.25rem);
 }
-.hero-faits {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 2.75rem;
-  margin: 1.4rem 0 0;
-  padding: 1.6rem 0 0;
-  border-top: 1px solid var(--trait);
-  list-style: none;
-  font-size: 0.85rem;
-  color: var(--gris);
-}
-.hero-faits strong {
-  display: block;
-  margin-bottom: 0.3rem;
-  font-size: 1.9rem;
-  font-stretch: 118%;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--blanc);
+/* vers la page de téléchargement de l'application */
+.hero-application {
+  margin-top: 1.8rem;
 }
 
 /* ---------- sections ---------- */
@@ -427,11 +414,5 @@
   }
   .vitrine-connexion {
     font-size: 0.875rem;
-  }
-  .hero-faits {
-    gap: 1rem 1.75rem;
-  }
-  .hero-faits strong {
-    font-size: 1.6rem;
   }
 }

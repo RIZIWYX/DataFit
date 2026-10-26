@@ -17,17 +17,12 @@ function useDashboard() {
   // de la plus récente à la plus ancienne
   const seances = [...SEANCES_DEMO].sort((a, b) => b.date.getTime() - a.date.getTime())
 
-  // 14 jours : les 7 derniers, et les 7 d'avant pour comparer
-  const quinzaine = parJour(seances, 14, aujourdHui)
-  const avant = quinzaine.slice(0, 7)
-  const jours = quinzaine.slice(7)
+  const jours = parJour(seances, 7, aujourdHui)
 
   return {
     prenom: profil?.prenom ?? '',
     aujourdHui,
-    jours,
     semaine: bilan(jours.flatMap((jour) => jour.seances)),
-    semainePrecedente: bilan(avant.flatMap((jour) => jour.seances)),
     derniereSeance: seances.at(0),
     seancesPrecedentes: seances.slice(1, 6),
     programmes: planning.programmes,

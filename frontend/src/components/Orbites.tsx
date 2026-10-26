@@ -112,10 +112,10 @@ function Orbites() {
         </g>
       </svg>
 
-      <p className="orbites-centre">
-        DataFit
-        <em>Au-delà de vos limites.</em>
-      </p>
+      {/* le logo au centre (provisoire : le contenu du centre reste à décider) */}
+      <div className="orbites-centre">
+        <img src="/logo.webp" alt="" width="232" height="200" />
+      </div>
     </div>
   )
 }
