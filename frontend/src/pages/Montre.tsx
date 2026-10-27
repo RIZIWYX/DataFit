@@ -74,9 +74,9 @@ function Montre() {
             </strong>
           </p>
           <div className="montre-actions">
-            <button type="button" className="bouton" disabled={!m.connectee} onClick={m.synchroniser}>
+            <button type="button" className="bouton" disabled={!m.connectee || m.enCours} onClick={m.synchroniser}>
               <Icone trace={ICONES.synchro} />
-              Synchroniser
+              {m.enCours ? 'Synchronisation…' : 'Synchroniser'}
             </button>
             <button type="button" className="bouton secondaire" onClick={m.basculerConnexion}>
               {m.connectee ? 'Déconnecter la montre' : 'Reconnecter la montre'}
@@ -90,6 +90,12 @@ function Montre() {
               </>
             )}
           </p>
+          {m.erreur && (
+            <p className="alerte" role="alert">
+              <Icone trace={ICONES.info} />
+              {m.erreur}
+            </p>
+          )}
           {!m.connectee && (
             <p className="montre-aide">Reconnectez la montre pour récupérer vos prochaines séances et nuits.</p>
           )}
