@@ -31,3 +31,10 @@ dist-ssr
 
 # Environnements virtuels Python
 .venv/
+
+# Fichiers générés par Python et Jupyter
+__pycache__/
+.ipynb_checkpoints/
+
+# Trace ajoutée par Windows aux fichiers téléchargés
+*Zone.Identifier
