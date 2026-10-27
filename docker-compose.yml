@@ -6,27 +6,58 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - donnees-postgres:/var/lib/postgresql/data   # les données survivent aux redémarrages
-
+      - donnees-postgres:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d datafit"]
       interval: 5s
+      timeout: 5s
       retries: 10
+
+  simulateur:
+    build: ./simulateur
+    image: datafit-simulateur
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/openapi.json', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  analyse:
+    build: ./analyse
+    image: datafit-analyse
+    ports:
+      - "8001:8001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/openapi.json', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   backend:
     build: ./backend
     environment:
-      DB_URL: jdbc:postgresql://db:5432/datafit   # "db" = le nom du service au-dessus
+      DB_URL: jdbc:postgresql://db:5432/datafit
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      # mails de confirmation (Resend) : sans clé, le lien s'affiche dans les logs du backend
+      # Mails de confirmation
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       MAIL_EXPEDITEUR: ${MAIL_EXPEDITEUR:-DataFit <onboarding@resend.dev>}
       APP_URL: ${APP_URL:-http://localhost:3000}
+      # Services Python SD
+      SIMULATEUR_URL: http://simulateur:8000
+      ANALYSE_URL: http://analyse:8001
     depends_on:
       db:
+        condition: service_healthy
+      simulateur:
+        condition: service_healthy
+      analyse:
         condition: service_healthy
     ports:
       - "8080:8080"

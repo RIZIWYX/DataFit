@@ -1,4 +1,6 @@
 fastapi
 uvicorn
-pandas
+pydantic>=2,<3
 numpy
+pandas
+matplotlib
