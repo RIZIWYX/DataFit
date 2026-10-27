@@ -4,8 +4,9 @@ import com.datafit.backend.utilisateur.Utilisateur;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+// Une nuit (table sommeil, db/07_sommeil.sql). Durées en secondes, FC en bpm.
 @Entity
 @Table(name = "sommeil")
 public class Sommeil {
@@ -17,48 +18,76 @@ public class Sommeil {
     @JoinColumn(name = "utilisateur_id", nullable = false)
     private Utilisateur utilisateur;
 
-    @Column(name = "date", nullable = false, updatable = false)
-    private LocalDate date;
+    @Column(name = "heure_coucher", nullable = false)
+    private LocalDateTime heureCoucher;
 
-    @Column(name = "nom", nullable = false, length = 255)
-    private String nom;
+    @Column(name = "heure_reveil", nullable = false)
+    private LocalDateTime heureReveil;
 
-    @Column(name = "calories", nullable = false)
-    private double calories;
+    @Column(name = "temps_au_lit_s", nullable = false)
+    private int tempsAuLitS;
 
-    @Column(name = "proteines", nullable = false)
-    private double proteines;
+    @Column(name = "duree_sommeil_s", nullable = false)
+    private int dureeSommeilS;
 
-    @Column(name = "glucides", nullable = false)
-    private double glucides;
+    @Column(name = "latence_endormissement_s", nullable = false)
+    private int latenceEndormissementS;
 
-    @Column(name = "lipides", nullable = false)
-    private double lipides;
+    @Column(name = "duree_eveil_totale_s", nullable = false)
+    private int dureeEveilTotaleS;
 
-    @Column(name = "objectif", nullable = false, length = 255)
-    private String objectif;
+    @Column(name = "eveil_nocturne_s", nullable = false)
+    private int eveilNocturneS;
+
+    @Column(name = "reveils_nb", nullable = false)
+    private int reveilsNb;
+
+    @Column(name = "efficacite_sommeil_pct", nullable = false)
+    private double efficaciteSommeilPct;
+
+    @Column(name = "fc_moyenne", nullable = false)
+    private double fcMoyenne;
+
+    @Column(name = "fc_min", nullable = false)
+    private double fcMin;
+
+    @Column(name = "fc_max", nullable = false)
+    private double fcMax;
+
+    @Column(name = "duree_eveil_s", nullable = false)
+    private int dureeEveilS;
+
+    @Column(name = "duree_leger_s", nullable = false)
+    private int dureeLegerS;
+
+    @Column(name = "duree_profond_s", nullable = false)
+    private int dureeProfondS;
+
+    @Column(name = "duree_paradoxal_s", nullable = false)
+    private int dureeParadoxalS;
 
     protected Sommeil() {
         // Constructeur par défaut requis par JPA
     }
 
-    public Sommeil(
-            Utilisateur utilisateur,
-            LocalDate date,
-            String nom,
-            double calories,
-            double proteines,
-            double glucides,
-            double lipides,
-            String objectif) {
+    public Sommeil(Utilisateur utilisateur, SommeilRequest req) {
         this.utilisateur = utilisateur;
-        this.date = date;
-        this.nom = nom;
-        this.calories = calories;
-        this.proteines = proteines;
-        this.glucides = glucides;
-        this.lipides = lipides;
-        this.objectif = objectif;
+        this.heureCoucher = req.heureCoucher();
+        this.heureReveil = req.heureReveil();
+        this.tempsAuLitS = req.tempsAuLitS();
+        this.dureeSommeilS = req.dureeSommeilS();
+        this.latenceEndormissementS = req.latenceEndormissementS();
+        this.dureeEveilTotaleS = req.dureeEveilTotaleS();
+        this.eveilNocturneS = req.eveilNocturneS();
+        this.reveilsNb = req.reveilsNb();
+        this.efficaciteSommeilPct = req.efficaciteSommeilPct();
+        this.fcMoyenne = req.fcMoyenne();
+        this.fcMin = req.fcMin();
+        this.fcMax = req.fcMax();
+        this.dureeEveilS = req.dureeEveilS();
+        this.dureeLegerS = req.dureeLegerS();
+        this.dureeProfondS = req.dureeProfondS();
+        this.dureeParadoxalS = req.dureeParadoxalS();
     }
 
     public Long getId() {
@@ -72,31 +101,67 @@ public class Sommeil {
         return utilisateur;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDateTime getHeureCoucher() {
+        return heureCoucher;
     }
 
-    public String getNom() {
-        return nom;
+    public LocalDateTime getHeureReveil() {
+        return heureReveil;
     }
 
-    public double getCalories() {
-        return calories;
+    public int getTempsAuLitS() {
+        return tempsAuLitS;
     }
 
-    public double getProteines() {
-        return proteines;
+    public int getDureeSommeilS() {
+        return dureeSommeilS;
     }
 
-    public double getGlucides() {
-        return glucides;
+    public int getLatenceEndormissementS() {
+        return latenceEndormissementS;
     }
 
-    public double getLipides() {
-        return lipides;
+    public int getDureeEveilTotaleS() {
+        return dureeEveilTotaleS;
     }
 
-    public String getObjectif() {
-        return objectif;
+    public int getEveilNocturneS() {
+        return eveilNocturneS;
+    }
+
+    public int getReveilsNb() {
+        return reveilsNb;
+    }
+
+    public double getEfficaciteSommeilPct() {
+        return efficaciteSommeilPct;
+    }
+
+    public double getFcMoyenne() {
+        return fcMoyenne;
+    }
+
+    public double getFcMin() {
+        return fcMin;
+    }
+
+    public double getFcMax() {
+        return fcMax;
+    }
+
+    public int getDureeEveilS() {
+        return dureeEveilS;
+    }
+
+    public int getDureeLegerS() {
+        return dureeLegerS;
+    }
+
+    public int getDureeProfondS() {
+        return dureeProfondS;
+    }
+
+    public int getDureeParadoxalS() {
+        return dureeParadoxalS;
     }
 }

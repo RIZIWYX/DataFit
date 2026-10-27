@@ -3,19 +3,22 @@ package com.datafit.backend.sommeil;
 import com.datafit.backend.utilisateur.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface SommeilRepository extends JpaRepository<Sommeil, Long> {
-    // Les repas d'un jour, dans l'ordre où ils ont été notés
-    List<Sommeil> findByUtilisateurAndDateOrderByIdAsc(Utilisateur utilisateur, LocalDate date);
+    // La nuit qui se termine ce jour-là : réveil entre le début (inclus) et la fin (exclue) du jour
+    Optional<Sommeil> findFirstByUtilisateurAndHeureReveilGreaterThanEqualAndHeureReveilLessThanOrderByHeureReveilDesc(
+            Utilisateur utilisateur, LocalDateTime debut, LocalDateTime fin);
 
-    // Historique complet pour un utilisateur (dashboard, graphiques), du plus
-    // récent au plus ancien
-    List<Sommeil> findByUtilisateurOrderByDateDescIdDesc(Utilisateur utilisateur);
+    // Historique complet pour un utilisateur (graphiques), de la nuit la plus récente à la plus ancienne
+    List<Sommeil> findByUtilisateurOrderByHeureCoucherDesc(Utilisateur utilisateur);
 
-    // Supprime un repas seulement s'il appartient à cet utilisateur ; renvoie le
+    // Une nuit déjà enregistrée avec la même heure de coucher
+    boolean existsByUtilisateurAndHeureCoucher(Utilisateur utilisateur, LocalDateTime heureCoucher);
+
+    // Supprime une nuit seulement si elle appartient à cet utilisateur ; renvoie le
     // nombre de lignes supprimées
     long deleteByIdAndUtilisateur(Long id, Utilisateur utilisateur);
-
 }
