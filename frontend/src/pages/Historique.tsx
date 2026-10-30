@@ -5,16 +5,17 @@ import Icone from '../components/Icone.tsx'
 import Segments from '../components/Segments.tsx'
 import TitrePage from '../components/TitrePage.tsx'
 import { ICONES } from '../data/icones.ts'
-import { LISTE_SPORTS, SPORTS } from '../data/sports.ts'
 import useHistorique, { PERIODES, type Tri } from '../hooks/useHistorique.ts'
 import { nbSeances } from '../lib/colonnes.ts'
 import { formatDuree, formatHeure, nombre } from '../lib/format.ts'
 import { type Categorie } from '../lib/historique.ts'
+import { formatDureeSecondes } from '../lib/cardio.ts'
 
 // Toutes les séances, de la plus récente à la plus ancienne, regroupées par mois.
 // On cherche, on filtre, on ouvre le détail ; rien d'autre sur la page.
 function Historique() {
   const {
+    chargement, erreur, connecte, recharger,
     categorie,
     choisirCategorie,
     nbSemaines,
@@ -33,9 +34,24 @@ function Historique() {
 
   const categories: { valeur: Categorie | 'tous'; nom: string }[] = [
     { valeur: 'tous', nom: 'Toutes' },
-    ...LISTE_SPORTS.map((sport) => ({ valeur: sport, nom: SPORTS[sport].nom })),
+    { valeur: 'course', nom: 'Course à pied' },
     { valeur: 'programmees', nom: 'Programmées' },
   ]
+
+  if (chargement || erreur) {
+    return (
+      <div className="ecran historique">
+        <TitrePage surtitre="Entraînement" titre="Historique" />
+        {chargement ? <p role="status">Chargement des séances…</p> : (
+          <EtatVide icone={ICONES.info} titre="Historique indisponible" action={connecte ? (
+            <button type="button" className="bouton secondaire" onClick={recharger}>Réessayer</button>
+          ) : <Link to="/connexion" className="bouton secondaire">Se connecter</Link>}>
+            {erreur}
+          </EtatVide>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className="ecran historique">
@@ -43,7 +59,7 @@ function Historique() {
         surtitre="Entraînement"
         titre="Historique"
       >
-        Toutes vos séances, de la plus récente à la plus ancienne.
+        Vos séances cardio enregistrées et vos séances programmées réalisées.
       </TitrePage>
 
       <div className="historique-outils">
@@ -52,7 +68,7 @@ function Historique() {
           <span className="visuellement-cache">Rechercher une séance</span>
           <input
             type="search"
-            placeholder="Rechercher : « natation », « mardi », « squat »…"
+            placeholder="Rechercher : « course », « mardi », « squat »…"
             value={recherche}
             onChange={(e) => chercher(e.target.value)}
           />
@@ -86,14 +102,16 @@ function Historique() {
       {groupes.length === 0 ? (
         <EtatVide
           icone={ICONES.recherche}
-          titre="Aucune séance ne correspond"
+          titre={recherche || nbSemaines || categorie !== 'tous' ? 'Aucune séance ne correspond' : 'Aucune séance enregistrée'}
           action={
             <button type="button" className="bouton secondaire petit" onClick={effacerFiltres}>
               Effacer les filtres
             </button>
           }
         >
-          Essayez une autre recherche, ou élargissez la période.
+          {recherche || nbSemaines || categorie !== 'tous'
+            ? 'Essayez une autre recherche, ou élargissez la période.'
+            : <>Vos séances cardio apparaîtront ici après leur enregistrement. <Link to="/montre">Ouvrir la montre</Link>.</>}
         </EtatVide>
       ) : (
         groupes.map((groupe) => (
@@ -118,12 +136,12 @@ function Historique() {
                     <span className="ligne-historique-titre">
                       <strong>{entree.titre}</strong>
                       <small>
-                        {formatHeure(entree.date)} · {entree.sousTitre}
+                        {entree.heureConnue !== false && <>{formatHeure(entree.date)} · </>}{entree.sousTitre}
                         {entree.exercices.length > 0 && ` · ${entree.exercices.join(', ')}`}
                       </small>
                     </span>
                     <span className="ligne-historique-mesure">{entree.mesure}</span>
-                    <span className="ligne-historique-mesure secondaire">{formatDuree(entree.dureeMin)}</span>
+                    <span className="ligne-historique-mesure secondaire">{entree.dureeSecondes !== undefined ? formatDureeSecondes(entree.dureeSecondes) : formatDuree(entree.dureeMin)}</span>
                     <span className="ligne-historique-mesure secondaire">{entree.fc ? `${entree.fc} bpm` : '–'}</span>
                     <Icone trace={ICONES.chevron} />
                   </Link>

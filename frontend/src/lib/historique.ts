@@ -18,6 +18,8 @@ export interface Entree {
   icone: string
   couleur: string
   dureeMin: number
+  dureeSecondes?: number
+  heureConnue?: boolean
   mesure: string // la mesure principale : « 5,2 km », « 3 exercices »
   km: number
   fc?: number

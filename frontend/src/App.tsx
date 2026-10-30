@@ -20,6 +20,7 @@ import Profil from './pages/Profil.tsx'
 import Programmation from './pages/Programmation.tsx'
 import Progression from './pages/Progression.tsx'
 import Seance from './pages/Seance.tsx'
+import SeanceCardio from './pages/SeanceCardio.tsx'
 import Sommeil from './pages/Sommeil.tsx'
 import Sport from './pages/Sport.tsx'
 import VerifierEmail from './pages/VerifierEmail.tsx'
@@ -54,6 +55,7 @@ function App() {
           <Route path="/programmation" element={<Programmation />} />
           <Route path="/montre" element={<Montre />} />
           <Route path="/historique" element={<Historique />} />
+          <Route path="/historique/cardio/:id" element={<SeanceCardio />} />
           <Route path="/historique/:id" element={<Seance />} />
           <Route path="/progression" element={<Progression />} />
           <Route path="/sommeil" element={<Sommeil />} />

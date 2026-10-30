@@ -33,3 +33,40 @@ BEGIN
         ALTER TABLE nutrition ADD COLUMN IF NOT EXISTS nom VARCHAR(255) NOT NULL;
     END IF;
 END $$;
+
+
+-- Résultats de l'analyse nutritionnelle : un bilan par utilisateur et par jour.
+CREATE TABLE IF NOT EXISTS analyse_nutrition (
+    id                          SERIAL PRIMARY KEY,
+    utilisateur_id              INT NOT NULL
+        REFERENCES utilisateur(id) ON DELETE CASCADE,
+    date                        DATE NOT NULL,
+    nombre_repas                INT NOT NULL,
+    -- Dispersion des calories entre les repas, en pourcentage.
+    variation_calories          FLOAT,
+    -- Estimation et comparaison énergétique.
+    energie_macros_kcal         FLOAT NOT NULL,
+    ecart_calories_macros       FLOAT NOT NULL,
+    ecart_calories_macros_pct   FLOAT,
+    -- Statistiques descriptives pour les quatre variables.
+    statistiques                JSONB NOT NULL,
+    -- Répartition énergétique des macronutriments.
+    repartition_macros          JSONB,
+    -- Corrélations entre calories et macronutriments.
+    correlations_calories       JSONB NOT NULL,
+    -- Statistiques par petit-déjeuner, déjeuner, dîner et collation.
+    repartition_repas            JSONB NOT NULL,
+    repas_plus_calorique        VARCHAR(20) NOT NULL,
+    repas_plus_proteine         VARCHAR(20) NOT NULL,
+    date_analyse                TIMESTAMP NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_analyse_nutrition_user_date
+        UNIQUE (utilisateur_id, date),
+
+    CONSTRAINT chk_analyse_nutrition_nombre_repas
+        CHECK (nombre_repas > 0)
+);
+
+CREATE INDEX IF NOT EXISTS idx_analyse_nutrition_user_date
+ON analyse_nutrition (utilisateur_id, date);
