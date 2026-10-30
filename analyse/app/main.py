@@ -1,3 +1,4 @@
+
 import logging
 
 from fastapi import FastAPI, HTTPException
@@ -7,7 +8,7 @@ from app.traitements.analyse_velo import analyser_velo
 from app.traitements.analyse_natation import analyser_natation
 from app.traitements.analyse_muscu import analyser_muscu
 from app.traitements.analyse_nutrition import analyser_nutrition
-
+from app.traitements.analyse_sommeil import analyser_sommeil
 
 app = FastAPI(title="DataFit - Analyses des séances")
 
@@ -18,7 +19,8 @@ ANALYSEURS = {
     "velo": analyser_velo,
     "natation": analyser_natation,
     "muscu": analyser_muscu,
-    "nutrition": analyser_nutrition
+    "nutrition": analyser_nutrition,
+    "sommeil": analyser_sommeil
 }
 
 
@@ -29,7 +31,7 @@ def analyser(donnees: dict):
     if not isinstance(sport, str) or sport not in ANALYSEURS:
         raise HTTPException(
             status_code=422,
-            detail="Analyse attendu : cardio, velo, natation, muscu ou nutrition."
+            detail="Analyse attendue : cardio, velo, natation, muscu, nutrition ou sommeil."
         )
 
     try:
