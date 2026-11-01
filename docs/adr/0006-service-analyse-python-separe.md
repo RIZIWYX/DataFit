@@ -1,6 +1,6 @@
 # 0006. Analyse des données dans un service Python séparé
 
-- **Statut** : Proposé — à valider avec l'équipe sciences des données
+- **Statut** : Accepté
 - **Date** : 2026-10-13
 - **Décideurs** : équipe DataFit
 

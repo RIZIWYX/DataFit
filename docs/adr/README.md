@@ -21,4 +21,4 @@ Pourquoi c'est utilisé en entreprise : dans six mois, personne ne se souviendra
 | [0003](0003-postgresql.md) | PostgreSQL comme base de données | Accepté |
 | [0004](0004-frontend-react-typescript-vite.md) | Frontend en React + TypeScript + Vite | Accepté |
 | [0005](0005-docker-compose.md) | Docker Compose pour lancer le projet | Accepté |
-| [0006](0006-service-analyse-python-separe.md) | Analyse des données dans un service Python séparé | Proposé |
+| [0006](0006-service-analyse-python-separe.md) | Analyse des données dans un service Python séparé | Accepté |

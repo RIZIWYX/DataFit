@@ -1,6 +1,6 @@
 # API
 
-Une **API** (*interface de programmation*) est l'ensemble des « portes » qu'un programme ouvre aux autres. Ici, le backend expose des adresses HTTP (les **endpoints**) que le front, le simulateur et plus tard l'application de bureau appellent. Ce document est le **contrat** entre les équipes : tant qu'on le respecte, chacun peut changer son code interne sans casser les autres.
+Une **API** (*interface de programmation*) est l'ensemble des « portes » qu'un programme ouvre aux autres. Ici, le backend expose des adresses HTTP (les **endpoints**) que le front appelle. Ce document est le **contrat** entre les équipes : tant qu'on le respecte, chacun peut changer son code interne sans casser les autres.
 
 ## Conventions
 
@@ -61,64 +61,76 @@ Quand ce sera en place, le tableau ci-dessous ne gardera que les règles métier
 
 ## Endpoints du backend
 
-### Existants
+Liste tirée du code (`backend/src/main/java/com/datafit/backend/`). `{utilisateurId}` est l'identifiant renvoyé par la connexion. Voir [Sécurité § Authentification](securite.md#authentification) pour la limite actuelle de ce choix.
 
-| Méthode | Adresse | Description | Réponse |
-|---|---|---|---|
-| `GET` | `/api/hello` | Vérifie que le back répond | texte |
-| `GET` | `/api/heart-rate` | Démonstration, valeur fixe | `{ "bpm": 78, "status": "normal", "message": "…" }` |
+### Comptes
 
-Ces deux endpoints sont des tests ; ils seront retirés quand les vrais seront en place.
+| Méthode | Adresse | Description |
+|---|---|---|
+| `POST` | `/api/auth/register` | Crée un compte |
+| `POST` | `/api/auth/login` | Vérifie les identifiants, renvoie `{ id, email }` |
+| `POST` | `/api/profil/register/profil` | Crée le profil (nom, sexe, poids, taille, objectif, niveau, activité, date de naissance) |
+| `POST` | `/api/contact` | Enregistre un message du formulaire de contact |
 
-### Prévus 🚧
+### Séances de la montre
 
-Proposition de départ, à ajuster en équipe. Toute modification passe par une PR qui met à jour ce tableau.
+Une séance est lancée par le front, puis le backend enchaîne simulateur, analyse et enregistrement (voir [Architecture § Flux principal](architecture.md#4-flux-principal--dune-séance-au-tableau-de-bord)).
 
-| Méthode | Adresse | Description | Connexion requise |
-|---|---|---|---|
-| `POST` | `/api/auth/inscription` | Crée un compte (`email`, `motDePasse`) | non |
-| `POST` | `/api/auth/connexion` | Vérifie les identifiants, renvoie de quoi rester connecté | non |
-| `POST` | `/api/auth/deconnexion` | Termine la session | oui |
-| `GET` | `/api/profil` | Profil de l'utilisateur connecté | oui |
-| `PUT` | `/api/profil` | Met à jour le profil (prénom, sexe, poids…) | oui |
-| `GET` | `/api/seances` | Séances de l'utilisateur, filtrables : `?depuis=2026-09-01&sport=course` | oui |
-| `GET` | `/api/seances/{id}` | Détail d'une séance, avec ses mesures | oui |
-| `POST` | `/api/seances` | Enregistre une séance reçue de la montre ou du simulateur | oui |
-| `DELETE` | `/api/seances/{id}` | Supprime une séance | oui |
-| `GET` | `/api/performances` | Performances déclarées par exercice (pour les rangs) | oui |
-| `PUT` | `/api/performances/{exerciceId}` | Enregistre une performance | oui |
+| Méthode | Adresse | Description |
+|---|---|---|
+| `POST` | `/api/seances/{sport}/{utilisateurId}` | Lance une séance simulée et l'enregistre une fois analysée |
+| `GET` | `/api/seances/{sport}/{utilisateurId}` | Historique, de la plus récente à la plus ancienne |
+| `GET` | `/api/seances/{sport}/{utilisateurId}/dernier` | Dernière séance, `204` s'il n'y en a pas |
 
-Exemple de séance envoyée par le simulateur (`POST /api/seances`) :
+`{sport}` vaut `cardio`, `velo`, `natation` ou `muscu`.
 
-```json
-{
-  "sport": "course",
-  "debut": "2026-10-13T18:30:00Z",
-  "mesures": [
-    { "t": 0,  "fc": 92,  "vitesseKmh": 0.0,  "lat": 49.3842, "lon": 1.0712 },
-    { "t": 1,  "fc": 95,  "vitesseKmh": 6.1,  "lat": 49.3842, "lon": 1.0713 }
-  ]
-}
-```
+### Sommeil
 
-`t` est le nombre de secondes écoulées depuis `debut`. Envoyer un décalage plutôt qu'une date complète par mesure allège beaucoup le message.
+| Méthode | Adresse | Description |
+|---|---|---|
+| `POST` | `/api/sommeil/{utilisateurId}` | Simule une nuit, l'analyse et l'enregistre |
+| `GET` | `/api/sommeil/{utilisateurId}` | Toutes les nuits |
+| `GET` | `/api/sommeil/{utilisateurId}/jour/{date}` | Nuit d'une date donnée |
+| `DELETE` | `/api/sommeil/{utilisateurId}/{id}` | Supprime une nuit |
 
-## Service d'analyse (Python)
+### Nutrition
 
-🚧 Prévu.
+| Méthode | Adresse | Description |
+|---|---|---|
+| `POST` | `/api/nutrition/{utilisateurId}` | Ajoute un repas |
+| `GET` | `/api/nutrition/{utilisateurId}` | Tous les repas |
+| `GET` | `/api/nutrition/{utilisateurId}/jour/{date}` | Repas d'une journée |
+| `DELETE` | `/api/nutrition/{utilisateurId}/{id}` | Supprime un repas |
+| `POST` | `/api/nutrition/{utilisateurId}/analyser/{date}` | Lance l'analyse de la journée (service Python) |
+| `GET` | `/api/nutrition/{utilisateurId}/analyse/{date}` | Résultat de l'analyse de la journée |
 
-Endpoints appelés **uniquement par le backend**, jamais par le front (voir [ADR 0006](adr/0006-service-analyse-python-separe.md)). Contrat à valider avec l'équipe SD.
+### Performances déclarées (rangs)
 
-| Méthode | Adresse | Entrée | Sortie |
-|---|---|---|---|
-| `GET` | `/sante` | — | `{ "statut": "ok" }`, pour vérifier que le service tourne |
-| `POST` | `/analyse/seance` | la séance au format ci-dessus | indicateurs de la séance (zones d'effort, anomalies détectées) |
-| `POST` | `/analyse/progression` | liste de séances résumées | tendance et indicateurs de progression |
+Une ligne par utilisateur et par jour pour chaque discipline.
 
-Conseil pour avancer en parallèle : l'équipe SD peut écrire dès maintenant un fichier d'exemple d'entrée et de sortie (`analyse/tests/exemples/`). Le back s'en sert pour simuler les réponses avant que le vrai service existe.
+| Méthode | Adresse | Description |
+|---|---|---|
+| `POST` | `/api/{discipline}/{utilisateurId}` | Enregistre les performances du jour |
+| `PUT` | `/api/{discipline}/{utilisateurId}/aujourdhui` | Corrige celles du jour |
+| `GET` | `/api/{discipline}/{utilisateurId}` | Historique |
+| `GET` | `/api/{discipline}/{utilisateurId}/aujourdhui` | Performances du jour |
+| `GET` | `/api/{discipline}/{utilisateurId}/dernier` | Dernières performances |
+
+`{discipline}` vaut `sbd`, `halterofilie`, `streetlifting`, `calisthenics`, `natation`, `souplesse` ou `athletisme`.
+
+## Services Python
+
+Appelés **uniquement par le backend**, jamais par le front (voir [ADR 0006](adr/0006-service-analyse-python-separe.md)). Tous deux sont écrits avec FastAPI, qui publie leur documentation interactive sur `/docs`.
+
+| Service | Méthode | Adresse | Entrée | Sortie |
+|---|---|---|---|---|
+| Simulateur (`:8000`) | `POST` | `/simuler` | `{ profil: { utilisateur_id, sexe, poids, taille, niveau, date_naissance }, seance: { type, nom, date } }` | mesures brutes de la séance |
+| Analyse (`:8001`) | `POST` | `/analyser` | mesures, avec un champ `sport` : `cardio`, `velo`, `natation`, `muscu`, `nutrition` ou `sommeil` | indicateurs calculés (FC, vitesses, durées, phases de sommeil, macros…) |
+
+Les deux renvoient `422` si l'entrée est invalide.
 
 ## Appels depuis le front
 
-- En développement (`npm run dev`, port 5173), le front appelle `http://localhost:8080/api/...`. Le back l'autorise grâce à l'annotation `@CrossOrigin` (voir [CORS](glossaire.md#cors)).
+- En développement (`npm run dev`, port 5173), Vite transmet les appels `/api/...` au back sur le port 8080.
 - Avec Docker, le front appelle `/api/...` sur sa propre adresse, et nginx transmet au back. Pas de CORS nécessaire.
-- Recommandation : définir l'adresse du back dans une seule variable (`VITE_API_URL`) et centraliser les appels dans un fichier `frontend/src/lib/api.ts`, plutôt que d'écrire des `fetch` dans chaque hook.
+- Les appels sont regroupés dans `frontend/src/services/` (un fichier par domaine : montre, nutrition, chaque discipline), plutôt que dispersés dans les pages.
