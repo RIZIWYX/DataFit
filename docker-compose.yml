@@ -45,6 +45,7 @@ services:
       DB_URL: jdbc:postgresql://db:5432/datafit
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       # Services Python SD
       SIMULATEUR_URL: http://simulateur:8000
       ANALYSE_URL: http://analyse:8001
