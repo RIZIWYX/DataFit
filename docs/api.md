@@ -67,7 +67,7 @@ Liste tirée du code (`backend/src/main/java/com/datafit/backend/`). `{utilisate
 
 | Méthode | Adresse | Description |
 |---|---|---|
-| `POST` | `/api/auth/register` | Crée un compte |
+| `POST` | `/api/auth/register` | Crée un compte, utilisable tout de suite (aucun mail de confirmation), renvoie `{ id, email }` |
 | `POST` | `/api/auth/login` | Vérifie les identifiants, renvoie `{ id, email }` |
 | `POST` | `/api/profil/register/profil` | Crée le profil (nom, sexe, poids, taille, objectif, niveau, activité, date de naissance) |
 | `POST` | `/api/contact` | Enregistre un message du formulaire de contact |
