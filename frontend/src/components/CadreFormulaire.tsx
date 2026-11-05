@@ -11,8 +11,8 @@ interface Props {
   children: ReactNode
 }
 
-// Mise en page des pages à formulaire hors de l'application (connexion, mot de passe oublié,
-// contact) : à gauche le logo et un message, à droite le formulaire.
+// Mise en page des pages à formulaire hors de l'application (connexion, contact) :
+// à gauche le logo et un message, à droite le formulaire.
 function CadreFormulaire({ accroche, titre, children }: Props) {
   return (
     <div className="cnx refonte">
