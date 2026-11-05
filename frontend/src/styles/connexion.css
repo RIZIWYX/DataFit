@@ -157,10 +157,6 @@
 .cnx-cgu .cnx-lien {
   font-weight: 500;
 }
-/* un lien seul sous un bouton (mot de passe oublié) */
-.cnx-centre {
-  align-self: center;
-}
 .cnx-message {
   display: flex;
   align-items: flex-start;

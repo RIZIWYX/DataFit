@@ -122,7 +122,7 @@ Le découpage suit une règle simple, appelée **séparation des responsabilité
 - son **hook** (voir [glossaire](glossaire.md#hook)) contient l'état et la logique de la page ;
 - les **fonctions de `lib/`** sont *pures* : mêmes entrées, même résultat, sans dépendre de React. On peut donc les tester seules.
 
-**Routage** : `App.tsx` déclare deux familles de pages. Les pages plein écran (`/`, `/connexion`, `/mot-de-passe-oublie`, `/creation-profil`, `/contact`, `/installer`, `/cgu`, `/donnees-personnelles`) et les pages de l'application, qui partagent la barre latérale via `AppLayout` (`/dashboard`, `/performance`, `/sport`, `/programmation`, `/montre`, `/historique`, `/progression`, `/sommeil`, `/nutrition`, `/chatbot`, `/premium`, `/profil`).
+**Routage** : `App.tsx` déclare deux familles de pages. Les pages plein écran (`/`, `/connexion`, `/creation-profil`, `/contact`, `/installer`, `/cgu`, `/donnees-personnelles`) et les pages de l'application, qui partagent la barre latérale via `AppLayout` (`/dashboard`, `/performance`, `/sport`, `/programmation`, `/montre`, `/historique`, `/progression`, `/sommeil`, `/nutrition`, `/chatbot`, `/premium`, `/profil`).
 
 **Appels au back** : regroupés dans `services/`, un fichier par domaine (`montreService.ts`, `nutritionService.ts`, `sport/*.ts`).
 
@@ -184,8 +184,7 @@ Résumé (détails dans [Déploiement](deploiement.md)) :
 | Front : pages, navigation, graphiques, rangs | ✅ fait |
 | Front : tableau de bord, progression et page Montre branchés sur les vraies séances | 🚧 utilisent encore des données de démonstration (`data/seances.ts`, `data/sommeil-demo.ts`) |
 | Profil : lecture et modification depuis le serveur | 🚧 seule la création existe côté back ; le front relit le profil dans le navigateur |
-| Mot de passe oublié | 🚧 page prête, endpoints à écrire |
-| Inscription et connexion | ✅ fait |
+| Inscription et connexion (e-mail + mot de passe, sans envoi de mail) | ✅ fait |
 | Profil créé côté serveur | ✅ fait |
 | Séances montre (cardio, vélo, natation, muscu) : simulateur → analyse → base | ✅ fait |
 | Sommeil : simulation, analyse, historique | ✅ fait |

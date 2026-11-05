@@ -28,6 +28,7 @@ Supprimer le fichier dans un nouveau commit ne suffit pas : le secret reste dans
 - Algorithme : **BCrypt** (`BCryptPasswordEncoder`, déclaré dans `config/PasswordConfig.java`). Ces algorithmes sont volontairement lents et ajoutent un *sel* (valeur aléatoire propre à chaque compte) : deux utilisateurs avec le même mot de passe ont des empreintes différentes, et tester des millions de mots de passe devient très coûteux. **Jamais** MD5 ni SHA-256 seuls, beaucoup trop rapides.
 - La colonne `mot_de_passe` (`VARCHAR(255)`) a la taille qu'il faut pour une empreinte BCrypt (60 caractères).
 - Message d'erreur identique pour « e-mail inconnu » et « mauvais mot de passe », pour ne pas révéler quelles adresses ont un compte.
+- **Aucun mail n'est envoyé** : l'adresse n'est pas confirmée à l'inscription (le compte marche tout de suite) et il n'y a pas de réinitialisation du mot de passe. Un mot de passe perdu ne se récupère pas depuis le site.
 
 ## Authentification
 
