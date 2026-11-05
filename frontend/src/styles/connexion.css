@@ -194,3 +194,29 @@
     display: inline-flex;
   }
 }
+
+/* ---------- continuer avec Google ---------- */
+.cnx-google {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+.cnx-separateur {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  color: var(--gris);
+  font-size: 0.85rem;
+}
+.cnx-separateur::before,
+.cnx-separateur::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--trait);
+}
+.cnx-google-bouton {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}

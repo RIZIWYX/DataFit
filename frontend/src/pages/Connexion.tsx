@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import BoutonGoogle from '../components/BoutonGoogle.tsx'
 import CadreFormulaire from '../components/CadreFormulaire.tsx'
 import Icone from '../components/Icone.tsx'
 import Segments from '../components/Segments.tsx'
@@ -180,6 +181,8 @@ function Connexion() {
           <Icone trace={ICONES.fleche} />
         </button>
       </form>
+
+      <BoutonGoogle inscription={isInscription} />
     </CadreFormulaire>
   )
 }
