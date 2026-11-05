@@ -76,19 +76,15 @@ public class GoogleAuthController {
         int id;
         if (ids.isEmpty()) {
             // nouveau compte : pas de mot de passe connu (une valeur aléatoire hachée, que personne
-            // ne connaît ; « mot de passe oublié » permet d'en choisir un plus tard).
-            // L'adresse est déjà vérifiée par Google, et le bouton indique l'acceptation des CGU.
-            LocalDateTime maintenant = LocalDateTime.now();
+            // ne connaît). Le bouton indique l'acceptation des CGU.
             id = jdbc.queryForObject(
-                    "INSERT INTO utilisateur (email, mot_de_passe, email_verifie_le, cgu_acceptees_le) "
-                            + "VALUES (?, ?, ?, ?) RETURNING id",
+                    "INSERT INTO utilisateur (email, mot_de_passe, cgu_acceptees_le) "
+                            + "VALUES (?, ?, ?) RETURNING id",
                     Integer.class,
-                    email, BCrypt.hashpw(UUID.randomUUID().toString(), BCrypt.gensalt()), maintenant, maintenant);
+                    email, BCrypt.hashpw(UUID.randomUUID().toString(), BCrypt.gensalt()), LocalDateTime.now());
         } else {
+            // compte déjà créé avec cette adresse (par e-mail ou par Google) : on le connecte
             id = ids.get(0);
-            // compte créé par e-mail mais jamais confirmé : Google vient de confirmer l'adresse
-            jdbc.update("UPDATE utilisateur SET email_verifie_le = now(), jeton_verification_hash = NULL, "
-                    + "jeton_expire_le = NULL WHERE id = ? AND email_verifie_le IS NULL", id);
         }
 
         return ResponseEntity.ok(Map.of("id", id, "email", email));
