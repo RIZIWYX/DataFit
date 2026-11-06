@@ -1,6 +1,7 @@
 package com.datafit.backend.montre.velo;
 
 import com.datafit.backend.montre.client.AnalyseClient;
+import com.datafit.backend.montre.graphiques.ArchivesMesures;
 import com.datafit.backend.montre.client.DemandeSimulation;
 import com.datafit.backend.montre.client.ProfilSimulation;
 import com.datafit.backend.montre.client.SeanceSimulation;
@@ -25,13 +26,15 @@ public class VeloService {
   private final ProfilRepository profilRepo;
   private final SimulateurClient simulateur;
   private final AnalyseClient analyse;
+  private final ArchivesMesures archives;
 
   public VeloService(VeloRepository repo, ProfilRepository profilRepo,
-      SimulateurClient simulateur, AnalyseClient analyse) {
+      SimulateurClient simulateur, AnalyseClient analyse, ArchivesMesures archives) {
     this.repo = repo;
     this.profilRepo = profilRepo;
     this.simulateur = simulateur;
     this.analyse = analyse;
+    this.archives = archives;
   }
 
   public Velo valider(Utilisateur user, VeloRequest req) {
@@ -50,7 +53,9 @@ public class VeloService {
         r.fcMin(), r.fcMoy(), r.fcMax(), r.correlationFcVitesse(), r.dureeS(),
         r.tempsPedalageS(), r.tempsRoueLibreS(), r.tempsPauseS(),
         r.distanceM(), r.vitesseMoyKmh(), r.vitesseMaxKmh(), r.variationVitesse());
-    return repo.save(seance);
+    seance = repo.save(seance);
+    archives.enregistrer(TYPE, user.getId(), seance.getId(), mesures);
+    return seance;
   }
 
   @Transactional(readOnly = true)

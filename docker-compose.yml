@@ -49,6 +49,9 @@ services:
       # Services Python SD
       SIMULATEUR_URL: http://simulateur:8000
       ANALYSE_URL: http://analyse:8001
+      DATAFIT_MESURES_DIR: /app/donnees-montre
+    volumes:
+      - mesures-montre:/app/donnees-montre
     depends_on:
       db:
         condition: service_healthy
@@ -68,3 +71,4 @@ services:
 
 volumes:
   donnees-postgres:
+  mesures-montre:

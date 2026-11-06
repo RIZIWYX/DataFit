@@ -1,6 +1,7 @@
 package com.datafit.backend.montre.natation;
 
 import com.datafit.backend.montre.client.AnalyseClient;
+import com.datafit.backend.montre.graphiques.ArchivesMesures;
 import com.datafit.backend.montre.client.DemandeSimulation;
 import com.datafit.backend.montre.client.ProfilSimulation;
 import com.datafit.backend.montre.client.SeanceSimulation;
@@ -27,13 +28,15 @@ public class NatationService {
   private final ProfilRepository profilRepo;
   private final SimulateurClient simulateur;
   private final AnalyseClient analyse;
+  private final ArchivesMesures archives;
 
   public NatationService(SeanceNatationRepository repo, ProfilRepository profilRepo,
-      SimulateurClient simulateur, AnalyseClient analyse) {
+      SimulateurClient simulateur, AnalyseClient analyse, ArchivesMesures archives) {
     this.repo = repo;
     this.profilRepo = profilRepo;
     this.simulateur = simulateur;
     this.analyse = analyse;
+    this.archives = archives;
   }
 
   public Natation valider(Utilisateur user, NatationRequest req) {
@@ -53,7 +56,9 @@ public class NatationService {
         r.tempsMoy100mS(), r.dureeLongueurRapideS(), r.dureeMoyLongueurS(),
         r.variationDureeLongueurs(), r.totalCyclesBras(),
         r.tempsNageS(), r.tempsPauseS());
-    return repo.save(seance);
+    seance = repo.save(seance);
+    archives.enregistrer(TYPE, user.getId(), seance.getId(), mesures);
+    return seance;
   }
 
   @Transactional(readOnly = true)

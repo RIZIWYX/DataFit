@@ -1,15 +1,19 @@
 import { useState } from 'react'
-import { SEANCES_DEMO } from '../data/seances.ts'
-import { NUITS_DEMO } from '../data/sommeil-demo.ts'
-import { lireCompte } from '../lib/compte.ts'
-import { finSeance } from '../lib/format.ts'
+import { cleDuCompte, lireCompte } from '../lib/compte.ts'
 import { lireProfil } from '../lib/profil.ts'
-import { nuits } from '../lib/sommeil.ts'
+import { useSeancesMontre } from './useResultatsMontre.ts'
+import useSommeil from './useSommeil.ts'
 import { SPORTS_MONTRE, simulerNuit, simulerSeance } from '../services/montreService.ts'
 
-// Aucune vraie montre n'est reliée au site pour l'instant : l'état « connectée » est simulé dans
-// la page, et « Synchroniser » demande au backend de simuler une séance et une nuit, de les faire
-// analyser puis de les enregistrer. Les chiffres affichés viennent encore des données de démonstration.
+// La connexion à la montre reste simulée. Les résultats affichés sont ceux du backend.
+// Une synchronisation produit des mesures, les analyse puis les enregistre en base.
+function lireSynchronisation(): Date | null {
+  try {
+    const date = localStorage.getItem(cleDuCompte('datafit-synchronisation'))
+    return date && Number.isFinite(Date.parse(date)) ? new Date(date) : null
+  } catch { return null }
+}
+
 const IDENTIFIANT = 'DF-001'
 
 const NOMS_SPORTS = { cardio: 'course', velo: 'vélo', natation: 'natation', muscu: 'musculation' }
@@ -23,17 +27,13 @@ function useMontre() {
   const [erreur, setErreur] = useState('')
   const [enCours, setEnCours] = useState(false)
 
-  // de la plus ancienne à la plus récente
-  const seances = [...SEANCES_DEMO].sort((a, b) => a.date.getTime() - b.date.getTime())
+  const resultats = useSeancesMontre()
+  const sommeil = useSommeil()
+  const seances = resultats.seances
   const derniereSeance = seances.at(-1)
-  const nuitsRecues = nuits(NUITS_DEMO, aujourdHui)
+  const nuitsRecues = sommeil.nuits
   const derniereNuit = nuitsRecues.at(-1)
-
-  // au départ, la dernière synchronisation est la plus récente des données reçues
-  const [synchronisation, setSynchronisation] = useState(() => {
-    const dates = [derniereSeance && finSeance(derniereSeance), derniereNuit?.lever].filter((d): d is Date => !!d)
-    return dates.length ? new Date(Math.max(...dates.map((d) => d.getTime()))) : null
-  })
+  const [synchronisation, setSynchronisation] = useState(lireSynchronisation)
 
   // une séance d'un sport tiré au hasard, et la nuit ; l'une peut réussir sans l'autre
   async function synchroniser() {
@@ -58,7 +58,17 @@ function useMontre() {
       nuit.status === 'fulfilled' && 'une nuit',
     ].filter(Boolean)
     if (recues.length) {
-      setSynchronisation(new Date())
+      // Ne pas attribuer les résultats à un compte changé pendant la requête.
+      if (lireCompte()?.id !== compte.id) return
+      if (seance.status === 'fulfilled' && seance.value && typeof seance.value === 'object' && 'id' in seance.value) {
+        try {
+          localStorage.setItem(cleDuCompte('datafit-derniere-seance'), `${sport}-${seance.value.id}`)
+        } catch { /* facultatif */ }
+      }
+      const date = new Date()
+      setSynchronisation(date)
+      try { localStorage.setItem(cleDuCompte('datafit-synchronisation'), date.toISOString()) } catch { /* facultatif */ }
+      window.dispatchEvent(new Event('datafit-synchronisation'))
       setMessage(`Synchronisation terminée : ${recues.join(' et ')} reçue${recues.length > 1 ? 's' : ''}.`)
     }
     const echecs = [seance.status === 'rejected' && 'la séance', nuit.status === 'rejected' && 'la nuit'].filter(
@@ -83,7 +93,8 @@ function useMontre() {
     synchroniser,
     enCours,
     message,
-    erreur,
+    erreur: [erreur, resultats.erreur, sommeil.erreur].filter(Boolean).join(' '),
+    chargement: resultats.chargement || sommeil.chargement,
     derniereSeance,
     derniereCourse: seances.findLast((s) => s.sport === 'course'),
     nbSeances: seances.length,

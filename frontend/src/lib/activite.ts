@@ -82,6 +82,7 @@ export function parJour(seances: Seance[], nbJours: number, aujourdHui: Date): J
 // Distance d'une séance en kilomètres : course et natation ; rien pour la musculation.
 export function distanceKm(seance: Seance): number {
   switch (seance.sport) {
+    case 'velo':
     case 'course': return seance.quantite
     case 'natation': return seance.quantite / 1000
     case 'musculation': return 0

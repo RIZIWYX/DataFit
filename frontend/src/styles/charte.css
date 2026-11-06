@@ -32,6 +32,7 @@
   /* sports, sur fond noir : trois teintes et trois clartés bien séparées (gris clair, orange, bleu),
     ce qui les garde distinctes pour les daltoniens. Le turquoise est réservé au signal. */
   --sport-musculation: #e4e4e7;
+  --sport-velo: #c4a7e7;
   --sport-course: #ff8a3d;
   --sport-natation: #6e8bff;
 

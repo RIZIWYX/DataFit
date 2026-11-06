@@ -36,4 +36,5 @@ __pycache__/
 
 # Trace ajoutée par Windows aux fichiers téléchargés
 *Zone.Identifier
-.vscode/
+donnees-montre/
+backend/donnees-montre/

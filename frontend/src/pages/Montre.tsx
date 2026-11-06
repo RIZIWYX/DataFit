@@ -1,3 +1,4 @@
+import '../styles/graphiques-analyse.css'
 import '../styles/montre.css'
 import Icone from '../components/Icone.tsx'
 import LienFleche from '../components/LienFleche.tsx'
@@ -13,7 +14,6 @@ import { allureSeance, formatDate, formatHeure, formatJourRelatif, resumeSeance 
 function Montre() {
   const m = useMontre()
   const { aujourdHui } = m
-  const calme = m.derniereNuit && Math.round((1 - m.derniereNuit.minutesAgitees / m.derniereNuit.minutes) * 100)
 
   const mesures = [
     {
@@ -34,7 +34,7 @@ function Montre() {
     {
       nom: 'Mouvement',
       quand: 'La nuit',
-      valeur: calme !== undefined ? `Nuit calme à ${calme} %, dernière nuit` : '–',
+      valeur: '–',
     },
   ]
 
@@ -44,7 +44,7 @@ function Montre() {
         surtitre="Suivi"
         titre="Montre"
       >
-        L'état de votre montre et les données qu'elle transmet à DataFit.
+        Les résultats de vos séances et nuits synchronisées.
       </TitrePage>
 
       {/* maintenant : la montre, son état, la synchronisation */}
@@ -60,6 +60,7 @@ function Montre() {
 
         <div className="montre-infos">
           <h2>{m.nom}</h2>
+          <p className="montre-note">Montre simulée : les résultats affichés sont ceux enregistrés après analyse.</p>
           <p className="montre-statut">
             <span className={m.connectee ? 'voyant actif' : 'voyant'} />
             {m.connectee ? 'Connectée' : 'Déconnectée'}
@@ -70,7 +71,7 @@ function Montre() {
             <strong>
               {m.synchronisation
                 ? `${formatJourRelatif(m.synchronisation, aujourdHui)}, ${formatHeure(m.synchronisation)}`
-                : 'jamais'}
+                : '–'}
             </strong>
           </p>
           <div className="montre-actions">
@@ -102,6 +103,7 @@ function Montre() {
         </div>
       </section>
 
+      {m.chargement && <p role="status">Chargement des résultats…</p>}
       <div className="montre-grille">
         <Panneau titre="Ce que la montre mesure">
           <div className="montre-tableau">
@@ -125,8 +127,8 @@ function Montre() {
             </table>
           </div>
           <p className="montre-note">
-            Un relevé par minute. Ne sont pas transmis : les phases de sommeil, l'oxygène du sang, la
-            variabilité cardiaque et le nombre de pas.
+            Les valeurs affichées proviennent des analyses enregistrées. Le détail des mouvements
+            et des relevés minute par minute n'est pas disponible ici.
           </p>
         </Panneau>
 
