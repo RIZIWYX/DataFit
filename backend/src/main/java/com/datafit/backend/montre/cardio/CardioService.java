@@ -1,6 +1,7 @@
 package com.datafit.backend.montre.cardio;
 
 import com.datafit.backend.montre.client.AnalyseClient;
+import com.datafit.backend.montre.graphiques.ArchivesMesures;
 import com.datafit.backend.montre.client.DemandeSimulation;
 import com.datafit.backend.montre.client.ProfilSimulation;
 import com.datafit.backend.montre.client.SeanceSimulation;
@@ -25,13 +26,15 @@ public class CardioService {
   private final ProfilRepository profilRepo;
   private final SimulateurClient simulateur;
   private final AnalyseClient analyse;
+  private final ArchivesMesures archives;
 
   public CardioService(CardioRepository repo, ProfilRepository profilRepo,
-      SimulateurClient simulateur, AnalyseClient analyse) {
+      SimulateurClient simulateur, AnalyseClient analyse, ArchivesMesures archives) {
     this.repo = repo;
     this.profilRepo = profilRepo;
     this.simulateur = simulateur;
     this.analyse = analyse;
+    this.archives = archives;
   }
 
   // Lance une seance : simulateur -> analyse -> enregistrement.
@@ -55,7 +58,9 @@ public class CardioService {
         r.fcMoy(), r.fcMin(), r.fcMax(), r.correlationVitesseFc(),
         r.dureeS(), r.distanceM(), r.vitesseMoyKmh(), r.vitesseMaxKmh(),
         r.tempsMoy1kmS(), r.variationVitesse());
-    return repo.save(seance);
+    seance = repo.save(seance);
+    archives.enregistrer(TYPE, user.getId(), seance.getId(), mesures);
+    return seance;
   }
 
   @Transactional(readOnly = true)

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SEANCES_DEMO } from '../data/seances.ts'
+import { useSeancesMontre } from './useResultatsMontre.ts'
 import { joursEcoules } from '../lib/activite.ts'
 import { type Categorie, type Entree, entreesHistorique, normaliser, texteRecherche } from '../lib/historique.ts'
 import { chargerPlanning } from '../lib/programmation.ts'
@@ -29,6 +29,7 @@ export interface Groupe {
 
 // logique de l'historique : recherche, filtres, tri, regroupement par mois et affichage par lots
 function useHistorique() {
+  const { seances, chargement, erreur, connecte, recharger } = useSeancesMontre()
   const [categorie, setCategorie] = useState<Categorie | 'tous'>('tous')
   const [nbSemaines, setNbSemaines] = useState(0)
   const [tri, setTri] = useState<Tri>('recentes')
@@ -39,7 +40,7 @@ function useHistorique() {
 
   const mots = normaliser(recherche).split(/\s+/).filter(Boolean)
   // la période et la recherche d'abord : les compteurs des catégories en dépendent
-  const candidates = entreesHistorique(SEANCES_DEMO, planning)
+  const candidates = entreesHistorique(seances, planning)
     .filter((entree) => !nbSemaines || joursEcoules(entree.date, aujourdHui) < nbSemaines * 7)
     .filter((entree) => {
       const texte = texteRecherche(entree)
@@ -68,6 +69,7 @@ function useHistorique() {
   }
 
   return {
+    chargement, erreur, connecte, recharger,
     aujourdHui,
     categorie,
     choisirCategorie: filtrer(setCategorie),

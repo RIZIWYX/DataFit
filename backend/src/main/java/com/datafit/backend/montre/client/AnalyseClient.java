@@ -27,4 +27,11 @@ public class AnalyseClient {
         .retrieve()
         .body(typeResultat);
   }
+  public Object graphiques(Object mesures) {
+    return http.post().uri("/graphiques").body(mesures).retrieve().body(Object.class);
+  }
+
+  public Object progression(Object historique) {
+    return http.post().uri("/graphiques/progression").body(historique).retrieve().body(Object.class);
+  }
 }

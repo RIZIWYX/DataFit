@@ -18,6 +18,8 @@ export interface Entree {
   icone: string
   couleur: string
   dureeMin: number
+  dureeSecondes?: number
+  heureConnue?: boolean
   mesure: string // la mesure principale : « 5,2 km », « 3 exercices »
   km: number
   fc?: number
@@ -32,11 +34,12 @@ export function entreesHistorique(seances: Seance[], planning: Planning): Entree
     id: seance.id,
     categorie: seance.sport,
     date: seance.date,
-    titre: SPORTS[seance.sport].nom,
+    titre: seance.nom,
     sousTitre: 'Montre',
     icone: SPORTS[seance.sport].icone,
     couleur: couleurSport(seance.sport),
     dureeMin: seance.dureeMin,
+    dureeSecondes: seance.dureeSecondes, heureConnue: false,
     mesure: resumeSeance(seance),
     km: distanceKm(seance),
     fc: seance.fcMoyenne,

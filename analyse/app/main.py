@@ -49,3 +49,21 @@ def analyser(donnees: dict):
             status_code=500,
             detail="L'analyse de la séance n'a pas pu être réalisée."
         ) from erreur
+
+
+@app.post("/graphiques")
+def graphiques(donnees: dict):
+    from app.graphiques import graphiques_seance
+    try:
+        return graphiques_seance(donnees)
+    except (ValueError, KeyError, TypeError) as erreur:
+        raise HTTPException(status_code=422, detail=str(erreur)) from erreur
+
+
+@app.post("/graphiques/progression")
+def progression(donnees: dict):
+    from app.graphiques import graphiques_progression
+    try:
+        return graphiques_progression(donnees)
+    except (ValueError, KeyError, TypeError) as erreur:
+        raise HTTPException(status_code=422, detail=str(erreur)) from erreur

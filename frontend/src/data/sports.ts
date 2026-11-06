@@ -2,7 +2,7 @@
 // Pour ajouter un sport : son id dans le type Sport, une ligne dans SPORTS,
 // puis sa couleur (--sport-…) dans charte.css.
 
-export type Sport = 'course' | 'musculation' | 'natation'
+export type Sport = 'course' | 'musculation' | 'natation' | 'velo'
 
 export interface InfosSport {
   nom: string
@@ -14,6 +14,10 @@ export interface InfosSport {
 
 // l'ordre des lignes est aussi l'ordre d'empilement dans le graphique (la première en bas)
 export const SPORTS: Record<Sport, InfosSport> = {
+  velo: {
+    nom: 'Vélo',
+    icone: 'M5 15a4 4 0 1 0 0 8 4 4 0 0 0 0-8M19 15a4 4 0 1 0 0 8 4 4 0 0 0 0-8M5 19l5-10 5 10H5M8 9h5M15 6h3l1 13',
+  },
   course: {
     nom: 'Course à pied',
     image: '/photos/course.webp',

@@ -1,20 +1,20 @@
 import { useState } from 'react'
-import { NUITS_DEMO } from '../data/sommeil-demo.ts'
-import { ecartCoucher, nuits } from '../lib/sommeil.ts'
+import { useNuitsMontre } from './useResultatsMontre.ts'
+import { minutesDepuisMidi } from '../lib/sommeil.ts'
 
-// logique de la page sommeil : les nuits reçues, la dernière mise en avant, et la nuit consultée
-function useSommeil() {
-  const [aujourdHui] = useState(() => new Date())
-  const liste = nuits(NUITS_DEMO, aujourdHui)
-  const [choisie, setChoisie] = useState(liste.at(-1)?.id ?? '')
-
+export default function useSommeil() {
+  const { nuits: resultats, ...etat } = useNuitsMontre()
+  const liste = resultats.map((n) => ({
+    ...n, id: String(n.id), coucher: new Date(n.heureCoucher), lever: new Date(n.heureReveil),
+    minutes: n.dureeSommeilS / 60,
+  }))
+  const [choisie, setChoisie] = useState('')
+  const heures = liste.map((n) => minutesDepuisMidi(n.coucher))
   return {
-    nuits: liste,
+    ...etat, nuits: liste,
     nuit: liste.find((n) => n.id === choisie) ?? liste.at(-1),
     choisirNuit: setChoisie,
-    ecartCoucher: ecartCoucher(liste),
-    dureeMoyenne: liste.length ? Math.round(liste.reduce((s, n) => s + n.minutes, 0) / liste.length) : 0,
+    ecartCoucher: heures.length > 1 ? Math.max(...heures) - Math.min(...heures) : null,
+    dureeMoyenne: liste.length ? liste.reduce((s, n) => s + n.minutes, 0) / liste.length : null,
   }
 }
-
-export default useSommeil

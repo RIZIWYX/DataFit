@@ -3,7 +3,7 @@ import '../styles/liste-seances.css'
 import { ICONES } from '../data/icones.ts'
 import { type Seance } from '../data/seances.ts'
 import { SPORTS, couleurSport } from '../data/sports.ts'
-import { formatDuree, formatHeure, formatJourRelatif, resumeSeance } from '../lib/format.ts'
+import { formatDuree, formatJourRelatif, resumeSeance } from '../lib/format.ts'
 import Icone from './Icone.tsx'
 
 type Props = {
@@ -25,9 +25,9 @@ function ListeSeances({ seances, aujourdHui }: Props) {
                 <Icone trace={sport.icone} />
               </span>
               <span className="ligne-seance-titre">
-                <strong>{sport.nom}</strong>
+                <strong>{seance.nom}</strong>
                 <small>
-                  {formatJourRelatif(seance.date, aujourdHui)} · {formatHeure(seance.date)}
+                  {formatJourRelatif(seance.date, aujourdHui)}
                 </small>
               </span>
               <span className="ligne-seance-mesure">{resumeSeance(seance)}</span>

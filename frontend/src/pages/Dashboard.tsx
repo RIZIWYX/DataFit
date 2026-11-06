@@ -1,3 +1,4 @@
+import '../styles/graphiques-analyse.css'
 
 import { Link } from 'react-router'
 import '../styles/dashboard.css'
@@ -60,15 +61,16 @@ function Dashboard() {
         })}
         titre={d.prenom ? `${salut} ${d.prenom}` : salut}
       >
-        {resume}
+        {d.chargement ? 'Chargement des résultats…' : resume}
       </TitrePage>
 
+      {d.erreur && <p className="alerte" role="alert">{d.erreur}</p>}
       {/* Ce que j'ai fait en dernier, ce qui m'attend ensuite */}
       <div className="accueil-cartes">
         {derniereSeance ? (
           <CarteSeance
-            surtitre={`Dernière séance · ${quand(derniereSeance.date)}`}
-            titre={SPORTS[derniereSeance.sport].nom}
+            surtitre={`Dernière séance · ${formatJourRelatif(derniereSeance.date, aujourdHui)}`}
+            titre={derniereSeance.nom}
             icone={SPORTS[derniereSeance.sport].icone}
             couleur={couleurSport(derniereSeance.sport)}
             image={SPORTS[derniereSeance.sport].image}

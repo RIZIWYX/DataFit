@@ -1,50 +1,26 @@
-import { useMemo, useState } from 'react'
-import { SEANCES_DEMO } from '../data/seances.ts'
+import { useState } from 'react'
 import { cleDuCompte } from '../lib/compte.ts'
-import { detailSeance } from '../lib/detail-seance.ts'
+import { useSeancesMontre } from './useResultatsMontre.ts'
 
-// des notes par compte (voir cleDuCompte)
 const CLE_STOCKAGE = 'datafit-notes'
-
-// Démonstration : les notes sont gardées dans le navigateur, une par séance.
 function lireNotes(): Record<string, string> {
-  try {
-    return JSON.parse(localStorage.getItem(cleDuCompte(CLE_STOCKAGE)) ?? '{}')
-  } catch {
-    return {}
-  }
+  try { return JSON.parse(localStorage.getItem(cleDuCompte(CLE_STOCKAGE)) ?? '{}') }
+  catch { return {} }
 }
-
-// logique de la page d'une séance : la retrouver, préparer ses courbes, garder la note,
-// et trouver les séances voisines pour passer de l'une à l'autre
-function useSeance(id: string | undefined) {
-  const seance = SEANCES_DEMO.find((s) => s.id === id)
-  const detail = useMemo(() => (seance ? detailSeance(seance) : null), [seance])
+export default function useSeance(id: string | undefined) {
+  const { seances, ...etat } = useSeancesMontre()
+  const seance = seances.find((s) => s.id === id)
   const [notes, setNotes] = useState(lireNotes)
-
-  // de la plus ancienne à la plus récente
-  const chronologie = [...SEANCES_DEMO].sort((a, b) => a.date.getTime() - b.date.getTime())
-  const rang = chronologie.findIndex((s) => s.id === id)
-
+  const rang = seances.findIndex((s) => s.id === id)
   function ecrireNote(texte: string) {
     if (!seance) return
     const suivantes = { ...notes, [seance.id]: texte }
     setNotes(suivantes)
-    try {
-      localStorage.setItem(cleDuCompte(CLE_STOCKAGE), JSON.stringify(suivantes))
-    } catch {
-      // stockage indisponible (navigation privée…) : la note ne sera pas gardée
-    }
+    try { localStorage.setItem(cleDuCompte(CLE_STOCKAGE), JSON.stringify(suivantes)) } catch { /* facultatif */ }
   }
-
   return {
-    seance,
-    detail,
-    note: seance ? (notes[seance.id] ?? '') : '',
-    ecrireNote,
-    precedente: rang > 0 ? chronologie[rang - 1] : undefined,
-    suivante: rang >= 0 ? chronologie[rang + 1] : undefined,
+    ...etat, seance, note: seance ? notes[seance.id] ?? '' : '', ecrireNote,
+    precedente: rang > 0 ? seances[rang - 1] : undefined,
+    suivante: rang >= 0 ? seances[rang + 1] : undefined,
   }
 }
-
-export default useSeance
