@@ -4,78 +4,103 @@ DataFit utilise **PostgreSQL 17** (choix expliqué dans l'[ADR 0003](adr/0003-po
 
 ## Schéma actuel
 
-Une seule table pour l'instant, créée par [`db/init.sql`](../db/init.sql) :
+Les tables sont créées par les scripts numérotés de [`db/`](../db/), exécutés dans l'ordre par `lancer.sh` :
 
-| Colonne | Type | Contraintes | Rôle |
-|---|---|---|---|
-| `id` | `SERIAL` | clé primaire | identifiant, attribué automatiquement |
-| `email` | `VARCHAR(255)` | non nul, unique | identifiant de connexion |
-| `mot_de_passe` | `VARCHAR(255)` | non nul | **empreinte** du mot de passe, jamais le mot de passe en clair (voir [Sécurité](securite.md#mots-de-passe)) |
-| `cree_le` | `TIMESTAMP` | non nul, défaut `now()` | date de création du compte |
-
-## Schéma cible 🚧
-
-Proposition, déduite de ce qu'affichent les pages du front. À valider en équipe avant de créer les tables.
+| Fichier | Tables |
+|---|---|
+| `01_utilisateur_profil.sql` | `utilisateur`, `profil` |
+| `02_nutrition.sql` | `nutrition`, `analyse_nutrition` |
+| `03_seance.sql` | `seance_cardio`, `seance_natation`, `seance_muscu`, `seance_velo` |
+| `04_sports.sql` | `sbd`, `halterofilie`, `streetlifting`, `calisthenics`, `natation`, `souplesse`, `athletisme` |
+| `05_seances.sql` | reprise des tables de séances pour les bases déjà créées |
+| `06_contact.sql` | `message_contact` |
+| `07_sommeil.sql` | `sommeil` |
 
 ```mermaid
 erDiagram
     UTILISATEUR ||--o| PROFIL : "a"
-    UTILISATEUR ||--o{ SEANCE : "réalise"
-    SEANCE ||--o{ MESURE : "contient"
-    SEANCE ||--o| ANALYSE_SEANCE : "est analysée par"
-    UTILISATEUR ||--o{ PERFORMANCE : "déclare"
+    UTILISATEUR ||--o{ SEANCE_CARDIO : "réalise"
+    UTILISATEUR ||--o{ SEANCE_VELO : "réalise"
+    UTILISATEUR ||--o{ SEANCE_NATATION : "réalise"
+    UTILISATEUR ||--o{ SEANCE_MUSCU : "réalise"
+    UTILISATEUR ||--o{ SOMMEIL : "dort"
+    UTILISATEUR ||--o{ NUTRITION : "mange"
+    UTILISATEUR ||--o{ ANALYSE_NUTRITION : "une par jour"
+    UTILISATEUR ||--o{ PERFORMANCE_DISCIPLINE : "déclare"
 
     UTILISATEUR {
         int id PK
         varchar email UK
-        varchar mot_de_passe
-        timestamptz cree_le
+        varchar mot_de_passe "empreinte BCrypt"
+        timestamp cree_le
+        timestamp cgu_acceptees_le
     }
     PROFIL {
         int utilisateur_id PK, FK
+        varchar nom
         varchar prenom
-        char sexe "H ou F"
-        numeric poids_kg
+        varchar sexe
+        float poids
+        float taille
+        varchar objectif
+        varchar niveau
+        varchar activite
         date date_naissance
     }
-    SEANCE {
-        bigint id PK
+    SEANCE_CARDIO {
+        int id PK
         int utilisateur_id FK
-        varchar sport "course, musculation, natation"
-        timestamptz debut
+        date date
+        varchar nom
+        int fc_moy
         int duree_s
-        numeric quantite
-        int fc_moyenne
+        float distance_m
+        float vitesse_moy_kmh
     }
-    MESURE {
-        bigint seance_id PK, FK
-        int t PK "secondes depuis le début"
-        smallint fc
-        numeric vitesse_kmh
-        double lat
-        double lon
+    SOMMEIL {
+        int id PK
+        int utilisateur_id FK
+        timestamp heure_coucher
+        timestamp heure_reveil
+        int duree_sommeil_s
+        float efficacite_sommeil_pct
+        int duree_profond_s
+        int duree_paradoxal_s
     }
-    ANALYSE_SEANCE {
-        bigint seance_id PK, FK
-        jsonb resultats "renvoyés par le service Python"
-        timestamptz calcule_le
+    NUTRITION {
+        int id PK
+        int utilisateur_id FK
+        date date
+        varchar repas
+        float calories
+        float proteines
+        float glucides
+        float lipides
     }
-    PERFORMANCE {
-        int utilisateur_id PK, FK
-        varchar exercice_id PK "id de paliers.ts"
-        varchar valeur
-        timestamptz maj_le
+    ANALYSE_NUTRITION {
+        int id PK
+        int utilisateur_id FK
+        date date
+        jsonb statistiques
+        jsonb repartition_repas
+    }
+    PERFORMANCE_DISCIPLINE {
+        int id PK
+        int utilisateur_id FK
+        date date
+        float valeurs "une colonne par exercice"
     }
 ```
 
-Lecture : `||--o{` signifie « un … pour zéro ou plusieurs … ». Un utilisateur a zéro ou plusieurs séances ; chaque séance appartient à exactement un utilisateur.
+Le schéma est simplifié : seules les colonnes principales sont montrées. `PERFORMANCE_DISCIPLINE` représente les sept tables de performances déclarées, qui ont toutes la même forme (une ligne par utilisateur et par jour, contrainte `UNIQUE (utilisateur_id, date)`). `SEANCE_CARDIO` représente aussi les tables vélo, natation et musculation, qui ajoutent leurs propres indicateurs.
 
 Quelques choix expliqués :
 
-- **`MESURE` a une clé composée `(seance_id, t)`** : une mesure n'existe qu'à l'intérieur d'une séance, et il n'y a qu'une mesure par seconde. Pas besoin d'un `id` séparé.
-- **`ANALYSE_SEANCE.resultats` en `JSONB`** : un type PostgreSQL qui stocke du JSON tout en permettant d'y chercher. Les indicateurs calculés par l'équipe SD vont évoluer ; les mettre en JSON évite de modifier la table à chaque nouvel indicateur. Si un indicateur devient central (affiché partout, trié, filtré), on le sortira dans une vraie colonne.
-- **`timestamptz` plutôt que `timestamp`** : garde le fuseau horaire. Avec des montres et des utilisateurs dans différents fuseaux, c'est la règle à suivre partout. La colonne `cree_le` actuelle est à convertir.
-- **Volume** : une séance d'une heure à une mesure par seconde, c'est 3 600 lignes dans `MESURE`. PostgreSQL gère des dizaines de millions de lignes sans problème avec le bon index (ici, la clé primaire suffit).
+- **Une table par type de séance** plutôt qu'une table générique : chaque sport a des indicateurs différents (longueurs en natation, séries en musculation, roue libre à vélo), stockés dans de vraies colonnes typées.
+- **Seuls les indicateurs sont stockés**, pas les mesures seconde par seconde : le service d'analyse les calcule, puis les mesures brutes sont abandonnées.
+- **`JSONB` pour une partie de l'analyse nutritionnelle** : les statistiques détaillées évoluent avec le travail de l'équipe SD ; les garder en JSON évite de modifier la table à chaque nouvel indicateur.
+- **`ON DELETE CASCADE` partout** : supprimer un compte supprime toutes ses données, ce qui répond au droit à l'effacement du RGPD.
+- **Contraintes `CHECK` sur le sommeil** : réveil après le coucher, durées positives, efficacité entre 0 et 100 %, FC cohérente. La base refuse une donnée incohérente même si le code a un bug.
 
 ## Conventions de nommage
 
@@ -86,16 +111,11 @@ Quelques choix expliqués :
 
 ## Faire évoluer le schéma
 
-### Le problème actuel
+### Le fonctionnement actuel
 
-`db/init.sql` n'est exécuté **qu'une seule fois**, à la création du volume Docker. Si quelqu'un ajoute une table dans ce fichier, les bases déjà créées sur les autres machines ne la verront pas. La seule solution aujourd'hui est de tout effacer :
+`lancer.sh` rejoue tous les fichiers de `db/` à chaque lancement. Comme ils utilisent `CREATE TABLE IF NOT EXISTS`, une nouvelle table apparaît sur toutes les machines sans rien effacer.
 
-```bash
-docker compose down -v   # -v supprime le volume, donc TOUTES les données locales
-docker compose up --build
-```
-
-Ça passe en développement, jamais avec de vraies données.
+La limite : `CREATE TABLE IF NOT EXISTS` ne modifie jamais une table qui existe déjà. Pour ajouter ou changer une colonne, il faut écrire un `ALTER TABLE` à la main (comme dans `05_seances.sql`), ou repartir d'une base vide avec `./lancer.sh --reinitialiser`, ce qui efface toutes les données locales.
 
 ### La solution standard : les migrations (recommandé)
 
@@ -106,11 +126,11 @@ Pour Spring Boot, l'outil le plus courant est **Flyway** :
 1. Ajouter la dépendance `spring-boot-starter-flyway` (ou `flyway-core` + `flyway-database-postgresql`) au `pom.xml`.
 2. Créer `backend/src/main/resources/db/migration/` et y mettre :
    ```
-   V1__creation_utilisateur.sql      ← le contenu actuel de init.sql
-   V2__creation_profil.sql
-   V3__creation_seance_et_mesure.sql
+   V1__utilisateur_profil.sql        ← le contenu actuel de db/01_…sql
+   V2__nutrition.sql
+   V3__seances.sql
    ```
-3. Retirer `db/init.sql` du `docker-compose.yml`.
+3. Retirer l'exécution des fichiers `db/*.sql` de `lancer.sh`.
 
 Règle d'or : **une migration déjà poussée ne se modifie jamais.** Pour corriger, on en écrit une nouvelle (`V4__ajout_colonne_x.sql`). Sinon, Flyway détecte que le fichier a changé et refuse de démarrer.
 

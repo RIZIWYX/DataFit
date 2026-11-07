@@ -12,7 +12,6 @@ import Historique from './pages/Historique.tsx'
 import Installer from './pages/Installer.tsx'
 import Landing from './pages/Landing.tsx'
 import Montre from './pages/Montre.tsx'
-import MotDePasseOublie from './pages/MotDePasseOublie.tsx'
 import Nutrition from './pages/Nutrition.tsx'
 import PageIntrouvable from './pages/PageIntrouvable.tsx'
 import Premium from './pages/Premium.tsx'
@@ -20,9 +19,9 @@ import Profil from './pages/Profil.tsx'
 import Programmation from './pages/Programmation.tsx'
 import Progression from './pages/Progression.tsx'
 import Seance from './pages/Seance.tsx'
+import SeanceCardio from './pages/SeanceCardio.tsx'
 import Sommeil from './pages/Sommeil.tsx'
 import Sport from './pages/Sport.tsx'
-import VerifierEmail from './pages/VerifierEmail.tsx'
 
 // l'onglet « Sport » s'appelle désormais « Performance » : les anciens liens
 // (/sport?discipline=nat…) mènent à la nouvelle adresse, paramètres compris
@@ -38,8 +37,6 @@ function App() {
         {/* pages plein écran, sans navigation */}
         <Route path="/" element={<Landing />} />
         <Route path="/connexion" element={<Connexion />} />
-        <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
-        <Route path="/verifier-email" element={<VerifierEmail />} />
         <Route path="/installer" element={<Installer />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/creation-profil" element={<CreationProfil />} />
@@ -54,6 +51,7 @@ function App() {
           <Route path="/programmation" element={<Programmation />} />
           <Route path="/montre" element={<Montre />} />
           <Route path="/historique" element={<Historique />} />
+          <Route path="/historique/cardio/:id" element={<SeanceCardio />} />
           <Route path="/historique/:id" element={<Seance />} />
           <Route path="/progression" element={<Progression />} />
           <Route path="/sommeil" element={<Sommeil />} />

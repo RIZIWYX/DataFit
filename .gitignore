@@ -14,7 +14,6 @@ dist-ssr
 
 # Editor directories and files
 .vscode/*
-!.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
@@ -27,7 +26,6 @@ dist-ssr
 .env
 
 # Réglages VS Code partagés par l'équipe
-!.vscode/settings.json
 
 # Environnements virtuels Python
 .venv/
@@ -40,3 +38,4 @@ __pycache__/
 *Zone.Identifier
 donnees-montre/
 backend/donnees-montre/
+.vscode/

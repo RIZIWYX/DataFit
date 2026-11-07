@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import BoutonGoogle from '../components/BoutonGoogle.tsx'
 import CadreFormulaire from '../components/CadreFormulaire.tsx'
 import Icone from '../components/Icone.tsx'
 import Segments from '../components/Segments.tsx'
@@ -28,50 +29,7 @@ function Connexion() {
     basculerMdp,
     erreur,
     handleSubmit,
-    lienEnvoyeA,
-    aConfirmer,
-    renvoi,
-    renvoyerMail,
-    allerALaConnexion,
   } = useConnexion()
-
-  // le bouton « renvoyer le mail », et ce qu'il devient une fois cliqué
-  const boutonRenvoi = (email: string) =>
-    renvoi === 'fait' ? (
-      <p className="cnx-message" role="status">
-        <Icone trace={ICONES.valide} />
-        Un nouveau lien vient de partir. Il peut mettre quelques minutes à arriver.
-      </p>
-    ) : (
-      <button
-        type="button"
-        className="cnx-lien cnx-centre"
-        disabled={renvoi === 'envoi'}
-        onClick={() => renvoyerMail(email)}
-      >
-        {renvoi === 'envoi' ? 'Envoi…' : 'Renvoyer le mail de confirmation'}
-      </button>
-    )
-
-  // compte créé : il reste à ouvrir le lien reçu par mail
-  if (lienEnvoyeA) {
-    return (
-      <CadreFormulaire accroche={ACCROCHES.inscription} titre="Vérifiez vos e-mails">
-        <p className="cnx-message" role="status">
-          <Icone trace={ICONES.enveloppe} />
-          <span>
-            Un lien de confirmation vient d'être envoyé à <strong>{lienEnvoyeA}</strong>. Ouvrez-le pour activer
-            votre compte, puis connectez-vous. Pensez à regarder dans vos courriers indésirables.
-          </span>
-        </p>
-        <button type="button" className="bouton cnx-envoyer" onClick={allerALaConnexion}>
-          J'ai confirmé, me connecter
-          <Icone trace={ICONES.fleche} />
-        </button>
-        {boutonRenvoi(lienEnvoyeA)}
-      </CadreFormulaire>
-    )
-  }
 
   return (
     <CadreFormulaire
@@ -142,9 +100,6 @@ function Connexion() {
               <input type="checkbox" name="souvenir" defaultChecked />
               Se souvenir de moi
             </label>
-            <Link to="/mot-de-passe-oublie" className="cnx-lien">
-              Mot de passe oublié ?
-            </Link>
           </div>
         )}
 
@@ -172,14 +127,14 @@ function Connexion() {
             {erreur}
           </p>
         )}
-        {/* bon mot de passe, mais adresse pas encore confirmée */}
-        {aConfirmer && boutonRenvoi(aConfirmer)}
 
         <button type="submit" className="bouton cnx-envoyer">
           {isInscription ? 'Créer mon compte' : 'Se connecter'}
           <Icone trace={ICONES.fleche} />
         </button>
       </form>
+
+      <BoutonGoogle inscription={isInscription} />
     </CadreFormulaire>
   )
 }

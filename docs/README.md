@@ -32,4 +32,4 @@ Ce dossier contient la documentation technique du projet. Le [`README.md`](../RE
 3. **On est honnête sur l'état réel.** Ce qui est prévu mais pas fait est marqué **🚧 prévu**. Une doc qui décrit un système imaginaire est pire que pas de doc.
 4. **Les schémas sont du texte.** Ils sont écrits en [Mermaid](https://mermaid.js.org/), que GitHub affiche directement en image. Ils se modifient comme du code et se relisent dans les PR.
 
-> Dernière mise à jour générale : octobre 2026.
+> Dernière mise à jour générale : novembre 2026.
