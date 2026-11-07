@@ -38,3 +38,4 @@ __pycache__/
 *Zone.Identifier
 donnees-montre/
 backend/donnees-montre/
+.vscode/
