@@ -15,7 +15,7 @@ import java.util.Set;
 /** Conservation des relevés et des séries graphiques sans modifier le schéma SQL. */
 @Service
 public class ArchivesMesures {
-    private static final Set<String> SPORTS = Set.of("cardio", "velo", "natation", "muscu");
+    private static final Set<String> SPORTS = Set.of("cardio", "velo", "natation", "muscu", "sommeil");
     private final Path racine;
     private final JsonMapper json;
     private final AnalyseClient analyse;

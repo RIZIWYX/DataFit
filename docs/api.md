@@ -91,6 +91,8 @@ Une séance est lancée par le front, puis le backend enchaîne simulateur, anal
 | `POST` | `/api/sommeil/{utilisateurId}` | Simule une nuit, l'analyse et l'enregistre |
 | `GET` | `/api/sommeil/{utilisateurId}` | Toutes les nuits |
 | `GET` | `/api/sommeil/{utilisateurId}/jour/{date}` | Nuit d'une date donnée |
+| `GET` | `/api/sommeil/{utilisateurId}/{id}/graphiques` | Graphiques d'une nuit (FC, mouvements, phases) ; `204` si ses mesures n'ont pas été conservées |
+| `GET` | `/api/sommeil/{utilisateurId}/graphiques` | Évolution des nuits enregistrées (durée, efficacité, FC…) |
 | `DELETE` | `/api/sommeil/{utilisateurId}/{id}` | Supprime une nuit |
 
 ### Nutrition

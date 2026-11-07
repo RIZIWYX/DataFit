@@ -10,7 +10,7 @@ import { ICONES } from '../data/icones.ts'
 import { SPORTS } from '../data/sports.ts'
 import useSeance from '../hooks/useSeance.ts'
 import { formatDureeSecondes } from '../lib/cardio.ts'
-import { allureSeance, formatDateLongue, resumeSeance } from '../lib/format.ts'
+import { allureSeance, formatDateLongue, formatHeure, resumeSeance } from '../lib/format.ts'
 
 export default function Seance() {
   const { id } = useParams()
@@ -31,7 +31,7 @@ export default function Seance() {
   return (
     <div className="ecran seance">
       <Link to="/historique" className="lien-retour"><Icone trace={ICONES.retour} />Historique</Link>
-      <TitrePage surtitre={`${SPORTS[seance.sport].nom} · ${formatDateLongue(seance.date)}`}
+      <TitrePage surtitre={`${SPORTS[seance.sport].nom} · ${formatDateLongue(seance.date)}${seance.heure ? `, ${formatHeure(seance.heure)}` : ''}`}
         titre={seance.nom} actions={<span className="etiquette"><Icone trace={ICONES.montre} />Reçue de la montre</span>} />
       {erreur && <p className="alerte" role="alert">{erreur}</p>}
       <dl className="indicateurs seance-chiffres">

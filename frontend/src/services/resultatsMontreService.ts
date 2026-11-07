@@ -82,6 +82,7 @@ export function convertirSeance(sport: SportMontre, s: ResultatSeance): Seance {
   })
   return {
     id: `${sport}-${s.id}`, nom: s.nom, sport: SPORTS[sport], date: dateCardio(s.date),
+    heure: typeof s.synchroniseLe === 'string' && Number.isFinite(Date.parse(s.synchroniseLe)) ? new Date(s.synchroniseLe) : undefined,
     dureeMin: s.dureeS / 60, dureeSecondes: s.dureeS,
     quantite: sport === 'muscu' ? Number(s.nbSeries) : Number(s.distanceM) / (sport === 'natation' ? 1 : 1000),
     fcMoyenne: s.fcMoy, fcMin: s.fcMin, fcMax: s.fcMax,
@@ -102,12 +103,17 @@ export async function recupererSeances(id: IdentifiantUtilisateur, signal?: Abor
     const lignes = await lireHistorique<ResultatSeance>(`/api/seances/${sport}`, id, signal)
     return lignes.map((s) => convertirSeance(sport, s))
   }))
-  // Les dates SQL n'ont pas d'heure. À date égale, on reconnaît la séance tout juste
-  // synchronisée dans ce navigateur par son id, sans stocker de résultats localement.
+  // De la plus ancienne à la plus récente : par jour, puis par heure de synchronisation
+  // (synchronise_le). Les anciennes séances n'ont pas d'heure : elles passent avant celles du
+  // même jour qui en ont une, et la séance tout juste synchronisée dans ce navigateur reste
+  // reconnue par son id, comme avant.
   let derniere = ''
   try { derniere = localStorage.getItem(`datafit-derniere-seance:${id}`) ?? '' } catch { /* facultatif */ }
   const seances = resultats.flatMap((r) => r.status === 'fulfilled' ? r.value : [])
-    .sort((a, b) => a.date.getTime() - b.date.getTime() || Number(a.id === derniere) - Number(b.id === derniere) || Number(a.id.split('-')[1]) - Number(b.id.split('-')[1]))
+    .sort((a, b) => a.date.getTime() - b.date.getTime()
+      || (a.heure?.getTime() ?? 0) - (b.heure?.getTime() ?? 0)
+      || Number(a.id === derniere) - Number(b.id === derniere)
+      || Number(a.id.split('-')[1]) - Number(b.id.split('-')[1]))
   const manquants = SPORTS_MONTRE.filter((_, i) => resultats[i].status === 'rejected')
   return { donnees: seances, erreur: manquants.length ? `Impossible de charger : ${manquants.join(', ')}.` : '' }
 }

@@ -17,7 +17,7 @@
 .seance-grille {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
+  align-items: stretch; /* panneaux côte à côte de même hauteur */
   gap: 1.25rem;
 }
 .seance-grille.une {

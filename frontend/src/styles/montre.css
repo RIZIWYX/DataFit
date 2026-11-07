@@ -90,7 +90,7 @@
 .montre-grille {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
-  align-items: start;
+  align-items: stretch; /* les deux panneaux ont la même hauteur */
   gap: 1.25rem;
 }
 .montre-tableau {
@@ -131,6 +131,72 @@
   margin-top: 1.25rem;
 }
 
+/* « Données reçues », à droite de la montre (en dessous quand la place manque) */
+.montre-recu {
+  margin-left: auto;
+  min-width: 260px;
+}
+
+/* dernière séance reçue : la séance, puis ses trois chiffres */
+.montre-seance {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.6rem;
+  margin: 0 -0.6rem;
+  border-radius: var(--rayon);
+  transition: background var(--transition);
+}
+.montre-seance:hover {
+  background: var(--noir-2);
+}
+.montre-seance-icone {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--rayon);
+  background: var(--noir-2);
+}
+.montre-seance-titre {
+  min-width: 0;
+}
+.montre-seance-titre strong {
+  display: block;
+  overflow: hidden;
+  font-size: 1rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.montre-seance-titre small {
+  font-size: 0.8rem;
+  color: var(--gris-2);
+}
+.montre-seance > .icone:last-child {
+  color: var(--gris-2);
+}
+.montre-seance-chiffres {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.1rem 0 1.25rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--trait);
+}
+.montre-seance-chiffres dt {
+  font-size: 0.75rem;
+  color: var(--gris);
+}
+.montre-seance-chiffres dd {
+  margin: 0.35rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .montre-limites {
   display: flex;
   align-items: flex-start;
@@ -148,5 +214,9 @@
 @media (max-width: 1099px) {
   .montre-grille {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .montre-recu {
+    flex: 1 1 100%;
+    margin-left: 0;
   }
 }

@@ -57,8 +57,11 @@ def analyser(donnees: dict):
 
 @app.post("/graphiques")
 def graphiques(donnees: dict):
-    from app.graphiques import graphiques_seance
+    from app.graphiques import graphiques_seance, graphiques_sommeil
     try:
+        # une nuit a ses propres graphes (FC, mouvements, phases) ; le reste est une séance
+        if donnees.get("sport") == "sommeil":
+            return graphiques_sommeil(donnees)
         return graphiques_seance(donnees)
     except (ValueError, KeyError, TypeError) as erreur:
         raise HTTPException(status_code=422, detail=str(erreur)) from erreur

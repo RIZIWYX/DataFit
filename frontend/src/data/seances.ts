@@ -5,7 +5,8 @@ export interface Seance {
   id: string // sport + id : deux tables peuvent avoir le même id numérique
   nom: string
   sport: Sport
-  date: Date // le backend conserve le jour, sans heure de début
+  date: Date // le jour de la séance (colonne date)
+  heure?: Date // moment de la synchronisation (colonne synchronise_le) ; absent pour les anciennes séances
   dureeMin: number
   dureeSecondes: number
   quantite: number // km, mètres en natation, séries en musculation

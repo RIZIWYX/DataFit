@@ -33,13 +33,14 @@ export function entreesHistorique(seances: Seance[], planning: Planning): Entree
   const montre: Entree[] = seances.map((seance) => ({
     id: seance.id,
     categorie: seance.sport,
-    date: seance.date,
+    // avec l'heure de synchronisation quand elle est connue : affichée, et départage les séances du même jour
+    date: seance.heure ?? seance.date,
     titre: seance.nom,
     sousTitre: 'Montre',
     icone: SPORTS[seance.sport].icone,
     couleur: couleurSport(seance.sport),
     dureeMin: seance.dureeMin,
-    dureeSecondes: seance.dureeSecondes, heureConnue: false,
+    dureeSecondes: seance.dureeSecondes, heureConnue: Boolean(seance.heure),
     mesure: resumeSeance(seance),
     km: distanceKm(seance),
     fc: seance.fcMoyenne,
