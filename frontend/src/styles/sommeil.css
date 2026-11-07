@@ -13,7 +13,7 @@
 .sommeil-grille {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
+  align-items: stretch;
   gap: 1.25rem;
 }
 .sommeil-note {
@@ -128,4 +128,47 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 0.35rem;
   }
+}
+
+/* phases : une barre découpée selon le temps passé dans chaque phase (mêmes couleurs que les graphes) */
+.sommeil-phases {
+  display: flex;
+  gap: 3px;
+  height: 14px;
+  margin: 0 0 1.5rem;
+  border-radius: 7px;
+  overflow: hidden;
+}
+.sommeil-phases i {
+  flex-basis: 0;
+  min-width: 4px;
+}
+.sommeil-phases .leger { background: #19c7b1; }
+.sommeil-phases .profond { background: #aaa0ff; }
+.sommeil-phases .paradoxal { background: #e093cc; }
+.sommeil-phases .eveil { background: #e8b35c; }
+.sommeil-phases-chiffres .indicateur-ecart {
+  font-weight: 500;
+}
+
+/* historique : le nom de la nuit sert à l'afficher en haut de la page */
+.sommeil-lien-nuit {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--trait);
+  text-underline-offset: 0.2em;
+}
+.sommeil-lien-nuit:hover,
+.sommeil-lien-nuit[aria-pressed='true'] {
+  color: var(--blanc);
+  text-decoration-color: currentColor;
+}
+.sommeil-tableau tr.choisie td {
+  color: var(--blanc);
 }

@@ -15,6 +15,7 @@ Les tables sont créées par les scripts numérotés de [`db/`](../db/), exécut
 | `05_seances.sql` | reprise des tables de séances pour les bases déjà créées |
 | `06_contact.sql` | `message_contact` |
 | `07_sommeil.sql` | `sommeil` |
+| `08_heure_seances.sql` | colonne `synchronise_le` (date et heure de réception) dans les quatre tables de séances |
 
 ```mermaid
 erDiagram

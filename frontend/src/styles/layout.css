@@ -14,6 +14,9 @@
   min-width: 0;
   padding: 2.5rem clamp(1rem, 3.5vw, 3rem) 4rem;
   overflow-y: auto;
+  /* repère des éléments en position absolue (.visuellement-cache) : sans lui, ils se placent
+     par rapport à toute la fenêtre et rallongent la page d'un grand vide sous le contenu */
+  position: relative;
 }
 
 /* téléphone : barre du haut, page, onglets en bas */

@@ -5,6 +5,7 @@ import '../styles/dashboard.css'
 import BadgeRang from '../components/BadgeRang.tsx'
 import CarteSeance from '../components/CarteSeance.tsx'
 import EtatVide from '../components/EtatVide.tsx'
+import Indicateur from '../components/Indicateur.tsx'
 import LienFleche from '../components/LienFleche.tsx'
 import ListeSeances from '../components/ListeSeances.tsx'
 import Panneau from '../components/Panneau.tsx'
@@ -21,8 +22,10 @@ import {
   formatDuree,
   formatHeure,
   formatJourRelatif,
+  nombre,
   resumeSeance,
 } from '../lib/format.ts'
+import { dureeNuit, heureNuit } from '../lib/sommeil.ts'
 import { couleurSeance, depuisIso } from '../lib/programmation.ts'
 import type { ResumeDiscipline } from '../lib/rangs.ts'
 
@@ -69,7 +72,7 @@ function Dashboard() {
       <div className="accueil-cartes">
         {derniereSeance ? (
           <CarteSeance
-            surtitre={`Dernière séance · ${formatJourRelatif(derniereSeance.date, aujourdHui)}`}
+            surtitre={`Dernière séance · ${formatJourRelatif(derniereSeance.date, aujourdHui)}${derniereSeance.heure ? `, ${formatHeure(derniereSeance.heure)}` : ''}`}
             titre={derniereSeance.nom}
             icone={SPORTS[derniereSeance.sport].icone}
             couleur={couleurSport(derniereSeance.sport)}
@@ -220,7 +223,7 @@ function Dashboard() {
               <dd>
                 <Link to="/sommeil" className="accueil-sommeil">
                   {montre.derniereNuit
-                    ? formatDuree(montre.derniereNuit.minutes)
+                    ? dureeNuit(montre.derniereNuit.dureeSommeilS)
                     : 'Aucune'}
                 </Link>
               </dd>
@@ -232,6 +235,26 @@ function Dashboard() {
           </dl>
         </Panneau>
       </div>
+
+      {/* La dernière nuit reçue : les valeurs enregistrées après analyse, le détail est sur la page Sommeil */}
+      {montre.derniereNuit && (
+        <Panneau
+          titre={`Dernière nuit · ${formatJourRelatif(montre.derniereNuit.lever, aujourdHui)}`}
+          action={<LienFleche to="/sommeil">Sommeil</LienFleche>}
+        >
+          <dl className="indicateurs compacts">
+            <Indicateur nom="Durée de sommeil" valeur={dureeNuit(montre.derniereNuit.dureeSommeilS)} />
+            <Indicateur
+              nom="Coucher – lever"
+              valeur={`${heureNuit(formatHeure(montre.derniereNuit.coucher))} – ${heureNuit(formatHeure(montre.derniereNuit.lever))}`}
+            />
+            <Indicateur nom="Efficacité" valeur={`${nombre(montre.derniereNuit.efficaciteSommeilPct)} %`} />
+            <Indicateur nom="Sommeil profond" valeur={dureeNuit(montre.derniereNuit.dureeProfondS)} />
+            <Indicateur nom="FC moyenne" valeur={`${nombre(montre.derniereNuit.fcMoyenne)} bpm`} />
+            <Indicateur nom="Réveils" valeur={String(montre.derniereNuit.reveilsNb)} />
+          </dl>
+        </Panneau>
+      )}
 
       {d.seancesPrecedentes.length > 0 && (
         <Panneau

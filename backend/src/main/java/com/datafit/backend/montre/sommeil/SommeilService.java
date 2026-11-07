@@ -5,6 +5,7 @@ import com.datafit.backend.montre.client.DemandeSimulation;
 import com.datafit.backend.montre.client.ProfilSimulation;
 import com.datafit.backend.montre.client.SeanceSimulation;
 import com.datafit.backend.montre.client.SimulateurClient;
+import com.datafit.backend.montre.graphiques.ArchivesMesures;
 import com.datafit.backend.profil.Profil;
 import com.datafit.backend.profil.ProfilRepository;
 import com.datafit.backend.utilisateur.Utilisateur;
@@ -34,16 +35,19 @@ public class SommeilService {
     // applique les règles de SommeilRequest (@NotNull, @PositiveOrZero…) aux
     // valeurs de l'analyse
     private final Validator validateur;
+    // garde les mesures de la nuit et ses graphiques (comme pour les séances)
+    private final ArchivesMesures archives;
 
     public SommeilService(SommeilRepository repo,
             ProfilRepository profilRepo,
             SimulateurClient simulateur, AnalyseClient analyse,
-            Validator validateur) {
+            Validator validateur, ArchivesMesures archives) {
         this.repo = repo;
         this.profilRepo = profilRepo;
         this.simulateur = simulateur;
         this.analyse = analyse;
         this.validateur = validateur;
+        this.archives = archives;
     }
 
     // Analyse une nuit : simulateur -> analyse -> vérifications -> enregistrement.
@@ -86,8 +90,11 @@ public class SommeilService {
             throw new IllegalStateException("Cette nuit est déjà enregistrée");
         }
 
-        // 5. on enregistre
-        return repo.save(new Sommeil(user, nuit));
+        // 5. on enregistre, puis on conserve les mesures et leurs graphiques
+        // (annulés avec la transaction si l'enregistrement échoue)
+        Sommeil enregistree = repo.save(new Sommeil(user, nuit));
+        archives.enregistrer(TYPE, user.getId(), enregistree.getId(), mesures);
+        return enregistree;
     }
 
     // Sans effet si la nuit n'existe plus (déjà supprimée) ou appartient à un autre

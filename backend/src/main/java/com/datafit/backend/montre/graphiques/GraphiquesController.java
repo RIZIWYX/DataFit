@@ -4,6 +4,7 @@ import com.datafit.backend.montre.cardio.CardioRepository;
 import com.datafit.backend.montre.velo.VeloRepository;
 import com.datafit.backend.montre.natation.SeanceNatationRepository;
 import com.datafit.backend.montre.muscu.MuscuRepository;
+import com.datafit.backend.montre.sommeil.SommeilRepository;
 import com.datafit.backend.montre.client.AnalyseClient;
 import com.datafit.backend.utilisateur.UtilisateurRepository;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +24,16 @@ public class GraphiquesController {
     private final VeloRepository velo;
     private final SeanceNatationRepository natation;
     private final MuscuRepository muscu;
+    private final SommeilRepository sommeil;
     private final UtilisateurRepository utilisateurs;
     private final AnalyseClient analyse;
     private final JsonMapper json;
 
     public GraphiquesController(ArchivesMesures archives, CardioRepository cardio, VeloRepository velo,
-            SeanceNatationRepository natation, MuscuRepository muscu, UtilisateurRepository utilisateurs,
-            AnalyseClient analyse, JsonMapper json) {
+            SeanceNatationRepository natation, MuscuRepository muscu, SommeilRepository sommeil,
+            UtilisateurRepository utilisateurs, AnalyseClient analyse, JsonMapper json) {
         this.archives = archives; this.cardio = cardio; this.velo = velo;
-        this.natation = natation; this.muscu = muscu; this.utilisateurs = utilisateurs;
+        this.natation = natation; this.muscu = muscu; this.sommeil = sommeil; this.utilisateurs = utilisateurs;
         this.analyse = analyse; this.json = json;
     }
 
@@ -49,6 +51,41 @@ public class GraphiquesController {
         if (!proprietaire.equals(utilisateurId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         return archives.lireGraphiques(sport, utilisateurId, seanceId)
                 .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    // Les graphiques d'une nuit (FC, mouvements, phases), calculés à la synchronisation.
+    // 204 : nuit enregistrée avant la conservation des mesures.
+    @GetMapping("/api/sommeil/{utilisateurId}/{nuitId}/graphiques")
+    public ResponseEntity<Object> nuit(@PathVariable Long utilisateurId, @PathVariable Long nuitId) {
+        Long proprietaire = sommeil.findById(nuitId).orElseThrow().getUtilisateur().getId();
+        if (!proprietaire.equals(utilisateurId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        return archives.lireGraphiques("sommeil", utilisateurId, nuitId)
+                .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    // L'évolution des nuits (durée, efficacité, FC…), depuis les valeurs de la table sommeil.
+    @GetMapping("/api/sommeil/{utilisateurId}/graphiques")
+    @SuppressWarnings("unchecked")
+    public Object nuits(@PathVariable Long utilisateurId, @RequestParam(defaultValue = "520") int semaines) {
+        if (semaines < 1 || semaines > 520)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Période invalide.");
+        var user = utilisateurs.findById(utilisateurId).orElseThrow();
+        LocalDate debut = LocalDate.now().minusWeeks(semaines).plusDays(1);
+        List<Map<String, Object>> lignes = new ArrayList<>();
+        // de la plus ancienne à la plus récente ; une nuit est datée du jour du réveil
+        List<com.datafit.backend.montre.sommeil.Sommeil> liste =
+                new ArrayList<>(sommeil.findByUtilisateurOrderByHeureCoucherDesc(user));
+        Collections.reverse(liste);
+        for (var n : liste) {
+            LocalDate date = n.getHeureReveil().toLocalDate();
+            if (date.isBefore(debut)) continue;
+            Map<String, Object> ligne = new LinkedHashMap<>(json.convertValue(n, Map.class));
+            ligne.put("sport", "sommeil");
+            ligne.put("date", date.toString());
+            ligne.put("nom", "Nuit");
+            lignes.add(ligne);
+        }
+        return analyse.progression(Map.of("seances", lignes));
     }
 
     @GetMapping("/api/graphiques/progression/{utilisateurId}")

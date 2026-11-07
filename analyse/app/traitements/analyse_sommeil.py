@@ -11,13 +11,13 @@ ECART_FC_PARADOXAL = 2
 FENETRE_LISSAGE = 5  # mesures (5 minutes à une mesure par minute)
 
 
-def analyser_sommeil(donnees):
-    """Résume une nuit simulée : les 16 valeurs de la table `sommeil`.
+def preparer_nuit(donnees):
+    """Vérifie une nuit simulée et estime la phase de chaque mesure.
 
-    Entrée : le JSON renvoyé par le simulateur (champ "sport" = "sommeil",
-    liste "mesures" avec date_heure, fc_bpm, mouvement).
-    Sortie : un dictionnaire en snake_case, comme les colonnes de la table
-    et le record Java ResultatSommeil.
+    Partagé par l'analyse (les 16 valeurs de la table) et par les graphiques :
+    les deux lisent exactement les mêmes phases.
+    Renvoie (nuit, pas_s) : la nuit triée, avec les colonnes fc_lissee,
+    mouvement_lisse et phase ("eveil", "leger", "profond" ou "paradoxal").
     """
     if not isinstance(donnees, dict) or donnees.get("sport") != "sommeil":
         raise ValueError("Une nuit de sommeil est attendue.")
@@ -58,22 +58,35 @@ def analyser_sommeil(donnees):
     nuit = nuit.sort_values("date_heure").reset_index(drop=True)
 
     # 1. lissage sur 5 minutes pour réduire le bruit
-    fc_lissee = nuit["fc_bpm"].rolling(FENETRE_LISSAGE, center=True, min_periods=1).mean()
-    mouvement_lisse = nuit["mouvement"].rolling(FENETRE_LISSAGE, center=True, min_periods=1).mean()
-    fc_reference = fc_lissee.median()
+    nuit["fc_lissee"] = nuit["fc_bpm"].rolling(FENETRE_LISSAGE, center=True, min_periods=1).mean()
+    nuit["mouvement_lisse"] = nuit["mouvement"].rolling(FENETRE_LISSAGE, center=True, min_periods=1).mean()
+    fc_lissee = nuit["fc_lissee"].to_numpy()
+    mouvement_lisse = nuit["mouvement_lisse"].to_numpy()
+    fc_reference = nuit["fc_lissee"].median()
 
     # 2. phase estimée de chaque mesure (même règles que analyse_nuit.py)
-    phase = np.select(
+    nuit["phase"] = np.select(
         [
-            mouvement_lisse.to_numpy() >= SEUIL_EVEIL,
-            (mouvement_lisse.to_numpy() < SEUIL_MOUVEMENT_PROFOND)
-            & (fc_lissee.to_numpy() <= fc_reference - ECART_FC_PROFOND),
-            (mouvement_lisse.to_numpy() < SEUIL_MOUVEMENT_PARADOXAL)
-            & (fc_lissee.to_numpy() >= fc_reference + ECART_FC_PARADOXAL),
+            mouvement_lisse >= SEUIL_EVEIL,
+            (mouvement_lisse < SEUIL_MOUVEMENT_PROFOND) & (fc_lissee <= fc_reference - ECART_FC_PROFOND),
+            (mouvement_lisse < SEUIL_MOUVEMENT_PARADOXAL) & (fc_lissee >= fc_reference + ECART_FC_PARADOXAL),
         ],
         ["eveil", "profond", "paradoxal"],
         default="leger",
     )
+    return nuit, pas_s
+
+
+def analyser_sommeil(donnees):
+    """Résume une nuit simulée : les 16 valeurs de la table `sommeil`.
+
+    Entrée : le JSON renvoyé par le simulateur (champ "sport" = "sommeil",
+    liste "mesures" avec date_heure, fc_bpm, mouvement).
+    Sortie : un dictionnaire en snake_case, comme les colonnes de la table
+    et le record Java ResultatSommeil.
+    """
+    nuit, pas_s = preparer_nuit(donnees)
+    phase = nuit["phase"].to_numpy()
 
     # 3. comptages, en nombre de mesures
     nb = len(nuit)

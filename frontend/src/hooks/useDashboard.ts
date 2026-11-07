@@ -15,8 +15,10 @@ function useDashboard() {
   // la date du jour est lue une seule fois, à l'ouverture de la page
   const [aujourdHui] = useState(() => new Date())
 
-  // de la plus récente à la plus ancienne
-  const seances = [...resultats.seances].sort((a, b) => b.date.getTime() - a.date.getTime())
+  // de la plus récente à la plus ancienne. Le service les range déjà dans l'ordre (à date égale,
+  // la séance tout juste synchronisée en dernier) : on inverse, sans retrier par date seule,
+  // sinon deux séances du même jour gardent l'ordre de la plus ancienne en premier.
+  const seances = [...resultats.seances].reverse()
 
   const jours = parJour(seances, 7, aujourdHui)
 

@@ -1,13 +1,15 @@
 import '../styles/graphiques-analyse.css'
 import '../styles/montre.css'
 import Icone from '../components/Icone.tsx'
+import { Link } from 'react-router'
 import LienFleche from '../components/LienFleche.tsx'
-import ListeSeances from '../components/ListeSeances.tsx'
 import Panneau from '../components/Panneau.tsx'
 import TitrePage from '../components/TitrePage.tsx'
 import { ICONES } from '../data/icones.ts'
+import { SPORTS, couleurSport } from '../data/sports.ts'
 import useMontre from '../hooks/useMontre.ts'
-import { allureSeance, formatDate, formatHeure, formatJourRelatif, resumeSeance } from '../lib/format.ts'
+import { allureSeance, formatDate, formatDuree, formatHeure, formatJourRelatif, resumeSeance } from '../lib/format.ts'
+import { dureeNuit } from '../lib/sommeil.ts'
 
 // La montre : son état maintenant, ce qu'elle mesure (et ce qu'elle ne mesure pas),
 // et ce qu'elle a envoyé jusqu'ici.
@@ -34,7 +36,10 @@ function Montre() {
     {
       nom: 'Mouvement',
       quand: 'La nuit',
-      valeur: '–',
+      // le mouvement sert à repérer les réveils : on affiche ce que l'analyse en a tiré
+      valeur: m.derniereNuit
+        ? `${m.derniereNuit.reveilsNb} réveil${m.derniereNuit.reveilsNb > 1 ? 's' : ''}, ${dureeNuit(m.derniereNuit.eveilNocturneS)} d'éveil, dernière nuit`
+        : '–',
     },
   ]
 
@@ -101,6 +106,25 @@ function Montre() {
             <p className="montre-aide">Reconnectez la montre pour récupérer vos prochaines séances et nuits.</p>
           )}
         </div>
+
+        {/* à côté de la montre : ce qu'elle a envoyé jusqu'ici */}
+        <Panneau titre="Données reçues" className="montre-recu">
+          <dl className="montre-totaux">
+            <div>
+              <dt>Séances</dt>
+              <dd className="chiffre">{m.nbSeances}</dd>
+            </div>
+            <div>
+              <dt>Nuits</dt>
+              <dd className="chiffre">{m.nbNuits}</dd>
+            </div>
+          </dl>
+          {m.premiereDonnee && <p className="montre-note">Depuis le {formatDate(m.premiereDonnee)}.</p>}
+          <div className="montre-liens">
+            <LienFleche to="/historique">Historique</LienFleche>
+            <LienFleche to="/sommeil">Sommeil</LienFleche>
+          </div>
+        </Panneau>
       </section>
 
       {m.chargement && <p role="status">Chargement des résultats…</p>}
@@ -127,35 +151,48 @@ function Montre() {
             </table>
           </div>
           <p className="montre-note">
-            Les valeurs affichées proviennent des analyses enregistrées. Le détail des mouvements
-            et des relevés minute par minute n'est pas disponible ici.
+            Les valeurs affichées proviennent des analyses enregistrées. Les courbes minute par minute
+            sont dans le détail de chaque séance et sur la page Sommeil.
           </p>
         </Panneau>
 
-        <Panneau titre="Données reçues">
-          <dl className="montre-totaux">
-            <div>
-              <dt>Séances</dt>
-              <dd className="chiffre">{m.nbSeances}</dd>
-            </div>
-            <div>
-              <dt>Nuits</dt>
-              <dd className="chiffre">{m.nbNuits}</dd>
-            </div>
-          </dl>
-          {m.premiereDonnee && <p className="montre-note">Depuis le {formatDate(m.premiereDonnee)}.</p>}
-          <div className="montre-liens">
-            <LienFleche to="/historique">Historique</LienFleche>
-            <LienFleche to="/sommeil">Sommeil</LienFleche>
-          </div>
-        </Panneau>
+        {m.derniereSeance ? (
+          <Panneau titre="Dernière séance reçue" action={<LienFleche to="/historique">Toutes les séances</LienFleche>}>
+            <Link to={`/historique/${m.derniereSeance.id}`} className="montre-seance">
+              <span className="montre-seance-icone" style={{ color: couleurSport(m.derniereSeance.sport) }}>
+                <Icone trace={SPORTS[m.derniereSeance.sport].icone} />
+              </span>
+              <span className="montre-seance-titre">
+                <strong>{m.derniereSeance.nom}</strong>
+                <small>
+                  {formatJourRelatif(m.derniereSeance.date, aujourdHui)}
+                  {m.derniereSeance.heure && `, ${formatHeure(m.derniereSeance.heure)}`}
+                </small>
+              </span>
+              <Icone trace={ICONES.chevron} />
+            </Link>
+            <dl className="montre-seance-chiffres">
+              <div>
+                <dt>{m.derniereSeance.sport === 'musculation' ? 'Séries' : 'Distance'}</dt>
+                <dd>{resumeSeance(m.derniereSeance)}</dd>
+              </div>
+              <div>
+                <dt>Durée</dt>
+                <dd>{formatDuree(m.derniereSeance.dureeMin)}</dd>
+              </div>
+              <div>
+                <dt>FC moyenne</dt>
+                <dd>{m.derniereSeance.fcMoyenne} bpm</dd>
+              </div>
+            </dl>
+            <LienFleche to={`/historique/${m.derniereSeance.id}`}>Voir l'analyse de la séance</LienFleche>
+          </Panneau>
+        ) : (
+          <Panneau titre="Dernière séance reçue">
+            <p className="montre-note">Aucune séance reçue pour l'instant : synchronisez la montre après votre prochain entraînement.</p>
+          </Panneau>
+        )}
       </div>
-
-      {m.derniereSeance && (
-        <Panneau titre="Dernière séance reçue" action={<LienFleche to="/historique">Toutes les séances</LienFleche>}>
-          <ListeSeances seances={[m.derniereSeance]} aujourdHui={aujourdHui} />
-        </Panneau>
-      )}
 
       <p className="montre-limites">
         <Icone trace={ICONES.info} />

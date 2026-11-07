@@ -7,7 +7,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / 'analyse'), str(ROOT / 'simulateur')]
-from app.graphiques import graphiques_seance, graphiques_progression
+from app.graphiques import graphiques_seance, graphiques_progression, graphiques_sommeil
+from app.traitements.analyse_sommeil import analyser_sommeil
 
 
 class GraphiquesTests(unittest.TestCase):
@@ -61,6 +62,28 @@ class GraphiquesTests(unittest.TestCase):
             with self.assertRaises(ValueError): graphiques_seance(data)
         json.dumps(graphiques_progression({'seances': [{'sport': 'velo', 'id': 1, 'date': '2026-11-01', 'vitesseMoyKmh': math.nan}]}), allow_nan=False)
 
+    def test_nuit_simulee_memes_phases_que_la_base(self):
+        sommeil = importlib.import_module('sommeil')
+        profil = dict(id_utilisateur=7, age=24, poids_kg=65, taille_cm=170, sexe='F', niveau='intermediaire')
+        brut = sommeil.simuler_sommeil(profil)
+        brut['sport'] = 'sommeil'
+        resultat = graphiques_sommeil(brut)
+        json.dumps(resultat, allow_nan=False)
+        graphes = {g['id']: g for g in resultat['graphiques']}
+        self.assertEqual(set(graphes), {'fc-nuit', 'mouvement', 'phases', 'repartition-phases'})
+        self.assertEqual([p['y'] for p in graphes['fc-nuit']['series'][0]['points']], [m['fc_bpm'] for m in brut['mesures']])
+        # la répartition des phases est celle enregistrée dans la table sommeil
+        resume = analyser_sommeil(brut)
+        durees = [p['y'] * 60 for p in graphes['repartition-phases']['series'][0]['points']]
+        self.assertEqual(durees, [resume['duree_profond_s'], resume['duree_leger_s'], resume['duree_paradoxal_s'], resume['duree_eveil_s']])
+
+    def test_progression_des_nuits(self):
+        nuits = [{'id': i, 'date': f'2026-11-0{i}', 'nom': 'Nuit', 'sport': 'sommeil', 'dureeSommeilS': 27000 + i * 600,
+                  'efficaciteSommeilPct': 90.0, 'fcMoyenne': 60.0 + i} for i in range(1, 4)]
+        graphes = {g['id']: g for g in graphiques_progression({'seances': nuits})['graphiques']}
+        duree = graphes['sommeil-dureeSommeilS']['series'][0]['points']
+        self.assertEqual([p['y'] for p in duree], [(27000 + i * 600) / 3600 for i in range(1, 4)])
+        self.assertNotIn('sommeil-reveilsNb', graphes)
 
 if __name__ == '__main__':
     unittest.main()

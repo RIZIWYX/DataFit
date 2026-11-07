@@ -4,6 +4,7 @@ import com.datafit.backend.utilisateur.Utilisateur;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 // Une seance de velo capturee depuis la montre (simulateur).
 // Une ligne = une seance. Plusieurs seances possibles le meme jour.
@@ -21,6 +22,11 @@ public class Velo {
 
   @Column(nullable = false, updatable = false)
   private LocalDate date;
+
+  // moment exact de la synchronisation (db/08_heure_seances.sql) : départage les séances
+  // d'un même jour. Vide pour les séances enregistrées avant l'ajout de la colonne.
+  @Column(name = "synchronise_le", updatable = false)
+  private LocalDateTime synchroniseLe;
 
   @Column(nullable = false)
   private String nom;
@@ -79,6 +85,7 @@ public class Velo {
   @PrePersist
   protected void avantCreation() {
     this.date = LocalDate.now();
+    this.synchroniseLe = LocalDateTime.now();
   }
 
   public Long getId() {
@@ -92,6 +99,10 @@ public class Velo {
 
   public LocalDate getDate() {
     return date;
+  }
+
+  public LocalDateTime getSynchroniseLe() {
+    return synchroniseLe;
   }
 
   public String getNom() {

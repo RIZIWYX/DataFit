@@ -17,24 +17,24 @@
 .analyse-tableau { max-height: 320px; overflow: auto; }
 .analyse-tableau table { width: 100%; border-collapse: collapse; }
 .analyse-tableau td, .analyse-tableau th { padding: .5rem; text-align: left; border-bottom: 1px solid var(--trait, #e2e8ed); overflow-wrap: anywhere; }
-:is(.seance, .progression, .montre, .accueil) .indicateurs {
+:is(.seance, .progression, .montre, .sommeil, .accueil) .indicateurs {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
   gap: 1.25rem;
 }
-:is(.seance, .progression, .montre, .accueil) .indicateur,
-:is(.seance, .progression, .montre, .accueil) .indicateur + .indicateur {
+:is(.seance, .progression, .montre, .sommeil, .accueil) .indicateur,
+:is(.seance, .progression, .montre, .sommeil, .accueil) .indicateur + .indicateur {
   min-width: 0; padding: 0; border-left: 0;
 }
-:is(.seance, .progression, .montre, .accueil) .indicateur-valeur {
+:is(.seance, .progression, .montre, .sommeil, .accueil) .indicateur-valeur {
   font-size: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
   line-height: 1.35; white-space: normal; overflow-wrap: anywhere;
 }
-:is(.seance, .progression, .montre, .accueil) .indicateur-valeur > span { display: inline-block; }
-:is(.seance, .progression, .montre, .accueil) .indicateur dt { line-height: 1.4; overflow-wrap: anywhere; }
+:is(.seance, .progression, .montre, .sommeil, .accueil) .indicateur-valeur > span { display: inline-block; }
+:is(.seance, .progression, .montre, .sommeil, .accueil) .indicateur dt { line-height: 1.4; overflow-wrap: anywhere; }
 .seance-grille > *, .progression-grille > *, .montre-grille > * { min-width: 0; }
 @media (max-width: 999px) { .graphiques-grille { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 599px) {
-  :is(.seance, .progression, .montre, .accueil) .indicateurs { grid-template-columns: minmax(0, 1fr); }
+  :is(.seance, .progression, .montre, .sommeil, .accueil) .indicateurs { grid-template-columns: minmax(0, 1fr); }
   .analyse-svg text { font-size: 14px; }
 }
 
