@@ -1,4 +1,5 @@
 import '../styles/progression.css'
+import GraphiquesProgression from '../components/GraphiquesProgression.tsx'
 import BadgeRang from '../components/BadgeRang.tsx'
 import EtatVide from '../components/EtatVide.tsx'
 import GrapheAnneau from '../components/GrapheAnneau.tsx'
@@ -48,6 +49,9 @@ function Progression() {
       >
         L'évolution de vos séances, et de chaque exercice.
       </TitrePage>
+
+      {p.chargement && <p role="status">Chargement des résultats…</p>}
+      {p.erreur && <p className="alerte" role="alert">{p.erreur}</p>}
 
       {/* le choix principal de la page : tout, ou un exercice de la page Performance */}
       <div className="progression-choix champ">
@@ -192,6 +196,7 @@ function VueEnsemble({ p }: { p: DonneesPage }) {
           </Panneau>
         )}
       </div>
+      <GraphiquesProgression sport={p.sport} semaines={p.nbSemaines} />
     </>
   )
 }

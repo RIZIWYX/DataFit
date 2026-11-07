@@ -1,6 +1,7 @@
 package com.datafit.backend.montre.muscu;
 
 import com.datafit.backend.montre.client.AnalyseClient;
+import com.datafit.backend.montre.graphiques.ArchivesMesures;
 import com.datafit.backend.montre.client.DemandeSimulation;
 import com.datafit.backend.montre.client.ProfilSimulation;
 import com.datafit.backend.montre.client.SeanceSimulation;
@@ -25,13 +26,15 @@ public class MuscuService {
   private final ProfilRepository profilRepo;
   private final SimulateurClient simulateur;
   private final AnalyseClient analyse;
+  private final ArchivesMesures archives;
 
   public MuscuService(MuscuRepository repo, ProfilRepository profilRepo,
-      SimulateurClient simulateur, AnalyseClient analyse) {
+      SimulateurClient simulateur, AnalyseClient analyse, ArchivesMesures archives) {
     this.repo = repo;
     this.profilRepo = profilRepo;
     this.simulateur = simulateur;
     this.analyse = analyse;
+    this.archives = archives;
   }
 
   public Muscu valider(Utilisateur user, MuscuRequest req) {
@@ -50,7 +53,9 @@ public class MuscuService {
         r.fcMin(), r.fcMoy(), r.fcMax(), r.fcMoyEffort(), r.fcMoyPause(),
         r.dureeS(), r.dureeEffortS(), r.dureePauseS(),
         r.nbSeries(), r.dureeMoyPauseS(), r.baisseFcApres60s());
-    return repo.save(seance);
+    seance = repo.save(seance);
+    archives.enregistrer(TYPE, user.getId(), seance.getId(), mesures);
+    return seance;
   }
 
   @Transactional(readOnly = true)

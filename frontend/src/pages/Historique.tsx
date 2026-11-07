@@ -1,3 +1,4 @@
+import '../styles/graphiques-analyse.css'
 import { Link } from 'react-router'
 import '../styles/historique.css'
 import EtatVide from '../components/EtatVide.tsx'
@@ -35,10 +36,13 @@ function Historique() {
   const categories: { valeur: Categorie | 'tous'; nom: string }[] = [
     { valeur: 'tous', nom: 'Toutes' },
     { valeur: 'course', nom: 'Course à pied' },
+    { valeur: 'natation', nom: 'Natation' },
+    { valeur: 'velo', nom: 'Vélo' },
+    { valeur: 'musculation', nom: 'Musculation' },
     { valeur: 'programmees', nom: 'Programmées' },
   ]
 
-  if (chargement || erreur) {
+  if (chargement || (erreur && groupes.length === 0)) {
     return (
       <div className="ecran historique">
         <TitrePage surtitre="Entraînement" titre="Historique" />
@@ -59,9 +63,10 @@ function Historique() {
         surtitre="Entraînement"
         titre="Historique"
       >
-        Vos séances cardio enregistrées et vos séances programmées réalisées.
+        Vos séances enregistrées par la montre et vos séances programmées réalisées.
       </TitrePage>
 
+      {erreur && <p className="alerte" role="alert">{erreur}</p>}
       <div className="historique-outils">
         <label className="historique-recherche">
           <Icone trace={ICONES.recherche} />

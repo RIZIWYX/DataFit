@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { DISCIPLINES, TOUS_LES_EXERCICES } from '../data/paliers.ts'
-import { SEANCES_DEMO } from '../data/seances.ts'
+import { useSeancesMontre } from './useResultatsMontre.ts'
 import { LISTE_SPORTS, type Sport } from '../data/sports.ts'
 import { bilan, joursEcoules, parSemaine } from '../lib/activite.ts'
 import { chargerPlanning } from '../lib/programmation.ts'
@@ -19,6 +19,7 @@ export const PERIODES = [
 // logique de la page progression : la période, puis soit la vue d'ensemble des séances
 // (filtrée par sport), soit un exercice choisi dans le menu (?exercice=squat dans l'adresse)
 function useProgression() {
+  const { seances, chargement, erreur } = useSeancesMontre()
   const [parametres, setParametres] = useSearchParams()
   const [nbSemaines, setNbSemaines] = useState(13)
   const [sport, setSport] = useState<Sport | 'tous'>('tous')
@@ -35,12 +36,12 @@ function useProgression() {
   const debut = new Date(aujourdHui.getFullYear(), aujourdHui.getMonth(), aujourdHui.getDate() - nbSemaines * 7 + 1)
 
   // ---------- vue d'ensemble : les séances de la montre ----------
-  const duSport = SEANCES_DEMO.filter((seance) => sport === 'tous' || seance.sport === sport)
-  const ecart = (seance: (typeof SEANCES_DEMO)[number]) => joursEcoules(seance.date, aujourdHui)
+  const duSport = seances.filter((seance) => sport === 'tous' || seance.sport === sport)
+  const ecart = (seance: (typeof seances)[number]) => joursEcoules(seance.date, aujourdHui)
   const periode = duSport.filter((s) => ecart(s) >= 0 && ecart(s) < nbSemaines * 7)
   // la période d'avant, de même longueur, pour comparer
   const avant = duSport.filter((s) => ecart(s) >= nbSemaines * 7 && ecart(s) < nbSemaines * 14)
-  const toutesPeriode = SEANCES_DEMO.filter((s) => ecart(s) >= 0 && ecart(s) < nbSemaines * 7)
+  const toutesPeriode = seances.filter((s) => ecart(s) >= 0 && ecart(s) < nbSemaines * 7)
 
   // ---------- un exercice ----------
   const records = exercice ? dansPeriode(pointsRecord(exercice, historique), debut) : []
@@ -50,6 +51,7 @@ function useProgression() {
   const nbMesures = (id: string) => Object.keys(historique[id] ?? {}).length + realisations(planning, id).length
 
   return {
+    chargement, erreur,
     nbSemaines,
     choisirPeriode: setNbSemaines,
     disciplines: DISCIPLINES.map((d) => ({

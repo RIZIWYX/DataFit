@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SEANCES_DEMO } from '../data/seances.ts'
+import { useSeancesMontre } from './useResultatsMontre.ts'
 import { bilan, parJour } from '../lib/activite.ts'
 import { lireProfil } from '../lib/profil.ts'
 import { chargerPlanning, seancesAVenir } from '../lib/programmation.ts'
@@ -8,6 +8,7 @@ import { lireResumeRangs } from './useSport.ts'
 // logique de l'accueil : les 7 derniers jours, la dernière séance faite et la prochaine prévue,
 // les rangs par sport et les séances précédentes
 function useDashboard() {
+  const resultats = useSeancesMontre()
   const [profil] = useState(lireProfil)
   const [rangs] = useState(lireResumeRangs)
   const [planning] = useState(chargerPlanning)
@@ -15,11 +16,12 @@ function useDashboard() {
   const [aujourdHui] = useState(() => new Date())
 
   // de la plus récente à la plus ancienne
-  const seances = [...SEANCES_DEMO].sort((a, b) => b.date.getTime() - a.date.getTime())
+  const seances = [...resultats.seances].sort((a, b) => b.date.getTime() - a.date.getTime())
 
   const jours = parJour(seances, 7, aujourdHui)
 
   return {
+    chargement: resultats.chargement, erreur: resultats.erreur,
     prenom: profil?.prenom ?? '',
     aujourdHui,
     semaine: bilan(jours.flatMap((jour) => jour.seances)),

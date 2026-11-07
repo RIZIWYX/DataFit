@@ -51,18 +51,21 @@ export function formatAllure(secondes: number): string {
 // La mesure principale d'une séance : « 5,2 km », « 1 200 m » ou « 3 exercices ».
 export function resumeSeance(seance: Seance): string {
   switch (seance.sport) {
+    case 'velo':
     case 'course': return `${nombre(seance.quantite)} km`
     case 'natation': return `${nombre(seance.quantite, 0)} m`
-    case 'musculation': return `${seance.quantite} exercice${seance.quantite > 1 ? 's' : ''}`
+    case 'musculation': return `${seance.quantite} série${seance.quantite > 1 ? 's' : ''}`
   }
 }
 
 // Allure moyenne : au kilomètre pour la course, aux 100 m pour la natation, rien sinon.
 export function allureSeance(seance: Seance): string | null {
-  const secondes = seance.dureeMin * 60
+  if (seance.allureMoyenne === undefined) return null
+  const secondes = seance.allureMoyenne
   switch (seance.sport) {
-    case 'course': return `${formatAllure(secondes / seance.quantite)}/km`
-    case 'natation': return `${formatAllure(secondes / (seance.quantite / 100))}/100 m`
+    case 'course': return `${formatAllure(secondes)}/km`
+    case 'natation': return `${formatAllure(secondes)}/100 m`
+    case 'velo':
     case 'musculation': return null
   }
 }
