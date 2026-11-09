@@ -1,0 +1,124 @@
+/* Page premium. Composants de base : charte.css */
+
+.premium {
+  gap: 1.75rem;
+}
+.premium-demo {
+  align-self: flex-start;
+}
+.premium-barre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* cartes des formules */
+.premium-formules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.premium-carte {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+  background: var(--noir-1);
+}
+.premium-carte.vedette {
+  border-color: var(--turquoise);
+  box-shadow: 0 0 0 4px var(--turquoise-voile);
+}
+.premium-carte header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.premium-carte h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.premium-carte-texte {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--gris);
+}
+.premium-prix {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0.25rem 0 0;
+}
+.premium-prix .chiffre {
+  font-size: 2.25rem;
+}
+.premium-prix small {
+  color: var(--gris-2);
+}
+.premium-avantages {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0.5rem 0 1rem;
+  padding: 0;
+  list-style: none;
+  flex: 1;
+}
+.premium-avantages li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+}
+.premium-avantages .icone {
+  color: var(--turquoise);
+}
+.premium-carte .bouton {
+  justify-content: center;
+}
+
+/* mon abonnement */
+.premium-etat {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.premium-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 3rem;
+  margin: 1.25rem 0;
+}
+.premium-details dt {
+  font-size: 0.8rem;
+  color: var(--gris);
+}
+.premium-details dd {
+  margin: 0.3rem 0 0;
+  font-weight: 600;
+}
+.premium-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+.premium-note {
+  margin: 0;
+  flex-basis: 100%;
+  font-size: 0.85rem;
+  color: var(--gris-2);
+}
+.bouton.premium-resilier {
+  border-color: var(--erreur);
+  color: var(--erreur);
+}
+
+@media (max-width: 720px) {
+  .premium-formules {
+    grid-template-columns: 1fr;
+  }
+}
