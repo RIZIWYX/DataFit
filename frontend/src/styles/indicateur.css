@@ -36,6 +36,11 @@
   letter-spacing: 0;
   color: var(--gris);
 }
+.indicateur-valeur .separateur {
+  margin: 0 0.3em;
+  font-weight: 400;
+  color: var(--gris);
+}
 .indicateur-ecart {
   display: flex;
   align-items: center;
