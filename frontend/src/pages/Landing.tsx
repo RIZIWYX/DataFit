@@ -53,11 +53,6 @@ const FONCTIONNALITES = [
     texte: 'Les séances terminées sont récupérées depuis votre montre, sans saisie.',
   },
   {
-    icone: ICONES.calendrier,
-    titre: 'Programmation',
-    texte: 'Retrouvez toute votre programmation dans un calendrier, séance par séance.',
-  },
-  {
     icone: ICONES.sommeil,
     titre: 'Sommeil',
     texte: 'Horaires, durée, régularité et fréquence cardiaque de vos nuits, mesurés par la montre.',

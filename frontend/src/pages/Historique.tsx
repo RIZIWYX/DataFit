@@ -39,7 +39,6 @@ function Historique() {
     { valeur: 'natation', nom: 'Natation' },
     { valeur: 'velo', nom: 'Vélo' },
     { valeur: 'musculation', nom: 'Musculation' },
-    { valeur: 'programmees', nom: 'Programmées' },
   ]
 
   if (chargement || (erreur && groupes.length === 0)) {
@@ -63,7 +62,7 @@ function Historique() {
         surtitre="Entraînement"
         titre="Historique"
       >
-        Vos séances enregistrées par la montre et vos séances programmées réalisées.
+        Vos séances enregistrées par la montre.
       </TitrePage>
 
       {erreur && <p className="alerte" role="alert">{erreur}</p>}

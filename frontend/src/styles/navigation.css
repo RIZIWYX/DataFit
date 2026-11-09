@@ -320,7 +320,7 @@
     font: inherit;
     font-size: 0.66rem;
     font-weight: 500;
-    font-stretch: 88%; /* police plus étroite : "Programmation" tient sous son icône */
+    font-stretch: 88%; /* police plus étroite pour que les noms tiennent sous les icônes */
     color: var(--gris-2);
     cursor: pointer;
   }

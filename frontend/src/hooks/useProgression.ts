@@ -4,8 +4,7 @@ import { DISCIPLINES, TOUS_LES_EXERCICES } from '../data/paliers.ts'
 import { useSeancesMontre } from './useResultatsMontre.ts'
 import { LISTE_SPORTS, type Sport } from '../data/sports.ts'
 import { bilan, joursEcoules, parSemaine } from '../lib/activite.ts'
-import { chargerPlanning } from '../lib/programmation.ts'
-import { criteresDisponibles, dansPeriode, pointsRang, pointsRecord, realisations } from '../lib/progression.ts'
+import { dansPeriode, pointsRang, pointsRecord } from '../lib/progression.ts'
 import { avecRecordsActuels, lireHistoriqueRecords } from '../lib/records.ts'
 import { chargerEtat, lireProfilRangs } from './useSport.ts'
 
@@ -26,7 +25,6 @@ function useProgression() {
   const [aujourdHui] = useState(() => new Date())
   const [perfs] = useState(() => chargerEtat().perfs)
   const [historique] = useState(() => avecRecordsActuels(lireHistoriqueRecords(), perfs, aujourdHui))
-  const [planning] = useState(chargerPlanning)
   const [profil] = useState(lireProfilRangs)
 
   const exercice = TOUS_LES_EXERCICES.find((ex) => ex.id === parametres.get('exercice'))
@@ -45,10 +43,9 @@ function useProgression() {
 
   // un exercice
   const records = exercice ? dansPeriode(pointsRecord(exercice, historique), debut) : []
-  const realisees = exercice ? realisations(planning, exercice.id).filter((r) => r.date >= debut) : []
 
   // combien de mesures chaque exercice a déjà, pour le signaler dans le menu
-  const nbMesures = (id: string) => Object.keys(historique[id] ?? {}).length + realisations(planning, id).length
+  const nbMesures = (id: string) => Object.keys(historique[id] ?? {}).length
 
   return {
     chargement, erreur,
@@ -75,8 +72,6 @@ function useProgression() {
     records,
     rangs: exercice && profil ? pointsRang(exercice, records, profil) : [],
     profil,
-    realisees,
-    criteres: exercice ? criteresDisponibles(exercice, realisees) : [],
     debut,
     aujourdHui,
   }

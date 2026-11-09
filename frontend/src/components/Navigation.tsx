@@ -21,7 +21,6 @@ const GROUPES: { titre?: string; pages: Page[] }[] = [
   {
     titre: 'Entraînement',
     pages: [
-      { to: '/programmation', nom: 'Programmation', icone: ICONES.calendrier },
       { to: '/historique', nom: 'Historique', icone: ICONES.chrono },
       { to: '/progression', nom: 'Progression', icone: ICONES.tendance },
       { to: '/performance', nom: 'Performance', icone: ICONES.trophee },
@@ -38,7 +37,7 @@ const GROUPES: { titre?: string; pages: Page[] }[] = [
 ]
 
 // Sur téléphone : quatre onglets en bas de l'écran, le reste derrière "Plus".
-const ONGLETS = ['/dashboard', '/programmation', '/historique', '/progression']
+const ONGLETS = ['/dashboard', '/historique', '/progression']
 const TOUTES = GROUPES.flatMap((groupe) => groupe.pages)
 const PAGES_ONGLETS = TOUTES.filter((page) => ONGLETS.includes(page.to))
 const PAGES_PLUS = TOUTES.filter((page) => !ONGLETS.includes(page.to))

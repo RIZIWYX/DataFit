@@ -1,13 +1,10 @@
-// Les entrées de l'historique : les séances reçues de la montre et les séances programmées
-// marquées comme faites, mises au même format pour être listées ensemble. Fonctions pures.
-import { ICONES } from '../data/icones.ts'
+// Les entrées de l'historique (séances de la montre) mises au format de la liste
 import { type Seance } from '../data/seances.ts'
 import { SPORTS, couleurSport, type Sport } from '../data/sports.ts'
 import { distanceKm } from './activite.ts'
 import { formatDateLongue, resumeSeance } from './format.ts'
-import { type Planning, couleurSeance, depuisIso } from './programmation.ts'
 
-export type Categorie = Sport | 'programmees'
+export type Categorie = Sport
 
 export interface Entree {
   id: string
@@ -27,10 +24,8 @@ export interface Entree {
   lien: string
 }
 
-const pluriel = (n: number, mot: string) => `${n} ${mot}${n > 1 ? 's' : ''}`
-
-export function entreesHistorique(seances: Seance[], planning: Planning): Entree[] {
-  const montre: Entree[] = seances.map((seance) => ({
+export function entreesHistorique(seances: Seance[]): Entree[] {
+  return seances.map((seance) => ({
     id: seance.id,
     categorie: seance.sport,
     // avec l'heure de synchronisation quand elle est connue : affichée, et départage les séances du même jour
@@ -48,24 +43,6 @@ export function entreesHistorique(seances: Seance[], planning: Planning): Entree
     lien: `/historique/${seance.id}`,
   }))
 
-  const programmees: Entree[] = planning.seances
-    .filter((seance) => seance.faite)
-    .map((seance) => ({
-      id: `p-${seance.id}`,
-      categorie: 'programmees',
-      date: depuisIso(seance.debut),
-      titre: seance.titre,
-      sousTitre: planning.programmes.find((p) => p.id === seance.programmeId)?.nom ?? 'Séance unique',
-      icone: ICONES.calendrier,
-      couleur: couleurSeance(seance, planning.programmes),
-      dureeMin: seance.dureeMin,
-      mesure: pluriel(seance.exercices.length, 'exercice'),
-      km: seance.exercices.reduce((total, ex) => total + (ex.distance ?? 0), 0),
-      exercices: seance.exercices.map((ex) => ex.nom),
-      lien: `/programmation?seance=${seance.id}`,
-    }))
-
-  return [...montre, ...programmees]
 }
 
 // texte sans accents ni majuscules, pour une recherche tolérante

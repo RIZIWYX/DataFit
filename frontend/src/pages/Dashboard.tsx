@@ -12,7 +12,6 @@ import Panneau from '../components/Panneau.tsx'
 import TitrePage from '../components/TitrePage.tsx'
 import { ICONES } from '../data/icones.ts'
 import { NOMS_RANGS } from '../data/paliers.ts'
-import { photoDesExercices } from '../data/photos.ts'
 import { SPORTS, couleurSport } from '../data/sports.ts'
 import useDashboard from '../hooks/useDashboard.ts'
 import useMontre from '../hooks/useMontre.ts'
@@ -26,11 +25,10 @@ import {
   resumeSeance,
 } from '../lib/format.ts'
 import { dureeNuit, heureNuit } from '../lib/sommeil.ts'
-import { couleurSeance, depuisIso } from '../lib/programmation.ts'
 import type { ResumeDiscipline } from '../lib/rangs.ts'
 
 // L'accueil : une synthèse, pas un inventaire. Ce que j'ai fait (la semaine, la dernière séance)
-// et ce qui m'attend (la prochaine séance, mon objectif) ; le détail est dans les pages dédiées.
+// le détail est dans les pages dédiées.
 function Dashboard() {
   const d = useDashboard()
   const montre = useMontre()
@@ -42,11 +40,7 @@ function Dashboard() {
     ? `${nbSeances(semaine.nbSeances)} et ${formatDuree(semaine.minutes)} d'entraînement ces 7 derniers jours.`
     : "Aucune séance ces 7 derniers jours : c'est le moment de s'y remettre."
 
-  // La prochaine séance planifiée, et celles qui la suivent
-  const [prochaine, ...ensuite] = d.prochaines
-  const debutProchaine = prochaine && depuisIso(prochaine.debut)
-  const quand = (date: Date) =>
-    `${formatJourRelatif(date, aujourdHui)} · ${formatHeure(date)}`
+  const quand = (date: Date) => `${formatJourRelatif(date, aujourdHui)} · ${formatHeure(date)}`
 
   // les sports classés vont du meilleur rang au moins bon : le premier et le dernier
   // (le "pire" seulement s'il y a au moins deux sports, sinon ce serait le même)
@@ -68,7 +62,7 @@ function Dashboard() {
       </TitrePage>
 
       {d.erreur && <p className="alerte" role="alert">{d.erreur}</p>}
-      {/* Ce que j'ai fait en dernier, ce qui m'attend ensuite */}
+      {/* La dernière séance */}
       <div className="accueil-cartes">
         {derniereSeance ? (
           <CarteSeance
@@ -107,62 +101,6 @@ function Dashboard() {
           </CarteSeance>
         )}
 
-        {prochaine && debutProchaine ? (
-          <CarteSeance
-            surtitre={`Prochaine séance · ${quand(debutProchaine)}`}
-            titre={prochaine.titre}
-            icone={ICONES.calendrier}
-            couleur={couleurSeance(prochaine, d.programmes)}
-            image={photoDesExercices(prochaine.exercices)}
-            mesures={[
-              { nom: 'Durée prévue', valeur: formatDuree(prochaine.dureeMin) },
-              { nom: 'Exercices', valeur: String(prochaine.exercices.length) },
-              {
-                nom: 'Programme',
-                valeur:
-                  d.programmes.find((p) => p.id === prochaine.programmeId)?.nom ??
-                  'Séance unique',
-              },
-            ]}
-            lien={`/programmation?seance=${prochaine.id}`}
-            action="Voir dans le calendrier"
-          >
-            {prochaine.exercices.length > 0 && (
-              <p className="carte-seance-detail">
-                {prochaine.exercices.slice(0, 4).map((ex) => ex.nom).join(' · ')}
-                {prochaine.exercices.length > 4 && ' ...'}
-              </p>
-            )}
-            {ensuite.length > 0 && (
-              <p className="carte-seance-detail">
-                <strong>Ensuite :</strong>{' '}
-                {ensuite
-                  .map(
-                    (s) =>
-                      `${s.titre}, ${formatJourRelatif(
-                        depuisIso(s.debut),
-                        aujourdHui,
-                      ).toLowerCase()}`,
-                  )
-                  .join(' · ')}
-              </p>
-            )}
-          </CarteSeance>
-        ) : (
-          <CarteSeance
-            surtitre="Prochaine séance"
-            titre="Rien de prévu"
-            icone={ICONES.calendrier}
-            couleur="var(--gris-2)"
-            mesures={[]}
-            lien="/programmation"
-            action="Planifier une séance"
-          >
-            <p className="carte-seance-detail">
-              Créez un programme ou une séance : la prochaine à faire s'affichera ici.
-            </p>
-          </CarteSeance>
-        )}
       </div>
 
       {/* Le sport où j'ai le meilleur rang, celui où j'ai le moins bon, et la montre */}

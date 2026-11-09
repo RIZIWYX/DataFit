@@ -15,11 +15,10 @@ import { ICONES } from '../data/icones.ts'
 import { DISCIPLINES, NOMS_RANGS, RANGS, type Exercice } from '../data/paliers.ts'
 import { LISTE_SPORTS, SPORTS, couleurSport } from '../data/sports.ts'
 import useProgression, { PERIODES } from '../hooks/useProgression.ts'
-import { joursEcoules, parSemaine } from '../lib/activite.ts'
-import { colonnesDesSemaines, colonnesParSemaine, nbSeances, seriesDesSports } from '../lib/colonnes.ts'
+import { colonnesDesSemaines, nbSeances, seriesDesSports } from '../lib/colonnes.ts'
 import { ecart } from '../lib/ecart.ts'
 import { formatAllure, formatDuree, formatJour, nombre } from '../lib/format.ts'
-import { CRITERES, type PointDate } from '../lib/progression.ts'
+import { type PointDate } from '../lib/progression.ts'
 import { formatValeur, libelleMesure, rang, valeur } from '../lib/rangs.ts'
 
 // cinq étiquettes de date au plus, réparties sous la courbe
@@ -260,14 +259,6 @@ function VueExercice({ p, exercice }: { p: DonneesPage; exercice: Exercice }) {
     evolution = progres === 0 ? 'Stable' : `${progres > 0 ? '+' : '−'}${formatValeur(exercice, Math.abs(difference)).replace('+', '')}`
   }
 
-  // séances faites contenant l'exercice, semaine par semaine
-  const semaines = parSemaine([], p.nbSemaines, p.aujourdHui)
-  const parSemaineFaites = semaines.map(() => 0)
-  for (const r of p.realisees) {
-    const index = semaines.length - 1 - Math.floor(joursEcoules(r.date, p.aujourdHui) / 7)
-    if (index >= 0) parSemaineFaites[index] += 1
-  }
-
   return (
     <>
       <section className="progression-exercice" aria-label={exercice.nom}>
@@ -288,7 +279,6 @@ function VueExercice({ p, exercice }: { p: DonneesPage; exercice: Exercice }) {
         <Indicateur nom="Record actuel" valeur={Number.isNaN(recordActuel) ? '–' : format(recordActuel)} />
         <Indicateur nom="Évolution sur la période" valeur={evolution} />
         <Indicateur nom="Rang" valeur={rangActuel >= 0 ? NOMS_RANGS[rangActuel] : '–'} />
-        <Indicateur nom="Séances faites" valeur={String(p.realisees.length)} />
       </dl>
 
       <div className="progression-grille">
@@ -305,31 +295,10 @@ function VueExercice({ p, exercice }: { p: DonneesPage; exercice: Exercice }) {
           />
         )}
 
-        {p.criteres.map((critere) => (
-          <CourbeDatee
-            key={critere}
-            points={p.realisees.map((r) => ({ date: r.date, valeur: r[critere] }))}
-            titre={CRITERES[critere].titre}
-            aide={CRITERES[critere].aide}
-            depuisZero={critere !== 'chargeMax'}
-            format={(v) => `${nombre(v)} ${CRITERES[critere].unite}`}
-          />
-        ))}
-
-        {p.realisees.length > 0 && (
-          <Panneau titre="Séances faites par semaine">
-            <GrapheColonnes
-              series={[{ nom: 'Séances', couleur: 'var(--blanc)' }]}
-              colonnes={colonnesParSemaine(semaines, (semaine) => [parSemaineFaites[semaines.indexOf(semaine)]])}
-              unite={nbSeances}
-              entete="Semaine"
-            />
-          </Panneau>
-        )}
       </div>
 
       {/* ce qui manque, et comment l'obtenir : jamais de graphique sans données */}
-      {(p.records.length === 0 || p.realisees.length === 0) && (
+      {p.records.length === 0 && (
         <div className="progression-manques">
           {p.records.length === 0 && (
             <EtatVide
@@ -339,20 +308,6 @@ function VueExercice({ p, exercice }: { p: DonneesPage; exercice: Exercice }) {
             >
               Chaque record saisi dans Performance est daté : en le mettant à jour au fil du temps, vous
               verrez sa courbe et celle de votre rang.
-            </EtatVide>
-          )}
-          {p.realisees.length === 0 && (
-            <EtatVide
-              icone={ICONES.calendrier}
-              titre="Aucune séance faite avec cet exercice"
-              action={<LienFleche to="/programmation">Planifier une séance</LienFleche>}
-            >
-              Ajoutez-le à une séance de la Programmation, puis marquez-la comme faite :{' '}
-              {exercice.type === 'load' || exercice.type === 'lest'
-                ? 'charge, répétitions et volume apparaîtront ici.'
-                : exercice.type === 'time'
-                  ? 'distance et durée apparaîtront ici.'
-                  : 'vos répétitions apparaîtront ici.'}
             </EtatVide>
           )}
         </div>
