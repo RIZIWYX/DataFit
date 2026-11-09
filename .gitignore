@@ -39,3 +39,7 @@ __pycache__/
 donnees-montre/
 backend/donnees-montre/
 .vscode/
+
+# Notebooks Jupyter
+*.ipynb
+.ipynb_checkpoints/
