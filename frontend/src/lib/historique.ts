@@ -24,6 +24,15 @@ export interface Entree {
   lien: string
 }
 
+// Les séances de la plus récente à la plus ancienne, avec l'heure de synchronisation quand elle existe.
+// Utilisé par l'accueil et par l'historique pour avoir le même ordre partout.
+// Le service renvoie les séances de la plus ancienne à la plus récente : on inverse d'abord pour
+// qu'à date égale la dernière synchronisée reste devant (le tri est stable).
+export function seancesRecentes(seances: Seance[]): Seance[] {
+  const moment = (s: Seance) => (s.heure ?? s.date).getTime()
+  return [...seances].reverse().sort((a, b) => moment(b) - moment(a))
+}
+
 export function entreesHistorique(seances: Seance[]): Entree[] {
   return seances.map((seance) => ({
     id: seance.id,
