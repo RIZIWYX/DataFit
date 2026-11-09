@@ -52,7 +52,7 @@
   align-items: stretch;
   gap: 1.25rem;
 }
-/* même structure dans chaque bloc : le tracé en haut, « Voir les chiffres » et la note calés en bas */
+/* même structure dans chaque bloc : le tracé en haut, "Voir les chiffres" et la note calés en bas */
 .progression-grille > .panneau {
   display: flex;
   flex-direction: column;

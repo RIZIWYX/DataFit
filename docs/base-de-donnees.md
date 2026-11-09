@@ -1,6 +1,6 @@
 # Base de données
 
-DataFit utilise **PostgreSQL 17** (choix expliqué dans l'[ADR 0003](adr/0003-postgresql.md)). Seul le backend s'y connecte.
+DataFit utilise **PostgreSQL 17**. Seul le backend s'y connecte.
 
 ## Schéma actuel
 
@@ -118,16 +118,16 @@ Quelques choix expliqués :
 
 La limite : `CREATE TABLE IF NOT EXISTS` ne modifie jamais une table qui existe déjà. Pour ajouter ou changer une colonne, il faut écrire un `ALTER TABLE` à la main (comme dans `05_seances.sql`), ou repartir d'une base vide avec `./lancer.sh --reinitialiser`, ce qui efface toutes les données locales.
 
-### La solution standard : les migrations (recommandé)
+### À faire : passer aux migrations
 
-Une **migration** est un petit fichier SQL numéroté qui décrit *un changement* du schéma. Un outil retient lesquelles ont déjà été appliquées et n'exécute que les nouvelles, au démarrage du back. C'est ce qu'on fait en entreprise : le schéma est versionné comme le code.
+Une **migration** est un petit fichier SQL numéroté qui décrit *un changement* du schéma. Un outil retient lesquelles ont déjà été appliquées et n'exécute que les nouvelles, au démarrage du back.
 
 Pour Spring Boot, l'outil le plus courant est **Flyway** :
 
 1. Ajouter la dépendance `spring-boot-starter-flyway` (ou `flyway-core` + `flyway-database-postgresql`) au `pom.xml`.
 2. Créer `backend/src/main/resources/db/migration/` et y mettre :
    ```
-   V1__utilisateur_profil.sql        ← le contenu actuel de db/01_…sql
+   V1__utilisateur_profil.sql        ← le contenu actuel de db/01_...sql
    V2__nutrition.sql
    V3__seances.sql
    ```

@@ -4,7 +4,7 @@
   gap: 2.25rem;
 }
 
-/* ---------- la dernière séance et la prochaine, côte à côte ---------- */
+/* la dernière séance et la prochaine, côte à côte */
 
 .accueil-cartes {
   display: grid;
@@ -12,7 +12,7 @@
   gap: 1.25rem;
 }
 
-/* ---------- l'état du moment : trois panneaux de même hauteur ---------- */
+/* l'état du moment : trois panneaux de même hauteur */
 
 .accueil-etat {
   display: grid;
@@ -116,7 +116,7 @@
   color: var(--blanc);
 }
 
-/* ---------- tablette : les cartes l'une sous l'autre ---------- */
+/* tablette : les cartes l'une sous l'autre */
 
 @media (max-width: 1099px) {
   .accueil-cartes {
@@ -127,7 +127,7 @@
   }
 }
 
-/* ---------- téléphone ---------- */
+/* téléphone */
 
 @media (max-width: 699px) {
   .accueil {

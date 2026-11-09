@@ -14,7 +14,7 @@
   margin: 0.9rem 0 1.1rem;
   font-size: clamp(2.4rem, 1.2rem + 4vw, 4.6rem);
 }
-/* « DataFit. » en turquoise, comme sur la maquette */
+/* "DataFit." en turquoise, comme sur la maquette */
 .installer-marque {
   color: var(--turquoise);
 }
@@ -27,7 +27,7 @@
   text-wrap: pretty;
 }
 
-/* ---------- une case par téléchargement, toutes sur la même ligne ---------- */
+/* une case par téléchargement, toutes sur la même ligne */
 
 .installer-plateformes {
   display: grid;
@@ -78,7 +78,7 @@
   padding-inline: 0.85rem;
   font-size: 0.875rem;
 }
-/* « pour Windows » : le texte complet demande environ 240 px. Il est masqué quand les cases sont
+/* "pour Windows" : le texte complet demande environ 240 px. Il est masqué quand les cases sont
    plus étroites (5 cases sur un écran de moins de 1580 px, 3 cases sous 960 px, 2 cases), le nom
    de la plateforme étant déjà juste au-dessus ; il reste lu par les lecteurs d'écran */
 @media (min-width: 1181px) and (max-width: 1579px), (min-width: 481px) and (max-width: 959px) {
@@ -95,7 +95,7 @@
   margin-bottom: 0.6rem;
 }
 
-/* ---------- écrans plus étroits : les cases passent sur plusieurs lignes ---------- */
+/* écrans plus étroits : les cases passent sur plusieurs lignes */
 
 @media (max-width: 1180px) {
   .installer-plateformes {

@@ -1,4 +1,4 @@
-// Algo de calcul des rangs E → Z. Fonctions pures : aucune dépendance à React.
+// Calcul des rangs (de E à Z)
 import { type Exercice, type Sexe, CATEGORIES, DISCIPLINES, POIDS_CALIBRAGE, TOUS_LES_EXERCICES } from '../data/paliers.ts'
 
 export type Perfs = Record<string, string>
@@ -9,7 +9,7 @@ export interface Profil {
 }
 
 // Catégorie de poids d'une personne (index dans CATEGORIES[sexe]) : la première dont
-// la limite n'est pas dépassée. La dernière, « + », accueille tous les poids au-dessus.
+// la limite n'est pas dépassée. La dernière, "+", accueille tous les poids au-dessus.
 export function categoriePourPoids(sexe: Sexe, poids: number): number {
   const categories = CATEGORIES[sexe]
   const index = categories.findIndex(([nom, limite]) => nom.startsWith('-') && poids <= limite)
@@ -31,7 +31,7 @@ export function seuils(ex: Exercice, profil: Profil): number[] | null {
   return bareme
 }
 
-// "4:30" → 270 s ; "1:25:00" → 5100 s ; "12,3" → 12,3 s
+// "4:30" -> 270 s ; "1:25:00" -> 5100 s ; "12,3" -> 12,3 s
 export function lireTemps(texte: string): number {
   const t = texte.trim().replace(',', '.')
   if (!t) return NaN
@@ -128,7 +128,7 @@ export function rangGlobal(resume: ResumeDiscipline[]) {
   return { rang, disciplines: rangs.length }
 }
 
-// ---------- affichage ----------
+// affichage
 
 const nombre = (n: number, decimales = 1) =>
   n.toLocaleString('fr-FR', { maximumFractionDigits: decimales })
@@ -156,7 +156,7 @@ export function formatValeur(ex: Exercice, x: number): string {
 
 const UNITE_ECART: Record<string, string> = { load: ' kg', lest: ' kg', reps: ' reps', hold: ' s', dist: ' m' }
 
-// Texte « Prochain : A à 102,5 kg · 12,5 kg à prendre »
+// Texte "Prochain : A à 102,5 kg · 12,5 kg à prendre"
 export function texteProchain(ex: Exercice, perfs: Perfs, profil: Profil, nomsRangs: readonly string[]): string {
   const r = rang(ex, perfs, profil)
   if (r < 0) return 'Pas encore renseigné.'

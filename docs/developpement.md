@@ -134,12 +134,12 @@ Toute nouvelle variable doit être ajoutée **ici et dans `.env.example`**, avec
 
 **`permission denied while trying to connect to the docker API`** : voir [Utiliser Docker sans sudo](#utiliser-docker-sans-sudo).
 
-**J'ai modifié un fichier de `db/` et rien n'a changé** : PostgreSQL ne les exécute qu'à la création de la base. `./lancer.sh` crée les **nouvelles** tables à chaque lancement, mais ne modifie pas une table qui existe déjà (ajout de colonne…) : pour ça, `./lancer.sh --reinitialiser`, ou une commande `ALTER TABLE`. Voir [Base de données](base-de-donnees.md#faire-évoluer-le-schéma).
+**J'ai modifié un fichier de `db/` et rien n'a changé** : PostgreSQL ne les exécute qu'à la création de la base. `./lancer.sh` crée les **nouvelles** tables à chaque lancement, mais ne modifie pas une table qui existe déjà (ajout de colonne...) : pour ça, `./lancer.sh --reinitialiser`, ou une commande `ALTER TABLE`. Voir [Base de données](base-de-donnees.md#faire-évoluer-le-schéma).
 
 **Après un `git pull`, le front ne compile plus** : `package.json` a sans doute changé. Relance `npm install` dans `frontend/`.
 
 **Page blanche ou 404 en rafraîchissant `/dashboard` sur le site déployé** : l'hébergeur doit renvoyer `index.html` pour toutes les adresses (c'est le rôle de `vercel.json` et `nginx.conf`).
 
-**Erreur CORS dans la console du navigateur** : le front appelle le back depuis une adresse non autorisée. Voir [CORS](glossaire.md#cors).
+**Erreur CORS dans la console du navigateur** : le front appelle le back depuis une adresse non autorisée.
 
 **`permission denied` sur `./mvnw`** : `chmod +x mvnw`.

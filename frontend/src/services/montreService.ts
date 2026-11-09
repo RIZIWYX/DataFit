@@ -1,13 +1,11 @@
-// Service de la montre : en attendant une vraie montre, chaque appel demande au backend de
-// simuler des mesures, de les faire analyser puis d'enregistrer le résultat
-// (voir CardioController, VeloController… et SommeilController).
+// Appels "montre" : le backend simule la séance, l'envoie à l'analyse puis l'enregistre
 import { API_URL, envoyerSeance, type IdentifiantUtilisateur } from './sport/http.ts'
 
 // les sports que le simulateur sait produire (chemin /api/seances/<sport>)
 export const SPORTS_MONTRE = ['cardio', 'velo', 'natation', 'muscu'] as const
 export type SportMontre = (typeof SPORTS_MONTRE)[number]
 
-// une séance : simulateur → analyse → enregistrement ; le nom est le seul champ envoyé
+// une séance : simulateur -> analyse -> enregistrement ; le nom est le seul champ envoyé
 export function simulerSeance(utilisateurId: IdentifiantUtilisateur, sport: SportMontre, nom: string) {
   return envoyerSeance<{ nom: string }, unknown>(`/api/seances/${sport}`, utilisateurId, 'POST', { nom })
 }

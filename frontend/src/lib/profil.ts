@@ -6,10 +6,10 @@ export interface Profil {
   prenom: string
   nom: string
   email: string
-  dateNaissance: string // « AAAA-MM-JJ » ; vide = pas encore renseignée
+  dateNaissance: string // "AAAA-MM-JJ" ; vide = pas encore renseignée
   taille: number // cm
   poids: number // kg : fixe la catégorie de poids de la page sport
-  sexe: string // « H » ou « F » : choisit les barèmes de la page sport
+  sexe: string // "H" ou "F" : choisit les barèmes de la page sport
   niveau: string
   activites: string[] // sports préférés (identifiants de data/sports.ts)
   objectif: string
@@ -39,7 +39,7 @@ export function lireProfil(): Profil | null {
     return {
       ...PROFIL_VIDE,
       ...garde,
-      // les profils enregistrés avant n'avaient qu'un seul « sport pratiqué »
+      // les profils enregistrés avant n'avaient qu'un seul "sport pratiqué"
       activites: garde.activites ?? (garde.sport ? [garde.sport] : []),
     }
   } catch {
@@ -53,7 +53,7 @@ export function enregistrerProfil(modifications: Partial<Profil>): Profil {
   try {
     localStorage.setItem(CLE_STOCKAGE, JSON.stringify(profil))
   } catch {
-    // stockage indisponible (navigation privée…) : le profil ne sera pas gardé
+    // stockage indisponible (navigation privée...) : le profil ne sera pas gardé
   }
   return profil
 }
@@ -100,7 +100,7 @@ export const OBJECTIFS = [
   'Rester en forme',
 ].map((nom) => ({ valeur: nom, nom }))
 
-// dates de naissance acceptées : entre 10 et 100 ans, au format des champs date (« AAAA-MM-JJ »)
+// dates de naissance acceptées : entre 10 et 100 ans, au format des champs date ("AAAA-MM-JJ")
 export function bornesNaissance(aujourdHui = new Date()) {
   const ilYa = (ans: number) => {
     const date = new Date(aujourdHui.getFullYear() - ans, aujourdHui.getMonth(), aujourdHui.getDate())

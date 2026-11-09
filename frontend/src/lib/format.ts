@@ -1,27 +1,27 @@
-// Mise en forme des dates, durées et mesures. Fonctions pures : aucune dépendance à React.
+// Formatage des dates, durées et mesures
 import { type Seance } from '../data/seances.ts'
 import { joursEcoules } from './activite.ts'
 
 export const nombre = (n: number, decimales = 1) =>
   n.toLocaleString('fr-FR', { maximumFractionDigits: decimales })
 
-// « 7 oct. »
+// "7 oct."
 export const formatJour = (date: Date) =>
   date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
 
-// « 11 oct. 2026 »
+// "11 oct. 2026"
 export const formatDate = (date: Date) =>
   date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
 
-// « 11 octobre 2026 »
+// "11 octobre 2026"
 export const formatDateLongue = (date: Date) =>
   date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
 
-// « 18:10 »
+// "18:10"
 export const formatHeure = (date: Date) =>
   date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
 
-// « Aujourd'hui », « Hier », « Demain », « Mardi » dans la semaine écoulée ou à venir, puis « 7 oct. »
+// "Aujourd'hui", "Hier", "Demain", "Mardi" dans la semaine écoulée ou à venir, puis "7 oct."
 export function formatJourRelatif(date: Date, aujourdHui: Date): string {
   const jours = joursEcoules(date, aujourdHui) // négatif dans le futur
   if (jours === 0) return "Aujourd'hui"
@@ -34,7 +34,7 @@ export function formatJourRelatif(date: Date, aujourdHui: Date): string {
   return formatJour(date)
 }
 
-// 32 → « 32 min » ; 70 → « 1 h 10 » ; 60 → « 1 h »
+// 32 -> "32 min" ; 70 -> "1 h 10" ; 60 -> "1 h"
 export function formatDuree(minutes: number): string {
   const h = Math.floor(minutes / 60)
   const m = Math.round(minutes % 60)
@@ -42,13 +42,13 @@ export function formatDuree(minutes: number): string {
   return m ? `${h} h ${String(m).padStart(2, '0')}` : `${h} h`
 }
 
-// 369 secondes → « 6'09" »
+// 369 secondes -> "6'09""
 export function formatAllure(secondes: number): string {
   const total = Math.round(secondes)
   return `${Math.floor(total / 60)}'${String(total % 60).padStart(2, '0')}"`
 }
 
-// La mesure principale d'une séance : « 5,2 km », « 1 200 m » ou « 3 exercices ».
+// La mesure principale d'une séance : "5,2 km", "1 200 m" ou "3 exercices".
 export function resumeSeance(seance: Seance): string {
   switch (seance.sport) {
     case 'velo':

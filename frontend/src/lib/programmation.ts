@@ -1,10 +1,5 @@
-// Programmes d'entraînement et séances placées dans le calendrier. Fonctions pures, sans React.
-//
-// Un programme est un modèle (« PPL » : trois séances types, avec leurs exercices) ;
-// le calendrier en contient les occurrences : des séances datées, copiées du modèle au moment
-// de la planification. Modifier une occurrence ne touche donc pas au modèle, et inversement.
-//
-// Démonstration : tout est gardé dans le navigateur, en attendant le backend.
+// Programmes et séances du calendrier (stockés dans le localStorage pour l'instant)
+// une séance planifiée est une copie du modèle, on peut la modifier sans toucher au programme
 import { TOUS_LES_EXERCICES, type Exercice } from '../data/paliers.ts'
 import { cleDuCompte } from './compte.ts'
 
@@ -39,7 +34,7 @@ export interface SeancePlanifiee {
   programmeId: string | null // null : séance unique, hors programme
   modeleId: string | null
   titre: string
-  debut: string // « 2026-10-16T18:00 », heure locale
+  debut: string // "2026-10-16T18:00", heure locale
   dureeMin: number
   exercices: ExercicePrevu[]
   faite: boolean
@@ -55,19 +50,19 @@ export const COULEURS_PROGRAMMES = ['#ff8a3d', '#6e8bff', '#f5b83d', '#b18cff', 
 // les séances uniques, hors programme
 export const COULEUR_SEANCE_UNIQUE = '#a4a4ad'
 
-// ---------- identifiants et dates ----------
+// identifiants et dates
 
 export const nouvelId = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4)
 
 const deux = (n: number) => String(n).padStart(2, '0')
 
-// date et heure locales → « 2026-10-16T18:00 » (sans fuseau : c'est l'heure affichée)
+// date et heure locales -> "2026-10-16T18:00" (sans fuseau : c'est l'heure affichée)
 export const versIso = (date: Date) =>
   `${date.getFullYear()}-${deux(date.getMonth() + 1)}-${deux(date.getDate())}T${deux(date.getHours())}:${deux(date.getMinutes())}`
 
 export const depuisIso = (iso: string) => new Date(iso)
 
-// « 2026-10-16 » : la clé d'un jour, pour regrouper
+// "2026-10-16" : la clé d'un jour, pour regrouper
 export const cleJour = (date: Date) => versIso(date).slice(0, 10)
 
 // lundi de la semaine d'une date, à minuit
@@ -79,7 +74,7 @@ export function debutSemaine(date: Date): Date {
 export const ajouterJours = (date: Date, jours: number) =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate() + jours, date.getHours(), date.getMinutes())
 
-// ---------- exercices ----------
+// exercices
 
 export const exerciceDuCatalogue = (id: string | null): Exercice | undefined =>
   id ? TOUS_LES_EXERCICES.find((ex) => ex.id === id) : undefined
@@ -117,7 +112,7 @@ export function champsExercice(exerciceId: string | null): Champ[] {
 
 const nombre = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 2 })
 
-// « 4 × 8 · 80 kg », « 5 km · 25 min », « 3 × 30 s »
+// "4 × 8 · 80 kg", "5 km · 25 min", "3 × 30 s"
 export function resumeExercice(ex: ExercicePrevu): string {
   const lest = exerciceDuCatalogue(ex.exerciceId)?.type === 'lest'
   const morceaux: string[] = []
@@ -131,16 +126,16 @@ export function resumeExercice(ex: ExercicePrevu): string {
   return morceaux.join(' · ')
 }
 
-// ---------- planification ----------
+// planification
 
 export interface Creneau {
   modeleId: string
-  jour: number // 0 = lundi … 6 = dimanche
-  heure: string // « 18:00 »
+  jour: number // 0 = lundi ... 6 = dimanche
+  heure: string // "18:00"
 }
 
 // Place les séances d'un programme dans le calendrier : chaque séance type à son jour et
-// à son heure, pendant n semaines à partir de la semaine de « depart ».
+// à son heure, pendant n semaines à partir de la semaine de "depart".
 // Les créneaux déjà passés de la première semaine sont ignorés.
 export function planifier(programme: Programme, depart: Date, semaines: number, creneaux: Creneau[]): SeancePlanifiee[] {
   const lundi = debutSemaine(depart)
@@ -168,7 +163,7 @@ export function planifier(programme: Programme, depart: Date, semaines: number, 
   return seances
 }
 
-// ---------- lecture ----------
+// lecture
 
 export const couleurSeance = (seance: SeancePlanifiee, programmes: Programme[]) =>
   programmes.find((p) => p.id === seance.programmeId)?.couleur ?? COULEUR_SEANCE_UNIQUE
@@ -180,7 +175,7 @@ export function seancesAVenir(planning: Planning, maintenant: Date): SeancePlani
     .sort((a, b) => a.debut.localeCompare(b.debut))
 }
 
-// ---------- stockage ----------
+// stockage
 
 // un planning par compte (voir cleDuCompte)
 const CLE_STOCKAGE = 'datafit-programmation'
@@ -198,11 +193,11 @@ export function enregistrerPlanning(planning: Planning) {
   try {
     localStorage.setItem(cleDuCompte(CLE_STOCKAGE), JSON.stringify(planning))
   } catch {
-    // stockage indisponible (navigation privée…) : le planning ne sera pas gardé
+    // stockage indisponible (navigation privée...) : le planning ne sera pas gardé
   }
 }
 
-// ---------- exemple ----------
+// exemple
 
 const ex = (exerciceId: string | null, nom: string, reglages: Partial<ExercicePrevu>): ExercicePrevu => ({
   id: nouvelId(),
@@ -211,7 +206,7 @@ const ex = (exerciceId: string | null, nom: string, reglages: Partial<ExercicePr
   ...reglages,
 })
 
-// Un programme « Push Pull Legs » prêt à l'emploi, créé seulement si l'utilisateur le demande.
+// Un programme "Push Pull Legs" prêt à l'emploi, créé seulement si l'utilisateur le demande.
 export function exemplePPL(): Programme {
   return {
     id: nouvelId(),

@@ -82,7 +82,7 @@ const ENGAGEMENTS = [
 function Landing() {
   const { hash } = useLocation()
 
-  // React Router ne fait pas défiler jusqu'à l'ancre (#rangs…) quand on arrive
+  // React Router ne fait pas défiler jusqu'à l'ancre (#rangs...) quand on arrive
   // d'une autre page : on cherche la section après l'affichage et on y va nous-mêmes.
   useEffect(() => {
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView()

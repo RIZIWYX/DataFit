@@ -23,8 +23,8 @@ import SeanceCardio from './pages/SeanceCardio.tsx'
 import Sommeil from './pages/Sommeil.tsx'
 import Sport from './pages/Sport.tsx'
 
-// l'onglet « Sport » s'appelle désormais « Performance » : les anciens liens
-// (/sport?discipline=nat…) mènent à la nouvelle adresse, paramètres compris
+// l'onglet "Sport" s'appelle désormais "Performance" : les anciens liens
+// (/sport?discipline=nat...) mènent à la nouvelle adresse, paramètres compris
 function VersPerformance() {
   const { search } = useLocation()
   return <Navigate to={`/performance${search}`} replace />

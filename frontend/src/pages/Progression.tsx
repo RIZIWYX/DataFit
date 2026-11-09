@@ -50,7 +50,7 @@ function Progression() {
         L'évolution de vos séances, et de chaque exercice.
       </TitrePage>
 
-      {p.chargement && <p role="status">Chargement des résultats…</p>}
+      {p.chargement && <p role="status">Chargement des résultats...</p>}
       {p.erreur && <p className="alerte" role="alert">{p.erreur}</p>}
 
       {/* le choix principal de la page : tout, ou un exercice de la page Performance */}
@@ -78,7 +78,7 @@ function Progression() {
 
 type DonneesPage = ReturnType<typeof useProgression>
 
-// ---------- vue d'ensemble : les séances reçues de la montre ----------
+// vue d'ensemble : les séances reçues de la montre
 
 function VueEnsemble({ p }: { p: DonneesPage }) {
   const sportSeul = p.sport === 'course' || p.sport === 'natation' ? p.sport : null
@@ -201,7 +201,7 @@ function VueEnsemble({ p }: { p: DonneesPage }) {
   )
 }
 
-// ---------- un exercice ----------
+// un exercice
 
 type PropsCourbe = {
   points: PointDate[]
@@ -210,7 +210,7 @@ type PropsCourbe = {
   format: (valeur: number) => string
   axe?: (valeur: number) => string
   inverse?: boolean // pour un temps : plus bas = mieux, donc en haut
-  depuisZero?: boolean // pour une quantité (répétitions, volume…) : l'axe part de 0
+  depuisZero?: boolean // pour une quantité (répétitions, volume...) : l'axe part de 0
   couleur?: string
 }
 

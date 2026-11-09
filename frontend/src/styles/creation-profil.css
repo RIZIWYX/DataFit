@@ -8,7 +8,7 @@
   min-height: 100svh;
 }
 
-/* ---------- en-tête : le logo et les deux étapes de l'inscription ---------- */
+/* en-tête : le logo et les deux étapes de l'inscription */
 
 .creation-tete {
   display: flex;
@@ -76,7 +76,7 @@
   color: var(--noir);
 }
 
-/* ---------- contenu ---------- */
+/* contenu */
 
 .creation-contenu {
   gap: 1.75rem;
@@ -204,7 +204,7 @@
   color: var(--gris);
 }
 
-/* ---------- téléphone : une colonne ---------- */
+/* téléphone : une colonne */
 
 @media (max-width: 599px) {
   .creation-groupe {

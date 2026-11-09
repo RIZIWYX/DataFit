@@ -26,8 +26,8 @@ export async function recupererAujourdhui<T>(
   return reponse.json() as Promise<T>
 }
 
-// POST : crée la ligne du jour (bouton « Valider »)
-// PUT  : modifie la ligne du jour (bouton « Modifier »)
+// POST : crée la ligne du jour (bouton "Valider")
+// PUT  : modifie la ligne du jour (bouton "Modifier")
 export async function envoyerSeance<TRequete, TReponse>(
   chemin: string,
   utilisateurId: IdentifiantUtilisateur,

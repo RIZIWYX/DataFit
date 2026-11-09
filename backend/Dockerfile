@@ -1,4 +1,4 @@
-# ---------- Étape 1 : compiler le .jar ----------
+# Étape 1 : compiler le .jar
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 
@@ -11,7 +11,7 @@ RUN ./mvnw dependency:go-offline -q
 COPY src src
 RUN ./mvnw package -DskipTests -q
 
-# ---------- Étape 2 : l'image finale, juste de quoi exécuter ----------
+# Étape 2 : l'image finale, juste de quoi exécuter
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar

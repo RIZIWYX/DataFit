@@ -35,16 +35,9 @@ const GROUPES: { titre?: string; pages: Page[] }[] = [
       { to: '/montre', nom: 'Montre', icone: ICONES.montre },
     ],
   },
-  {
-    titre: 'Services',
-    pages: [
-      { to: '/chatbot', nom: 'Chatbot', icone: ICONES.chatbot },
-      { to: '/premium', nom: 'Premium', icone: ICONES.premium },
-    ],
-  },
 ]
 
-// Sur téléphone : quatre onglets en bas de l'écran, le reste derrière « Plus ».
+// Sur téléphone : quatre onglets en bas de l'écran, le reste derrière "Plus".
 const ONGLETS = ['/dashboard', '/programmation', '/historique', '/progression']
 const TOUTES = GROUPES.flatMap((groupe) => groupe.pages)
 const PAGES_ONGLETS = TOUTES.filter((page) => ONGLETS.includes(page.to))
@@ -134,7 +127,7 @@ function Navigation() {
         </button>
       </nav>
 
-      {/* « Plus » : un panneau qui monte du bas ; un clic à côté ou Échap le referme */}
+      {/* "Plus" : un panneau qui monte du bas ; un clic à côté ou Échap le referme */}
       <dialog
         ref={feuille}
         className="feuille refonte"

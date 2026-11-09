@@ -1,4 +1,4 @@
-// Service pour la discipline « SBD » : appels REST vers /api/sbd.
+// Service pour la discipline "SBD" : appels REST vers /api/sbd.
 // Les champs renvoyés par le backend correspondent aux colonnes de la table.
 import {
   envoyerSeance,

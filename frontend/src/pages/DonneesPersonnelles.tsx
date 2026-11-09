@@ -102,7 +102,7 @@ function DonneesPersonnelles() {
           n'est enregistrée que pendant une séance que tu as lancée.
         </p>
         <h3>Tes performances</h3>
-        <p>Les résultats que tu saisis pour chaque exercice (charge, répétitions, temps…).</p>
+        <p>Les résultats que tu saisis pour chaque exercice (charge, répétitions, temps...).</p>
         <h3>Données techniques</h3>
         <p>
           Comme tout site web, notre serveur enregistre des journaux techniques (adresse IP,

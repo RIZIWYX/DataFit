@@ -62,7 +62,7 @@
   background-size: 100% calc(100% / var(--pas));
 }
 
-/* ---------- colonnes ---------- */
+/* colonnes */
 
 .graphe-zone {
   display: flex;
@@ -174,10 +174,10 @@
 .graphe-libelles span {
   flex: 1;
   text-align: center;
-  white-space: pre-line; /* « \n » dans le libellé = retour à la ligne */
+  white-space: pre-line; /* "\n" dans le libellé = retour à la ligne */
 }
 
-/* ---------- courbe ---------- */
+/* courbe */
 
 .ligne-zone {
   position: relative;
@@ -245,7 +245,7 @@
   white-space: nowrap;
 }
 
-/* ---------- anneau ---------- */
+/* anneau */
 
 .anneau {
   display: flex;
@@ -324,7 +324,7 @@
   color: var(--d-encre-2);
 }
 
-/* ---------- tableau des chiffres, sous chaque graphique ---------- */
+/* tableau des chiffres, sous chaque graphique */
 
 .graphe-chiffres {
   margin-top: 0.9rem;

@@ -1,4 +1,4 @@
-// Service pour la discipline « Calisthenics » : appels REST vers /api/calisthenics.
+// Service pour la discipline "Calisthenics" : appels REST vers /api/calisthenics.
 // Les champs renvoyés par le backend correspondent aux colonnes de la table.
 import {
   envoyerSeance,

@@ -5,6 +5,7 @@ import {
   type Journal,
   type NiveauActivite,
   activiteParDefaut,
+  ajoutsEau,
   calculerBesoins,
   cleJour,
   decalerJour,
@@ -20,6 +21,18 @@ import {
   analyserNutrition,
   type AnalyseNutrition,
 } from '../services/nutritionService.ts'
+import {
+  ajouterEau as envoyerEau,
+  lireEau,
+  supprimerEau,
+} from '../services/hydratationService.ts'
+
+// un ajout d'eau affiché : local identifie l'ajout dans la page, id sa ligne en base une fois enregistré
+interface AjoutAffiche {
+  local: number
+  ml: number
+  id?: number
+}
 
 function useNutrition() {
   const [profil] = useState(lireProfil)
@@ -44,11 +57,115 @@ function useNutrition() {
     : null
 
   const alimentsDuJour = journal.aliments.filter((a) => a.jour === cle)
-  const verres = journal.verres[cle] ?? 0
+  // remplace les ajouts d'eau gardés dans le navigateur pour un jour ; l'ancien compteur de verres est retiré
+  function changerEauLocale(jourEau: string, modification: (ajouts: number[]) => number[]) {
+    changer((j) => {
+      const verres = Object.fromEntries(Object.entries(j.verres).filter(([jourVerres]) => jourVerres !== jourEau))
+      return { ...j, verres, eau: { ...j.eau, [jourEau]: modification(ajoutsEau(j, jourEau)) } }
+    })
+  }
 
   const utilisateurId = lireCompte()?.id
   const [erreurEnvoi, setErreurEnvoi] = useState(false)
   const envois = useRef(Promise.resolve())
+
+  // ---------- eau ----------
+  // Connecté : l'eau est enregistrée en base (une ligne par ajout). Sinon : dans le navigateur.
+  const [eauBase, setEauBaseEtat] = useState<{ jour: string; ajouts: AjoutAffiche[] } | null>(null)
+  const eauBaseActuelle = useRef(eauBase)
+  const compteurEau = useRef(0)
+
+  function setEauBase(modification: (eau: typeof eauBase) => typeof eauBase) {
+    eauBaseActuelle.current = modification(eauBaseActuelle.current)
+    setEauBaseEtat(eauBaseActuelle.current)
+  }
+
+  // charge l'eau du jour affiché ; la première fois, l'eau notée dans le navigateur est envoyée en base
+  useEffect(() => {
+    if (utilisateurId === undefined) return
+    let annule = false
+    setEauBase(() => null)
+
+    async function charger(id: number) {
+      try {
+        let lignes = await lireEau(id, cle)
+        const locales = ajoutsEau(journalActuel.current, cle)
+        if (lignes.length === 0 && locales.length > 0) {
+          for (const ml of locales) await envoyerEau(id, cle, ml)
+          changerEauLocale(cle, () => [])
+          lignes = await lireEau(id, cle)
+        }
+        if (annule) return
+        setEauBase(() => ({
+          jour: cle,
+          ajouts: lignes.map((l) => ({ local: ++compteurEau.current, ml: l.ml, id: l.id })),
+        }))
+      } catch {
+        if (!annule) {
+          setErreurEnvoi(true)
+          setEauBase(() => ({ jour: cle, ajouts: [] }))
+        }
+      }
+    }
+
+    charger(utilisateurId)
+    return () => {
+      annule = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [utilisateurId, cle])
+
+  const connecte = utilisateurId !== undefined
+  const chargementEau = connecte && eauBase?.jour !== cle
+  const eauDuJour = connecte
+    ? (eauBase?.jour === cle ? eauBase.ajouts.map((a) => a.ml) : [])
+    : ajoutsEau(journal, cle)
+  const eauMl = eauDuJour.reduce((somme, ml) => somme + ml, 0)
+
+  function ajouterEau(ml: number) {
+    if (utilisateurId === undefined) {
+      changerEauLocale(cle, (ajouts) => [...ajouts, ml])
+      return
+    }
+    const local = ++compteurEau.current
+    const jourEau = cle
+    setEauBase((eau) => (eau && eau.jour === jourEau ? { ...eau, ajouts: [...eau.ajouts, { local, ml }] } : eau))
+
+    envoyerEau(utilisateurId, jourEau, ml)
+      .then((ligne) => {
+        const toujoursLa = eauBaseActuelle.current?.ajouts.some((a) => a.local === local)
+        if (!toujoursLa) {
+          // annulé pendant l'envoi : on retire la ligne qui vient d'être créée
+          supprimerEau(utilisateurId, ligne.id).catch(() => setErreurEnvoi(true))
+          return
+        }
+        setEauBase((eau) =>
+          eau && { ...eau, ajouts: eau.ajouts.map((a) => (a.local === local ? { ...a, id: ligne.id } : a)) },
+        )
+        setErreurEnvoi(false)
+      })
+      .catch(() => {
+        setErreurEnvoi(true)
+        setEauBase((eau) => eau && { ...eau, ajouts: eau.ajouts.filter((a) => a.local !== local) })
+      })
+  }
+
+  function annulerEau() {
+    if (utilisateurId === undefined) {
+      changerEauLocale(cle, (ajouts) => ajouts.slice(0, -1))
+      return
+    }
+    const dernier = eauBaseActuelle.current?.jour === cle ? eauBaseActuelle.current.ajouts.at(-1) : undefined
+    if (!dernier) return
+    setEauBase((eau) => eau && { ...eau, ajouts: eau.ajouts.slice(0, -1) })
+    // sans id, l'envoi est en cours : la ligne sera retirée à son arrivée (voir ajouterEau)
+    if (dernier.id !== undefined) {
+      supprimerEau(utilisateurId, dernier.id).catch(() => {
+        setErreurEnvoi(true)
+        setEauBase((eau) => eau && { ...eau, ajouts: [...eau.ajouts, dernier] })
+      })
+    }
+  }
 
   useEffect(() => {
     if (utilisateurId === undefined) return
@@ -189,12 +306,11 @@ function useNutrition() {
     chargementAnalyse,
     erreurAnalyse,
 
-    verres,
-    changerVerres: (nombre: number) =>
-      changer((j) => ({
-        ...j,
-        verres: { ...j.verres, [cle]: Math.max(0, nombre) },
-      })),
+    eauMl,
+    nombreAjoutsEau: eauDuJour.length,
+    chargementEau,
+    ajouterEau,
+    annulerEau,
 
     semaine,
   }

@@ -1,19 +1,19 @@
 # Architecture
 
-Ce document décrit comment DataFit est construit. Il suit une version allégée du modèle **C4** (voir [glossaire](glossaire.md#c4)), très utilisé en entreprise : on décrit le système à plusieurs niveaux de zoom, du plus large (« qui utilise le système ? ») au plus fin (« comment est organisé ce bout de code ? »).
+Comment DataFit est organisé : les services, les échanges entre eux et l'état du projet.
 
 ## 1. Objectif du système
 
-DataFit récupère les données de séance d'une montre connectée (fréquence cardiaque, vitesse, position), les stocke, les fait analyser (progression, efforts anormaux) et affiche le résultat au sportif sur un tableau de bord. Un système de **rangs E → Z** par exercice permet au sportif de se situer.
+DataFit récupère les données de séance d'une montre connectée (fréquence cardiaque, vitesse, position), les stocke, les fait analyser (progression, efforts anormaux) et affiche le résultat au sportif sur un tableau de bord. Un système de **rangs E -> Z** par exercice permet au sportif de se situer.
 
 ### Exigences qui pèsent sur l'architecture
 
 - **Deux équipes, deux langages** : la partie informatique travaille en Java et TypeScript, la partie sciences des données en Python. Chacune doit pouvoir avancer sans bloquer l'autre.
 - **Données sensibles** : fréquence cardiaque et position sont des données personnelles, potentiellement des données de santé (voir [Sécurité](securite.md)).
-- **Lancement simple** : n'importe quel membre de l'équipe (ou le jury) doit pouvoir lancer tout le projet avec une seule commande.
+- **Lancement simple** : tout le projet se lance avec une seule commande (`./lancer.sh`).
 - **Deux livrables** : un site web, et à terme une application de bureau.
 
-## 2. Contexte (niveau 1 du C4)
+## 2. Contexte
 
 Qui interagit avec DataFit, vu de l'extérieur :
 
@@ -33,9 +33,7 @@ flowchart LR
 
 Tant qu'on n'a pas de vraie montre branchée, c'est le **simulateur de montre** (en Python) qui joue son rôle en générant des données réalistes.
 
-## 3. Conteneurs (niveau 2 du C4)
-
-Un « conteneur » au sens C4 est un programme qui tourne de façon indépendante (à ne pas confondre avec un conteneur Docker, même si ici chacun tourne justement dans le sien).
+## 3. Services
 
 ```mermaid
 flowchart TB
@@ -88,7 +86,7 @@ sequenceDiagram
     B->>S: POST /simuler (profil + type de séance)
     S-->>B: mesures brutes
     B->>A: POST /analyser (mesures)
-    A-->>B: indicateurs (FC min/moy/max, vitesses, durées…)
+    A-->>B: indicateurs (FC min/moy/max, vitesses, durées...)
     B->>DB: enregistre la séance et ses indicateurs
     B-->>F: séance enregistrée
     Note over F: plus tard, le sportif ouvre son historique
@@ -100,7 +98,7 @@ Le même enchaînement sert au vélo, à la natation, à la musculation et au so
 
 Les mesures brutes ne sont pas conservées : seuls les indicateurs calculés sont enregistrés, ce qui limite le volume et les données personnelles stockées.
 
-## 5. Composants (niveau 3 du C4)
+## 5. Organisation du code
 
 ### Frontend
 
@@ -108,9 +106,9 @@ Les mesures brutes ne sont pas conservées : seuls les indicateurs calculés son
 frontend/src/
 ├── main.tsx          point d'entrée : monte l'application React dans la page
 ├── App.tsx           table des routes (quelle adresse affiche quelle page)
-├── pages/            une page = un fichier (Dashboard, Seance, Profil…)
-├── hooks/            la logique de chaque page (useDashboard, useSeance…)
-├── components/       morceaux d'interface réutilisables (graphes, Sidebar, BadgeRang…)
+├── pages/            une page = un fichier (Dashboard, Seance, Profil...)
+├── hooks/            la logique de chaque page (useDashboard, useSeance...)
+├── components/       morceaux d'interface réutilisables (graphes, Sidebar, BadgeRang...)
 ├── lib/              fonctions pures : calcul des rangs, formats, regroupements
 ├── data/             données de référence (barèmes, sports) et données de démonstration
 └── styles/           une feuille CSS par page ou composant, App.css pour les couleurs communes
@@ -119,7 +117,7 @@ frontend/src/
 Le découpage suit une règle simple, appelée **séparation des responsabilités** :
 
 - une **page** ne fait qu'afficher ;
-- son **hook** (voir [glossaire](glossaire.md#hook)) contient l'état et la logique de la page ;
+- son **hook** contient l'état et la logique de la page ;
 - les **fonctions de `lib/`** sont *pures* : mêmes entrées, même résultat, sans dépendre de React. On peut donc les tester seules.
 
 **Routage** : `App.tsx` déclare deux familles de pages. Les pages plein écran (`/`, `/connexion`, `/creation-profil`, `/contact`, `/installer`, `/cgu`, `/donnees-personnelles`) et les pages de l'application, qui partagent la barre latérale via `AppLayout` (`/dashboard`, `/performance`, `/sport`, `/programmation`, `/montre`, `/historique`, `/progression`, `/sommeil`, `/nutrition`, `/chatbot`, `/premium`, `/profil`).
@@ -149,7 +147,7 @@ backend/src/main/java/com/datafit/backend/
                      calisthenics, natation, souplesse, athletisme
 ```
 
-Dans chaque domaine, la règle reste celle des couches : `Controller → Service → Repository`. Un contrôleur ne touche jamais la base directement.
+Dans chaque domaine, la règle reste celle des couches : `Controller -> Service -> Repository`. Un contrôleur ne touche jamais la base directement.
 
 ### Service d'analyse (Python)
 
@@ -171,13 +169,21 @@ simulateur/
 
 Règle importante : **les notebooks servent à explorer, le code dans `app/` sert à produire.** Une fonction validée dans un notebook est recopiée proprement dans `app/traitements/`.
 
-## 6. Déploiement
+## 6. Choix techniques
 
-Résumé (détails dans [Déploiement](deploiement.md)) :
+- **Un seul dépôt** pour le front, le back, la base et les services Python : plus simple pour une équipe de 5.
+- **Java + Spring Boot** pour le back : c'est ce qu'on connaît le mieux en info (cours de POO).
+- **PostgreSQL**, avec des scripts SQL écrits à la main dans `db/` (Hibernate ne crée pas les tables : `ddl-auto=none`).
+- **React + TypeScript + Vite** pour le front.
+- **Analyse en Python (FastAPI) séparée du back** : l'équipe SD travaille en Python, le back l'appelle en HTTP.
+- **Docker Compose** pour tout lancer en local.
+
+## 7. Déploiement
+
 - **En local, avec Docker Compose** : les cinq services (base, simulateur, analyse, back, front) se lancent avec `./lancer.sh`. Le front est servi par nginx, qui transmet les appels `/api/...` au backend.
 - **En ligne** : seul le front est déployé, sur Vercel. Le back et les services Python ne sont pas encore hébergés.
 
-## 7. État d'avancement
+## 8. État d'avancement
 
 | Brique | État |
 |---|---|
@@ -186,7 +192,7 @@ Résumé (détails dans [Déploiement](deploiement.md)) :
 | Profil : lecture et modification depuis le serveur | 🚧 seule la création existe côté back ; le front relit le profil dans le navigateur |
 | Inscription et connexion (e-mail + mot de passe, sans envoi de mail) | ✅ fait |
 | Profil créé côté serveur | ✅ fait |
-| Séances montre (cardio, vélo, natation, muscu) : simulateur → analyse → base | ✅ fait |
+| Séances montre (cardio, vélo, natation, muscu) : simulateur -> analyse -> base | ✅ fait |
 | Sommeil : simulation, analyse, historique | ✅ fait |
 | Nutrition : repas et analyse de la journée | ✅ fait |
 | Performances déclarées par discipline | ✅ fait |
@@ -197,12 +203,10 @@ Résumé (détails dans [Déploiement](deploiement.md)) :
 | Vraie montre connectée | 🚧 prévu |
 | Application de bureau | 🚧 prévu |
 
-## 8. Risques et dette technique connus
-
-La **dette technique** désigne les raccourcis pris volontairement ou non, qu'il faudra « rembourser » plus tard.
+## 9. Problèmes connus
 
 - **Pas d'authentification sur les endpoints** : l'identifiant de l'utilisateur est passé dans l'adresse et n'est pas vérifié côté serveur. C'est le chantier prioritaire, voir [Sécurité](securite.md#authentification).
 - **Données de démonstration** : plusieurs hooks (`useDashboard`, `useProgression`, `useMontre`, `useSeance`) lisent encore `data/seances.ts` au lieu de l'API.
 - **Peu de tests automatisés** : la CI vérifie que le projet compile, mais les calculs (rangs côté front, analyses côté Python) ne sont presque pas testés.
-- **Schéma géré par des scripts SQL numérotés** (`db/01_…sql` à `db/07_…sql`), rejoués par `lancer.sh`. Ça marche pour ajouter des tables, pas pour modifier une colonne existante. Voir [Base de données](base-de-donnees.md#faire-évoluer-le-schéma).
+- **Schéma géré par des scripts SQL numérotés** (`db/01_...sql` à `db/07_...sql`), rejoués par `lancer.sh`. Ça marche pour ajouter des tables, pas pour modifier une colonne existante. Voir [Base de données](base-de-donnees.md#faire-évoluer-le-schéma).
 - **Un ancien mot de passe** de base de développement est visible dans l'historique Git (dépôt public). Voir [Sécurité](securite.md).

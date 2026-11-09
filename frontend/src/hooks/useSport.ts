@@ -219,7 +219,7 @@ function useSport() {
       majSauvegarde(disciplineId, {
         erreur: true,
         message:
-          'Renseignez toutes les valeurs avec des nombres (positifs si c’est une charge, un temps ou une distance).',
+          "Renseignez toutes les valeurs avec des nombres (positifs si c'est une charge, un temps ou une distance).",
       })
       return
     }
@@ -251,7 +251,7 @@ function useSport() {
         message:
           erreur instanceof Error
             ? erreur.message
-            : 'Impossible d’enregistrer la séance.',
+            : "Impossible d'enregistrer la séance.",
       })
     }
   }

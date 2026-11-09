@@ -1,6 +1,4 @@
-// Compte créé à l'inscription : son identifiant (renvoyé par le backend) et son adresse e-mail.
-// Gardé dans le navigateur en attendant une vraie connexion : la page de création du profil
-// en a besoin pour rattacher le profil au bon utilisateur.
+// id et e-mail du compte, gardés dans le navigateur (utilisés par la création du profil)
 
 export interface Compte {
   id: number
@@ -23,12 +21,12 @@ export function enregistrerCompte(compte: Compte) {
   try {
     localStorage.setItem(CLE_STOCKAGE, JSON.stringify(compte))
   } catch {
-    // stockage indisponible (navigation privée…) : le compte ne sera pas gardé
+    // stockage indisponible (navigation privée...) : le compte ne sera pas gardé
   }
 }
 
 // Ce que l'application garde dans le navigateur (journal nutrition, programmes, records, notes, rangs)
-// est rangé par compte : « datafit-nutrition:12 » pour le compte 12. Un nouveau compte part donc
+// est rangé par compte : "datafit-nutrition:12" pour le compte 12. Un nouveau compte part donc
 // de zéro, et chacun retrouve ses données en se reconnectant. Sans compte : le nom seul.
 export function cleDuCompte(nom: string): string {
   const compte = lireCompte()

@@ -9,7 +9,7 @@ import { ICONES } from '../data/icones.ts'
 // Les boutons ne mènent encore nulle part : il faudra y mettre les liens des fichiers d'installation.
 const PLATEFORMES = [
   { id: 'windows', logo: 'windows.svg', titre: 'Windows', texte: 'Pour les ordinateurs sous Windows 10 et 11.' },
-  { id: 'linux', logo: 'linux.svg', titre: 'Linux', texte: 'Pour les ordinateurs sous Linux (Ubuntu, Debian, Fedora…).' },
+  { id: 'linux', logo: 'linux.svg', titre: 'Linux', texte: 'Pour les ordinateurs sous Linux (Ubuntu, Debian, Fedora...).' },
   { id: 'macos', logo: 'apple.svg', titre: 'macOS', texte: 'Pour les ordinateurs sous macOS (Apple).' },
   { id: 'android', logo: 'android.svg', titre: 'Android', texte: 'Pour les smartphones et tablettes Android.' },
   { id: 'iphone', logo: 'apple.svg', titre: 'iPhone', texte: 'Pour les iPhone et iPad.' },
@@ -42,7 +42,7 @@ function Installer() {
               <p>{p.texte}</p>
               <button type="button" className="bouton">
                 <Icone trace={ICONES.telecharger} />
-                {/* « pour Windows » n'est affiché que s'il y a la place (installer.css) */}
+                {/* "pour Windows" n'est affiché que s'il y a la place (installer.css) */}
                 <span>
                   Télécharger<span className="installer-pour"> pour {p.titre}</span>
                 </span>

@@ -18,13 +18,13 @@ export default function Seance() {
   if (!seance) return (
     <div className="ecran seance">
       <TitrePage surtitre="Historique" titre="Séance" />
-      {chargement ? <p role="status">Chargement de la séance…</p> : (
+      {chargement ? <p role="status">Chargement de la séance...</p> : (
         <EtatVide icone={ICONES.info} titre={erreur ? 'Chargement impossible' : 'Séance introuvable'}
           action={erreur ? <button className="bouton secondaire" onClick={recharger}>Réessayer</button> : undefined}>
           {erreur || 'Cette séance ne figure pas dans vos données enregistrées.'}
         </EtatVide>
       )}
-      <Link to="/historique">Retour à l’historique</Link>
+      <Link to="/historique">Retour à l'historique</Link>
     </div>
   )
   const allure = allureSeance(seance)

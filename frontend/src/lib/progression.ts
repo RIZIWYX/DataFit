@@ -1,8 +1,5 @@
-// Données de la page Progression, exercice par exercice. Fonctions pures, sans React.
-//
-// Deux sources, et seulement celles-là (rien n'est inventé) :
-// - l'historique des records saisis sur la page Performance (lib/records.ts) ;
-// - les séances programmées marquées comme faites (lib/programmation.ts), avec leurs séries.
+// Données de la page Progression
+// sources : les records (records.ts) et les séances faites du calendrier (programmation.ts)
 import { type Exercice } from '../data/paliers.ts'
 import { type Profil, rang, valeur } from './rangs.ts'
 import { type HistoriqueRecords } from './records.ts'
@@ -21,7 +18,7 @@ export function pointsRecord(ex: Exercice, historique: HistoriqueRecords): Point
     .sort((a, b) => a.date.getTime() - b.date.getTime())
 }
 
-// le rang correspondant à chaque record (0 = E … 7 = Z)
+// le rang correspondant à chaque record (0 = E ... 7 = Z)
 export const pointsRang = (ex: Exercice, records: PointDate[], profil: Profil): PointDate[] =>
   records.map((point) => ({ date: point.date, valeur: rang(ex, { [ex.id]: String(point.valeur) }, profil) }))
 

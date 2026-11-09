@@ -20,7 +20,7 @@ function chargerScriptGoogle(): Promise<void> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Google = any
 
-// « Continuer avec Google ». Google donne un jeton d'identité, le backend le vérifie et répond
+// "Continuer avec Google". Google donne un jeton d'identité, le backend le vérifie et répond
 // comme /api/auth/login ({ id, email }). Rien n'est affiché si le backend n'a pas de client Google.
 function BoutonGoogle({ inscription }: { inscription: boolean }) {
   const zone = useRef<HTMLDivElement>(null)

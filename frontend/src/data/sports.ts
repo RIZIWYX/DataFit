@@ -1,6 +1,6 @@
 // Ce qui ne dépend que du sport : son nom, sa photo et son icône.
 // Pour ajouter un sport : son id dans le type Sport, une ligne dans SPORTS,
-// puis sa couleur (--sport-…) dans charte.css.
+// puis sa couleur (--sport-...) dans charte.css.
 
 export type Sport = 'course' | 'musculation' | 'natation' | 'velo'
 

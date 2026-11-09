@@ -1,6 +1,6 @@
 # API
 
-Une **API** (*interface de programmation*) est l'ensemble des « portes » qu'un programme ouvre aux autres. Ici, le backend expose des adresses HTTP (les **endpoints**) que le front appelle. Ce document est le **contrat** entre les équipes : tant qu'on le respecte, chacun peut changer son code interne sans casser les autres.
+Une **API** (*interface de programmation*) est l'ensemble des "portes" qu'un programme ouvre aux autres. Ici, le backend expose des adresses HTTP (les **endpoints**) que le front appelle. Ce document est le **contrat** entre les équipes : tant qu'on le respecte, chacun peut changer son code interne sans casser les autres.
 
 ## Conventions
 
@@ -53,11 +53,9 @@ Ces règles suivent le style **REST**, le plus répandu pour les API web.
 
 **Versionnement** : tant que le projet n'a qu'un seul client que nous maîtrisons, pas de `/api/v1/`. Si l'application de bureau doit continuer à marcher pendant qu'on change l'API, on ajoutera une version.
 
-## Documentation générée automatiquement (recommandé)
+## À faire
 
-En entreprise, la liste des endpoints n'est en général pas écrite à la main mais **générée depuis le code**, au format **OpenAPI** (anciennement *Swagger*). Pour Spring Boot, la bibliothèque `springdoc-openapi` le fait : une fois ajoutée au `pom.xml`, une page interactive est disponible sur `http://localhost:8080/swagger-ui.html`, où l'on peut lire et tester chaque endpoint. FastAPI fait la même chose nativement sur `/docs`.
-
-Quand ce sera en place, le tableau ci-dessous ne gardera que les règles métier non visibles dans le code.
+Générer cette liste depuis le code avec `springdoc-openapi` (page Swagger sur `http://localhost:8080/swagger-ui.html`). FastAPI le fait déjà sur `/docs`.
 
 ## Endpoints du backend
 
@@ -92,7 +90,7 @@ Une séance est lancée par le front, puis le backend enchaîne simulateur, anal
 | `GET` | `/api/sommeil/{utilisateurId}` | Toutes les nuits |
 | `GET` | `/api/sommeil/{utilisateurId}/jour/{date}` | Nuit d'une date donnée |
 | `GET` | `/api/sommeil/{utilisateurId}/{id}/graphiques` | Graphiques d'une nuit (FC, mouvements, phases) ; `204` si ses mesures n'ont pas été conservées |
-| `GET` | `/api/sommeil/{utilisateurId}/graphiques` | Évolution des nuits enregistrées (durée, efficacité, FC…) |
+| `GET` | `/api/sommeil/{utilisateurId}/graphiques` | Évolution des nuits enregistrées (durée, efficacité, FC...) |
 | `DELETE` | `/api/sommeil/{utilisateurId}/{id}` | Supprime une nuit |
 
 ### Nutrition
@@ -122,12 +120,12 @@ Une ligne par utilisateur et par jour pour chaque discipline.
 
 ## Services Python
 
-Appelés **uniquement par le backend**, jamais par le front (voir [ADR 0006](adr/0006-service-analyse-python-separe.md)). Tous deux sont écrits avec FastAPI, qui publie leur documentation interactive sur `/docs`.
+Appelés **uniquement par le backend**, jamais par le front. Tous deux sont écrits avec FastAPI, qui publie leur documentation interactive sur `/docs`.
 
 | Service | Méthode | Adresse | Entrée | Sortie |
 |---|---|---|---|---|
 | Simulateur (`:8000`) | `POST` | `/simuler` | `{ profil: { utilisateur_id, sexe, poids, taille, niveau, date_naissance }, seance: { type, nom, date } }` | mesures brutes de la séance |
-| Analyse (`:8001`) | `POST` | `/analyser` | mesures, avec un champ `sport` : `cardio`, `velo`, `natation`, `muscu`, `nutrition` ou `sommeil` | indicateurs calculés (FC, vitesses, durées, phases de sommeil, macros…) |
+| Analyse (`:8001`) | `POST` | `/analyser` | mesures, avec un champ `sport` : `cardio`, `velo`, `natation`, `muscu`, `nutrition` ou `sommeil` | indicateurs calculés (FC, vitesses, durées, phases de sommeil, macros...) |
 
 Les deux renvoient `422` si l'entrée est invalide.
 

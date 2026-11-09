@@ -8,7 +8,7 @@ type Props = {
   children: ReactNode
 }
 
-// lien d'action discret suivi d'une flèche : « Historique → »
+// lien d'action discret suivi d'une flèche : "Historique ->"
 function LienFleche({ to, children }: Props) {
   return (
     <Link to={to} className="lien-fleche">

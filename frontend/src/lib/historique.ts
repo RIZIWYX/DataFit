@@ -14,13 +14,13 @@ export interface Entree {
   categorie: Categorie
   date: Date
   titre: string
-  sousTitre: string // d'où vient la séance : « Montre », « PPL »…
+  sousTitre: string // d'où vient la séance : "Montre", "PPL"...
   icone: string
   couleur: string
   dureeMin: number
   dureeSecondes?: number
   heureConnue?: boolean
-  mesure: string // la mesure principale : « 5,2 km », « 3 exercices »
+  mesure: string // la mesure principale : "5,2 km", "3 exercices"
   km: number
   fc?: number
   exercices: string[]

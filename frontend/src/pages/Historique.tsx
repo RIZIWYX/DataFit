@@ -46,7 +46,7 @@ function Historique() {
     return (
       <div className="ecran historique">
         <TitrePage surtitre="Entraînement" titre="Historique" />
-        {chargement ? <p role="status">Chargement des séances…</p> : (
+        {chargement ? <p role="status">Chargement des séances...</p> : (
           <EtatVide icone={ICONES.info} titre="Historique indisponible" action={connecte ? (
             <button type="button" className="bouton secondaire" onClick={recharger}>Réessayer</button>
           ) : <Link to="/connexion" className="bouton secondaire">Se connecter</Link>}>
@@ -73,7 +73,7 @@ function Historique() {
           <span className="visuellement-cache">Rechercher une séance</span>
           <input
             type="search"
-            placeholder="Rechercher : « course », « mardi », « squat »…"
+            placeholder='Rechercher : "course", "mardi", "squat"...'
             value={recherche}
             onChange={(e) => chercher(e.target.value)}
           />
