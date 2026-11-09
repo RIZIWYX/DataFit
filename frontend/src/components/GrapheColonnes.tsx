@@ -9,15 +9,15 @@ export interface Serie {
 
 export interface Colonne {
   cle: string
-  libelle: string // sous la colonne ; « \n » fait passer à la ligne
-  detail: string // en clair, pour la bulle et le tableau : « Du 7 au 13 oct. »
+  libelle: string // sous la colonne ; "\n" fait passer à la ligne
+  detail: string // en clair, pour la bulle et le tableau : "Du 7 au 13 oct."
   valeurs: number[] // une valeur par série, dans le même ordre que les séries
 }
 
 type Props = {
   series: Serie[]
   colonnes: Colonne[]
-  unite: (n: number) => string // la valeur avec son unité : « 3 séances »
+  unite: (n: number) => string // la valeur avec son unité : "3 séances"
   entete: string // titre de la première colonne du tableau
   legende?: boolean // false : la légende est affichée ailleurs sur la page
 }

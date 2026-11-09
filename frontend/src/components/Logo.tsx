@@ -1,5 +1,5 @@
-// Logo DataFit : le symbole « D » (une courbe de progression) tient lieu de première lettre,
-// suivi de « ata » et « fit ». Le symbole est une image (public/logo.webp), le nom du texte
+// Logo DataFit : le symbole "D" (une courbe de progression) tient lieu de première lettre,
+// suivi de "ata" et "fit". Le symbole est une image (public/logo.webp), le nom du texte
 // dans la police de la charte. Styles : .logo dans charte.css.
 function Logo() {
   return (

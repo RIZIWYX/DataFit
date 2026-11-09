@@ -1,4 +1,4 @@
-// Service pour la discipline « Streetlifting » : appels REST vers /api/streetlifting.
+// Service pour la discipline "Streetlifting" : appels REST vers /api/streetlifting.
 // Les champs renvoyés par le backend correspondent aux colonnes de la table.
 import {
   envoyerSeance,

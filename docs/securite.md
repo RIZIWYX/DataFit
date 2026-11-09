@@ -27,16 +27,16 @@ Supprimer le fichier dans un nouveau commit ne suffit pas : le secret reste dans
 - Stockés sous forme d'**empreinte** (*hash*), jamais en clair ni chiffrés de façon réversible. Une empreinte se calcule facilement à partir du mot de passe, mais on ne peut pas retrouver le mot de passe à partir d'elle. À la connexion, on recalcule l'empreinte du mot de passe saisi et on compare.
 - Algorithme : **BCrypt** (`BCryptPasswordEncoder`, déclaré dans `config/PasswordConfig.java`). Ces algorithmes sont volontairement lents et ajoutent un *sel* (valeur aléatoire propre à chaque compte) : deux utilisateurs avec le même mot de passe ont des empreintes différentes, et tester des millions de mots de passe devient très coûteux. **Jamais** MD5 ni SHA-256 seuls, beaucoup trop rapides.
 - La colonne `mot_de_passe` (`VARCHAR(255)`) a la taille qu'il faut pour une empreinte BCrypt (60 caractères).
-- Message d'erreur identique pour « e-mail inconnu » et « mauvais mot de passe », pour ne pas révéler quelles adresses ont un compte.
+- Message d'erreur identique pour "e-mail inconnu" et "mauvais mot de passe", pour ne pas révéler quelles adresses ont un compte.
 - **Aucun mail n'est envoyé** : l'adresse n'est pas confirmée à l'inscription (le compte marche tout de suite) et il n'y a pas de réinitialisation du mot de passe. Un mot de passe perdu ne se récupère pas depuis le site.
 
 ## Authentification
 
 **État actuel, à corriger en priorité.** La connexion renvoie l'identifiant de l'utilisateur, que le front garde dans le navigateur (`localStorage`) et place dans l'adresse des appels suivants (`/api/sommeil/{utilisateurId}`). Le serveur ne vérifie pas que la personne qui appelle est bien ce compte : en changeant le nombre dans l'adresse, on peut lire ou modifier les données d'un autre utilisateur.
 
-C'est la faille la plus fréquente des API (*Broken Object Level Authorization*, n° 1 du classement OWASP API Security). Elle est acceptable sur une démonstration locale, pas en ligne avec de vrais comptes.
+C'est une faille de type BOLA/IDOR (OWASP API Security n°1), à corriger avant toute mise en ligne avec de vrais comptes.
 
-Correction prévue, à décider dans un ADR :
+Pistes pour corriger :
 
 | Approche | Principe | Pour DataFit |
 |---|---|---|
@@ -52,7 +52,7 @@ La configuration est globale, dans `config/CorsConfig.java`, et n'autorise que `
 ## Autres règles
 
 - **HTTPS partout** en ligne : sans lui, mots de passe et données circulent en clair.
-- **Valider toutes les entrées côté back** (annotations `@Valid`, `@Email`, `@NotBlank`…). La validation du front sert le confort de l'utilisateur ; seule celle du back protège.
+- **Valider toutes les entrées côté back** (annotations `@Valid`, `@Email`, `@NotBlank`...). La validation du front sert le confort de l'utilisateur ; seule celle du back protège.
 - **Requêtes SQL paramétrées** uniquement (ce que fait JPA par défaut). Jamais de requête construite en collant du texte saisi par l'utilisateur : c'est la porte ouverte à l'injection SQL.
 - **Dépendances à jour** : activer *Dependabot* sur GitHub, qui ouvre des PR quand une bibliothèque a une faille connue.
 - **Logs** : ne jamais y écrire de mot de passe, de jeton ni de données de santé. `spring.jpa.show-sql=true` est pratique en développement mais doit être désactivé en production.
@@ -67,4 +67,3 @@ Le RGPD s'applique dès qu'on traite des données sur des personnes identifiable
 - **Droit d'accès et d'effacement** : toutes les tables sont liées au compte par `ON DELETE CASCADE`, donc supprimer un compte supprime toutes ses données. Les endpoints d'export et de suppression de compte restent à écrire 🚧.
 - **Données de test** : utiliser le simulateur, pas les vraies données d'un membre de l'équipe dans le dépôt.
 
-Pour un projet universitaire de démonstration, ces règles ne demandent pas de démarche administrative, mais les respecter dès la conception est exactement ce qu'on attendra de vous en entreprise, et c'est un argument fort devant un jury.

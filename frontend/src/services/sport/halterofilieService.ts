@@ -1,4 +1,4 @@
-// Service pour la discipline « Halterofilie » : appels REST vers /api/halterofilie.
+// Service pour la discipline "Halterofilie" : appels REST vers /api/halterofilie.
 // Les champs renvoyés par le backend correspondent aux colonnes de la table.
 import {
   envoyerSeance,

@@ -140,7 +140,7 @@ function Contact() {
           )}
 
           <button type="submit" className="bouton cnx-envoyer" disabled={envoi}>
-            {envoi ? 'Envoi…' : 'Envoyer le message'}
+            {envoi ? 'Envoi...' : 'Envoyer le message'}
             <Icone trace={ICONES.fleche} />
           </button>
         </form>

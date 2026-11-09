@@ -1,10 +1,8 @@
-// Historique des records saisis sur la page Performance : une valeur par exercice et par jour.
-// C'est lui qui permet de tracer l'évolution d'un record et de son rang (page Progression).
-// Démonstration : gardé dans le navigateur, en attendant le backend.
+// Historique des records (une valeur par exercice et par jour), sert pour la page Progression
 import { cleDuCompte } from './compte.ts'
 import { cleJour } from './programmation.ts'
 
-// { exercice : { « 2026-10-15 » : « 102,5 » } } ; la valeur est le texte saisi, comme dans Performance
+// { exercice : { "2026-10-15" : "102,5" } } ; la valeur est le texte saisi, comme dans Performance
 export type HistoriqueRecords = Record<string, Record<string, string>>
 
 // un historique par compte (voir cleDuCompte)

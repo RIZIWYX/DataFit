@@ -2,7 +2,7 @@ import '../styles/badge-rang.css'
 import { RANGS } from '../data/paliers.ts'
 
 interface Props {
-  rang: number // -1 = pas renseigné, 0 = E … 7 = Z
+  rang: number // -1 = pas renseigné, 0 = E ... 7 = Z
   petit?: boolean
 }
 

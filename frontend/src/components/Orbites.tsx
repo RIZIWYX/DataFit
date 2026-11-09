@@ -9,7 +9,7 @@ import { SPORTS } from '../data/sports.ts'
 const CX = 320
 const CY = 280
 
-// une ellipse centrée : demi-axes rx et ry, inclinée de « angle » degrés
+// une ellipse centrée : demi-axes rx et ry, inclinée de "angle" degrés
 interface Orbite {
   rx: number
   ry: number
@@ -26,7 +26,7 @@ const ORBITES = {
 
 type NomOrbite = keyof typeof ORBITES
 
-// position du point situé à « t » degrés le long de l'ellipse
+// position du point situé à "t" degrés le long de l'ellipse
 function point({ rx, ry, angle }: Orbite, t: number) {
   const a = (angle * Math.PI) / 180
   const u = (t * Math.PI) / 180

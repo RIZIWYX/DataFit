@@ -11,13 +11,13 @@ Le fond est noir, le texte blanc, et le turquoise, la couleur du logo, reste rar
 - aujourd'hui, dans la bande des jours et le calendrier ;
 - une hausse dans les chiffres clés ;
 - le rang le plus haut (Z) ;
-- le point qui termine les grands titres (« Vos progrès**.** »), la signature de la charte.
+- le point qui termine les grands titres ("Vos progrès**.**"), la signature de la charte.
 
 Le turquoise ne sert jamais de couleur de sport ni de couleur décorative. Sur un fond turquoise, le texte est toujours noir : le blanc y serait illisible.
 
 ## Logo
 
-Le symbole « D » (une courbe de progression) tient lieu de première lettre : il est suivi de « ata » en blanc et de « fit » dans le dégradé du symbole. Le symbole est une image, `frontend/public/logo.webp` ; le nom est du texte, dans la police du site. Sur tablette, quand la barre de navigation est réduite, seul le symbole reste.
+Le symbole "D" (une courbe de progression) tient lieu de première lettre : il est suivi de "ata" en blanc et de "fit" dans le dégradé du symbole. Le symbole est une image, `frontend/public/logo.webp` ; le nom est du texte, dans la police du site. Sur tablette, quand la barre de navigation est réduite, seul le symbole reste.
 
 | Fichier (`frontend/public/`) | Usage |
 |---|---|
@@ -71,13 +71,13 @@ Une seule famille, **Archivo**, servie par le site (paquet `@fontsource-variable
 
 - **Ordinateur** (≥ 1100 px) : barre latérale noire, pages groupées. *Accueil*, puis *Entraînement* (Programmation, Historique, Progression, Performance) et *Suivi* (Sommeil, Montre). En bas, l'utilisateur : son profil, et la déconnexion, qui est une action et pas une page.
 - **Tablette** (700 à 1099 px) : la même barre réduite aux icônes, le nom de la page en infobulle.
-- **Téléphone** (< 700 px) : barre du haut (logo, avatar) et quatre onglets en bas (Accueil, Programmation, Historique, Progression). « Plus » ouvre un panneau avec les autres pages et la déconnexion.
+- **Téléphone** (< 700 px) : barre du haut (logo, avatar) et quatre onglets en bas (Accueil, Programmation, Historique, Progression). "Plus" ouvre un panneau avec les autres pages et la déconnexion.
 
 ## Composants
 
 | Composant / classe | Rôle |
 |---|---|
-| `Logo` | symbole « D » suivi du nom ; lu « DataFit » par les lecteurs d'écran |
+| `Logo` | symbole "D" suivi du nom ; lu "DataFit" par les lecteurs d'écran |
 | `TitrePage` | surtitre, titre avec point turquoise, phrase, actions |
 | `Panneau` (`.panneau`) | bloc de contenu : titre court en capitales, action à droite |
 | `.bouton` | action principale, turquoise ; variantes `.secondaire`, `.contour`, `.fantome`, `.petit` |
@@ -105,10 +105,10 @@ Toutes les pages portent la classe `.refonte`, qui applique la charte (page de g
 | Page | Contenu |
 |---|---|
 | Accueil | les 7 derniers jours (chiffres clés et bande des jours), la dernière séance et la prochaine séance prévue côte à côte, puis l'objectif principal, les rangs et la montre, et les séances précédentes |
-| Programmation | programmes (modèles de séances) et calendrier (leurs occurrences) : vues mois, semaine et jour, filtre par programme, création à une date et une heure, déplacement par glisser-déposer, fiche au clic, séance « faite » |
+| Programmation | programmes (modèles de séances) et calendrier (leurs occurrences) : vues mois, semaine et jour, filtre par programme, création à une date et une heure, déplacement par glisser-déposer, fiche au clic, séance "faite" |
 | Historique | toutes les séances, montre et programmation réunies : recherche, filtres, tri, regroupement par mois |
 | Progression | vue d'ensemble des séances (comparée à la période précédente) ou un exercice choisi dans le menu : seuls les graphiques que les données permettent de calculer sont affichés |
-| Performance | l'ancienne page « Sport », renommée (l'adresse `/sport` mène à `/performance`) |
+| Performance | l'ancienne page "Sport", renommée (l'adresse `/sport` mène à `/performance`) |
 | Sommeil | horaires, durée, fréquence cardiaque et agitation des nuits ; pas de phases de sommeil, que la montre ne mesure pas |
 | Montre | état, synchronisation, mesures transmises (et celles qui ne le sont pas), données reçues |
 | Nutrition | besoins du jour selon l'objectif et l'activité choisis sur la page (calories, protéines, glucides, lipides, eau), journal des repas, 7 derniers jours |
@@ -121,10 +121,10 @@ Rien n'est inventé à l'écran : chaque graphique ne montre que ce qui est mesu
 
 | Donnée | Source | Gardée dans |
 |---|---|---|
-| Séances de la montre | exemple, `data/seances.ts` (`SEANCES_DEMO`) | — |
-| Nuits | exemple, `data/sommeil-demo.ts`, généré depuis `SD/sommeil_mesures.csv` | — |
+| Séances de la montre | exemple, `data/seances.ts` (`SEANCES_DEMO`) | - |
+| Nuits | exemple, `data/sommeil-demo.ts`, généré depuis `SD/sommeil_mesures.csv` | - |
 | Records et rangs | saisis dans Performance ; chaque record est daté (une valeur par jour) pour la Progression | navigateur (`datafit-rangs`, `datafit-records`) |
-| Programmes et séances planifiées | créés dans Programmation ; une séance « faite » compte dans l'Historique et la Progression | navigateur (`datafit-programmation`) |
+| Programmes et séances planifiées | créés dans Programmation ; une séance "faite" compte dans l'Historique et la Progression | navigateur (`datafit-programmation`) |
 | Repas et eau | saisis dans Nutrition ; les besoins sont calculés à partir du profil | navigateur (`datafit-nutrition`) |
 | Profil | saisi sur la page de création du profil, modifiable dans le Profil | base de données (création) et navigateur (`datafit-profil`) |
 

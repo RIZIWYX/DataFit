@@ -8,10 +8,10 @@ import { formatJour } from './format.ts'
 export const seriesDesSports = (sports: Sport[]): Serie[] =>
   sports.map((sport) => ({ nom: SPORTS[sport].nom, couleur: couleurSport(sport) }))
 
-// une colonne par semaine ; « valeurs » donne ses étages (une valeur par série)
+// une colonne par semaine ; "valeurs" donne ses étages (une valeur par série)
 export const colonnesParSemaine = (semaines: Semaine[], valeurs: (semaine: Semaine) => number[]): Colonne[] =>
   semaines.map((semaine, i) => {
-    // « 7\noct. » : le jour sur une ligne, le mois en dessous, seulement quand il change
+    // "7\noct." : le jour sur une ligne, le mois en dessous, seulement quand il change
     const [jour, mois] = formatJour(semaine.debut).split(' ')
     const nouveauMois = i === 0 || semaines[i - 1].debut.getMonth() !== semaine.debut.getMonth()
     return {

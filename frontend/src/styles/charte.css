@@ -45,7 +45,7 @@
   --transition: 160ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-/* ---------- base des zones refondues ---------- */
+/* base des zones refondues */
 
 .refonte {
   font-family: var(--police);
@@ -54,11 +54,11 @@
   line-height: 1.5;
   color: var(--blanc);
   background: var(--noir);
-  color-scheme: dark; /* champs, barres de défilement… en version sombre */
+  color-scheme: dark; /* champs, barres de défilement... en version sombre */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-/* les composants de l'ancienne charte (graphiques, badges de rang…) lisent ces variables :
+/* les composants de l'ancienne charte (graphiques, badges de rang...) lisent ces variables :
   on les traduit ici, et ils passent au noir sans être réécrits */
 .refonte,
 .app-content.refonte {
@@ -81,9 +81,9 @@
   outline-offset: 2px;
 }
 
-/* ---------- typographie ----------
+/* typographie
   Une seule famille, Archivo, dont on fait varier la largeur :
-  large et très grasse pour les titres « affiche », normale pour le texte, étroite pour les étiquettes. */
+  large et très grasse pour les titres "affiche", normale pour le texte, étroite pour les étiquettes. */
 
 .affiche {
   font-stretch: 125%;
@@ -145,7 +145,7 @@
   gap: 0.75rem;
 }
 
-/* ---------- boutons ---------- */
+/* boutons */
 
 .bouton {
   display: inline-flex;
@@ -191,7 +191,7 @@
   border-color: var(--blanc);
   background: rgb(255 255 255 / 0.04);
 }
-/* variante contour turquoise : action importante mais pas principale (« S'inscrire ») */
+/* variante contour turquoise : action importante mais pas principale ("S'inscrire") */
 .bouton.contour {
   border-color: var(--turquoise);
   background: transparent;
@@ -306,7 +306,7 @@
   color: var(--turquoise);
 }
 
-/* ---------- panneaux (composant Panneau) ---------- */
+/* panneaux (composant Panneau) */
 
 .panneau {
   min-width: 0;
@@ -332,7 +332,7 @@
   color: var(--gris);
 }
 
-/* liste de lignes cliquables, séparées par un trait (séances, disciplines…) */
+/* liste de lignes cliquables, séparées par un trait (séances, disciplines...) */
 .liste-lignes {
   margin: -0.4rem -0.75rem;
   padding: 0;
@@ -349,7 +349,7 @@
   background: var(--noir-2);
 }
 
-/* ---------- étiquettes et voyants ---------- */
+/* étiquettes et voyants */
 
 .etiquette {
   display: inline-flex;
@@ -391,7 +391,7 @@
   box-shadow: 0 0 0 4px rgb(62 207 142 / 0.15);
 }
 
-/* ---------- états : vide, erreur ---------- */
+/* états : vide, erreur */
 
 /* absence de données (composant EtatVide) : un cadre pointillé, jamais une erreur */
 .etat-vide {
@@ -438,7 +438,7 @@
   color: var(--erreur);
 }
 
-/* ---------- choix segmentés (composant Segments) ---------- */
+/* choix segmentés (composant Segments) */
 
 .segments {
   display: inline-flex;
@@ -501,7 +501,7 @@
   }
 }
 
-/* ---------- jauge (composant Jauge) ---------- */
+/* jauge (composant Jauge) */
 
 .jauge {
   height: 6px;
@@ -517,7 +517,7 @@
   transition: width 0.3s;
 }
 
-/* ---------- tableau de chiffres ---------- */
+/* tableau de chiffres */
 
 .tableau-donnees {
   width: 100%;
@@ -547,7 +547,7 @@
   white-space: nowrap;
 }
 
-/* ---------- fenêtre modale (composant Fenetre) ---------- */
+/* fenêtre modale (composant Fenetre) */
 
 .fenetre {
   width: min(560px, calc(100% - 2rem));
@@ -598,7 +598,7 @@
   padding: 1rem 1.4rem;
   border-top: 1px solid var(--trait);
 }
-/* une action à part (supprimer…), rangée à gauche */
+/* une action à part (supprimer...), rangée à gauche */
 .fenetre-pied .a-gauche {
   margin-right: auto;
 }
@@ -613,7 +613,7 @@
   }
 }
 
-/* ---------- champs ---------- */
+/* champs */
 
 /* un champ : son nom au-dessus, une aide éventuelle en dessous */
 .champ {
@@ -690,7 +690,7 @@
   outline: none;
 }
 
-/* ---------- graphiques et badges de l'ancienne charte, sur fond noir ---------- */
+/* graphiques et badges de l'ancienne charte, sur fond noir */
 
 .refonte .graphe-colonne:hover,
 .refonte .graphe-colonne:focus-visible {
@@ -711,9 +711,9 @@
   color: var(--blanc);
 }
 
-/* ---------- logo (composant Logo) ---------- */
+/* logo (composant Logo) */
 
-/* le symbole « D » sert de première lettre : « ata » et « fit » se posent sur son pied */
+/* le symbole "D" sert de première lettre : "ata" et "fit" se posent sur son pied */
 .logo {
   display: inline-flex;
   align-items: baseline;
@@ -735,7 +735,7 @@
   position: relative;
   top: 0.14em;
 }
-/* « fit » reprend le dégradé du symbole */
+/* "fit" reprend le dégradé du symbole */
 .logo-nom em {
   font-style: normal;
   background: linear-gradient(180deg, #1fe3d6, #0a9fb4);
@@ -744,7 +744,7 @@
   color: transparent;
 }
 
-/* ---------- utilitaires ---------- */
+/* utilitaires */
 
 /* lu par les lecteurs d'écran, invisible à l'écran */
 .visuellement-cache {

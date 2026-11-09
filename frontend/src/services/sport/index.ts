@@ -62,7 +62,7 @@ import type { IdentifiantUtilisateur } from './http.ts'
 export interface ServiceSport {
   // id côté data/paliers.ts (ex. 'sbd', 'halt', 'nat')
   disciplineId: string
-  // Correspondance (champ back → id exercice front) pour pré-remplir et envoyer
+  // Correspondance (champ back -> id exercice front) pour pré-remplir et envoyer
   champs: Record<string, string>
   recuperer(utilisateurId: IdentifiantUtilisateur): Promise<SeanceSport | null>
   valider(

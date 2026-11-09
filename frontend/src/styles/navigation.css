@@ -1,7 +1,7 @@
 /* Navigation de l'application (composant Navigation). Couleurs et police : charte.css
    - ordinateur (≥ 1100 px) : barre latérale avec les noms des pages
    - tablette (700 à 1099 px) : la même barre, réduite aux icônes
-   - téléphone (< 700 px) : barre du haut, quatre onglets en bas et un panneau « Plus » */
+   - téléphone (< 700 px) : barre du haut, quatre onglets en bas et un panneau "Plus" */
 
 .nav-app,
 .barre-haut,
@@ -11,7 +11,7 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* ---------- barre latérale ---------- */
+/* barre latérale */
 
 .nav-app {
   width: 248px;
@@ -189,14 +189,14 @@
   outline-offset: 2px;
 }
 
-/* ---------- téléphone : barres du haut et du bas, cachées ailleurs ---------- */
+/* téléphone : barres du haut et du bas, cachées ailleurs */
 
 .barre-haut,
 .barre-onglets {
   display: none;
 }
 
-/* ---------- tablette : la barre latérale ne garde que les icônes ---------- */
+/* tablette : la barre latérale ne garde que les icônes */
 
 @media (min-width: 700px) and (max-width: 1099px) {
   .nav-app {
@@ -278,7 +278,7 @@
   }
 }
 
-/* ---------- téléphone ---------- */
+/* téléphone */
 
 @media (max-width: 699px) {
   .nav-app {
@@ -320,7 +320,7 @@
     font: inherit;
     font-size: 0.66rem;
     font-weight: 500;
-    font-stretch: 88%; /* police plus étroite : « Programmation » tient sous son icône */
+    font-stretch: 88%; /* police plus étroite : "Programmation" tient sous son icône */
     color: var(--gris-2);
     cursor: pointer;
   }
@@ -348,7 +348,7 @@
   }
 }
 
-/* ---------- panneau « Plus » (téléphone) ---------- */
+/* panneau "Plus" (téléphone) */
 
 .feuille {
   width: 100%;

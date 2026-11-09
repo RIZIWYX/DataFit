@@ -36,7 +36,7 @@ const VUES: { valeur: Vue; nom: string }[] = [
 ]
 const JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
 
-// le titre de la période affichée : « octobre 2026 », « 12 – 18 oct. 2026 », « jeudi 15 octobre 2026 »
+// le titre de la période affichée : "octobre 2026", "12 – 18 oct. 2026", "jeudi 15 octobre 2026"
 function titrePeriode(vue: Vue, reference: Date): string {
   if (vue === 'mois') return reference.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
   if (vue === 'jour') return reference.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
@@ -53,13 +53,13 @@ function Programmation() {
   const [parametres, setParametres] = useSearchParams()
   const [aujourdHui] = useState(() => new Date())
   const [vue, setVue] = useState<Vue>(() => (window.matchMedia('(max-width: 699px)').matches ? 'jour' : 'semaine'))
-  // la fiche ouverte est dans l'adresse (?seance=…) : l'historique peut y mener directement
+  // la fiche ouverte est dans l'adresse (?seance=...) : l'historique peut y mener directement
   const ouverteId = parametres.get('seance')
   const [reference, setReference] = useState(() => {
     const seance = planning.seances.find((s) => s.id === ouverteId)
     return seance ? depuisIso(seance.debut) : new Date()
   })
-  const [masques, setMasques] = useState<string[]>([]) // programmes cachés ; « unique » : les séances hors programme
+  const [masques, setMasques] = useState<string[]>([]) // programmes cachés ; "unique" : les séances hors programme
   const [edition, setEdition] = useState<SeancePlanifiee | null>(null)
   const [programmeEdite, setProgrammeEdite] = useState<{ programme: Programme; etape: Etape } | null>(null)
   const [message, setMessage] = useState('')
@@ -152,7 +152,7 @@ function Programmation() {
 
       {/* deux blocs de même hauteur : les programmes à gauche, le calendrier à droite */}
       <div className="prog-mise-en-page">
-        {/* ---------- les programmes (modèles) et ce qui arrive ---------- */}
+        {/* les programmes (modèles) et ce qui arrive */}
         <aside className="prog-cote">
           <section className="panneau" aria-labelledby="prog-programmes">
             <header className="panneau-tete">
@@ -245,7 +245,7 @@ function Programmation() {
           </section>
         </aside>
 
-        {/* ---------- le calendrier (les occurrences) ---------- */}
+        {/* le calendrier (les occurrences) */}
         <section className="prog-calendrier" aria-label="Calendrier">
           <Calendrier
             vue={vue}
@@ -315,13 +315,13 @@ function Programmation() {
           onEnregistrer={(programme) => {
             p.enregistrerProgramme(programme)
             setProgrammeEdite(null)
-            annoncer(`Programme « ${programme.nom} » enregistré.`)
+            annoncer(`Programme "${programme.nom}" enregistré.`)
           }}
           onPlanifier={(programme, depart, semaines, creneaux) => {
             const nb = p.planifierProgramme(programme, depart, semaines, creneaux)
             setProgrammeEdite(null)
             setReference(depart)
-            annoncer(`${nb} séance${nb > 1 ? 's' : ''} de « ${programme.nom} » ajoutée${nb > 1 ? 's' : ''} au calendrier.`)
+            annoncer(`${nb} séance${nb > 1 ? 's' : ''} de "${programme.nom}" ajoutée${nb > 1 ? 's' : ''} au calendrier.`)
           }}
           onSupprimer={(id) => {
             p.supprimerProgramme(id)
@@ -334,7 +334,7 @@ function Programmation() {
   )
 }
 
-// ---------- fiche d'une séance (clic dans le calendrier) ----------
+// fiche d'une séance (clic dans le calendrier)
 
 type PropsFiche = {
   seance: SeancePlanifiee
@@ -422,7 +422,7 @@ function FicheSeance({ seance, programme, couleur, aujourdHui, onFermer, onModif
   )
 }
 
-// ---------- créer ou modifier une séance ----------
+// créer ou modifier une séance
 
 type PropsSeance = {
   seance: SeancePlanifiee
@@ -464,7 +464,7 @@ function FenetreSeance({ seance, programmes, existe, onFermer, onEnregistrer }: 
             id="seance-titre"
             required
             autoFocus
-            placeholder="ex. Push, Fractionné 10 × 400 m…"
+            placeholder="ex. Push, Fractionné 10 × 400 m..."
             value={brouillon.titre}
             onChange={(e) => modifier({ titre: e.target.value })}
           />
@@ -512,7 +512,7 @@ function FenetreSeance({ seance, programmes, existe, onFermer, onEnregistrer }: 
   )
 }
 
-// ---------- créer ou modifier un programme, en trois étapes ----------
+// créer ou modifier un programme, en trois étapes
 
 type Etape = 'infos' | 'seances' | 'planifier'
 
@@ -538,7 +538,7 @@ function FenetreProgramme({ initial, etapeInitiale, existe, aujourdHui, onFermer
   const [etape, setEtape] = useState<Etape>(etapeInitiale)
   const [depart, setDepart] = useState(cleJour(aujourdHui))
   const [semaines, setSemaines] = useState(4)
-  // par défaut, les séances types sont espacées d'un jour : lundi, mercredi, vendredi…
+  // par défaut, les séances types sont espacées d'un jour : lundi, mercredi, vendredi...
   const [creneaux, setCreneaux] = useState<Creneau[]>(() =>
     initial.seances.map((modele, i) => ({ modeleId: modele.id, jour: (i * 2) % 7, heure: '18:00' })),
   )
@@ -563,7 +563,7 @@ function FenetreProgramme({ initial, etapeInitiale, existe, aujourdHui, onFermer
     <Fenetre
       ouverte
       large
-      titre={existe ? `Programme « ${initial.nom} »` : 'Nouveau programme'}
+      titre={existe ? `Programme "${initial.nom}"` : 'Nouveau programme'}
       onFermer={onFermer}
       pied={
         <>
@@ -616,7 +616,7 @@ function FenetreProgramme({ initial, etapeInitiale, existe, aujourdHui, onFermer
             <input
               id="programme-nom"
               autoFocus
-              placeholder="ex. PPL, Préparation 10 km…"
+              placeholder="ex. PPL, Préparation 10 km..."
               value={programme.nom}
               onChange={(e) => setProgramme({ ...programme, nom: e.target.value })}
             />

@@ -39,7 +39,7 @@ export function useGraphiquesNuit(id: string | undefined) {
   const chemin = utilisateur && id && /^\d+$/.test(id) ? `/api/sommeil/${utilisateur}/${id}/graphiques` : null
   return useGraphiques(chemin)
 }
-// L'évolution des nuits enregistrées (durée, efficacité, FC…), d'après la table sommeil.
+// L'évolution des nuits enregistrées (durée, efficacité, FC...), d'après la table sommeil.
 // `version` change à chaque nouvelle nuit reçue : les graphiques sont alors recalculés.
 export function useGraphiquesNuits(version: number) {
   const utilisateur = lireCompte()?.id

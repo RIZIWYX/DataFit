@@ -1,4 +1,4 @@
-// Service pour la discipline « Natation » : appels REST vers /api/natation.
+// Service pour la discipline "Natation" : appels REST vers /api/natation.
 // Les champs renvoyés par le backend correspondent aux colonnes de la table.
 import {
   envoyerSeance,

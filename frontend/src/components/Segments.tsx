@@ -8,7 +8,7 @@ export interface OptionSegment<T> {
 }
 
 type Props<T> = {
-  libelle: string // pour les lecteurs d'écran : « Sport affiché »
+  libelle: string // pour les lecteurs d'écran : "Sport affiché"
   options: OptionSegment<T>[]
   valeur: T
   onChange: (valeur: T) => void

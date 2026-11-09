@@ -10,8 +10,8 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
-        // on garde l'adresse du site (localhost:5173), comme nginx avec « Host $http_host » :
-        // sinon Spring voit arriver « localhost:8080 » et refuse les POST et PUT (CORS)
+        // on garde l'adresse du site (localhost:5173), comme nginx avec "Host $http_host" :
+        // sinon Spring voit arriver "localhost:8080" et refuse les POST et PUT (CORS)
         changeOrigin: false,
       },
     },

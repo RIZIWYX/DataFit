@@ -2,7 +2,7 @@ import '../styles/graphes.css'
 
 type Props = {
   parts: { nom: string; couleur: string; valeur: number }[]
-  unite: string // ce qu'on compte, au pluriel : « séances »
+  unite: string // ce qu'on compte, au pluriel : "séances"
 }
 
 const RAYON = 38

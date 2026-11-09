@@ -57,7 +57,7 @@ function useCreationProfil() {
             taille: profil.taille,
             poids: profil.poids,
             niveau: profil.niveau,
-            // la table n'a qu'une colonne « activite » : les activités y sont séparées par des virgules
+            // la table n'a qu'une colonne "activite" : les activités y sont séparées par des virgules
             activite: activites.join(','),
             objectif: profil.objectif,
           }),
@@ -68,7 +68,7 @@ function useCreationProfil() {
         const data = await response.json().catch(() => ({}))
         // 5xx : backend arrêté (le proxy répond à sa place) ou en panne.
         // Sinon, nos contrôleurs renvoient { error: "message en français" } ;
-        // les erreurs produites par Spring lui-même (validation…) ont un champ path et un texte technique
+        // les erreurs produites par Spring lui-même (validation...) ont un champ path et un texte technique
         setErreur(
           response.status >= 500
             ? 'Le serveur ne répond pas correctement. Vérifiez que le backend est démarré.'

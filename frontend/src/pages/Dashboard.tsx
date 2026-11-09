@@ -49,7 +49,7 @@ function Dashboard() {
     `${formatJourRelatif(date, aujourdHui)} · ${formatHeure(date)}`
 
   // les sports classés vont du meilleur rang au moins bon : le premier et le dernier
-  // (le « pire » seulement s'il y a au moins deux sports, sinon ce serait le même)
+  // (le "pire" seulement s'il y a au moins deux sports, sinon ce serait le même)
   const classes = d.rangs?.filter((discipline) => discipline.rang >= 0) ?? []
   const meilleure = classes.at(0)
   const pire = classes.length > 1 ? classes.at(-1) : undefined
@@ -64,7 +64,7 @@ function Dashboard() {
         })}
         titre={d.prenom ? `${salut} ${d.prenom}` : salut}
       >
-        {d.chargement ? 'Chargement des résultats…' : resume}
+        {d.chargement ? 'Chargement des résultats...' : resume}
       </TitrePage>
 
       {d.erreur && <p className="alerte" role="alert">{d.erreur}</p>}
@@ -130,7 +130,7 @@ function Dashboard() {
             {prochaine.exercices.length > 0 && (
               <p className="carte-seance-detail">
                 {prochaine.exercices.slice(0, 4).map((ex) => ex.nom).join(' · ')}
-                {prochaine.exercices.length > 4 && ' …'}
+                {prochaine.exercices.length > 4 && ' ...'}
               </p>
             )}
             {ensuite.length > 0 && (
@@ -276,7 +276,7 @@ function RangDuSport({
 }: {
   discipline: ResumeDiscipline
   exercice?: ResumeDiscipline['exercices'][number]
-  libelle: string // ce que l'exercice représente : « Meilleur exercice »…
+  libelle: string // ce que l'exercice représente : "Meilleur exercice"...
 }) {
   return (
     <Link to={`/performance?discipline=${discipline.id}`} className="accueil-rang">

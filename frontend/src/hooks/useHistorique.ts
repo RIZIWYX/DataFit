@@ -4,7 +4,7 @@ import { joursEcoules } from '../lib/activite.ts'
 import { type Categorie, type Entree, entreesHistorique, normaliser, texteRecherche } from '../lib/historique.ts'
 import { chargerPlanning } from '../lib/programmation.ts'
 
-// nombre de séances affichées d'un coup ; « Afficher plus » en ajoute autant
+// nombre de séances affichées d'un coup ; "Afficher plus" en ajoute autant
 const PAR_LOT = 15
 
 // semaines : 0 = pas de limite
@@ -23,7 +23,7 @@ const TRIS = {
 export type Tri = keyof typeof TRIS
 
 export interface Groupe {
-  titre: string // « Octobre 2026 », ou rien quand le tri n'est pas chronologique
+  titre: string // "Octobre 2026", ou rien quand le tri n'est pas chronologique
   entrees: Entree[]
 }
 

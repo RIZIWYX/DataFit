@@ -1,4 +1,4 @@
-// Barèmes des rangs E → Z : catégories de poids, disciplines, exercices et seuils.
+// Barèmes des rangs E -> Z : catégories de poids, disciplines, exercices et seuils.
 // Pour ajuster un palier, on modifie seulement ce fichier.
 
 export type Sexe = 'H' | 'F'
@@ -46,7 +46,7 @@ export const NOMS_RANGS = [
 
 // Catégories : limites L_k = L_0 × 1,15^k (L_0 = 50 kg hommes, 45 kg femmes).
 // Le 2e nombre est le poids de référence utilisé dans les calculs (limite haute ;
-// pour la catégorie « + », un palier de 15 % de plus).
+// pour la catégorie "+", un palier de 15 % de plus).
 export const CATEGORIES: Record<Sexe, [string, number][]> = {
   H: [['-50', 50], ['-58', 58], ['-66', 66], ['-76', 76], ['-87', 87], ['-101', 101], ['-116', 116], ['-133', 133], ['+133', 150]],
   F: [['-45', 45], ['-52', 52], ['-60', 60], ['-68', 68], ['-79', 79], ['-91', 91], ['-104', 104], ['+104', 120]],

@@ -131,7 +131,7 @@
   margin-top: 1.25rem;
 }
 
-/* « Données reçues », à droite de la montre (en dessous quand la place manque) */
+/* "Données reçues", à droite de la montre (en dessous quand la place manque) */
 .montre-recu {
   margin-left: auto;
   min-width: 260px;
