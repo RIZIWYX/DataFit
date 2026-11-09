@@ -185,7 +185,7 @@ function CreationProfil() {
             )}
 
             <button type="submit" className="bouton creation-envoyer" disabled={envoi}>
-              {envoi ? 'Enregistrement…' : 'Accéder à DataFit'}
+              {envoi ? 'Enregistrement...' : 'Accéder à DataFit'}
               {!envoi && <Icone trace={ICONES.fleche} />}
             </button>
           </form>

@@ -1,10 +1,9 @@
-// Outils de la page Sommeil. Les valeurs elles-mêmes viennent de la base (table sommeil),
-// calculées par l'analyse : rien n'est inventé ni recalculé ici.
+// Fonctions pour la page Sommeil (les valeurs viennent de la table sommeil)
 
-// heure d'une date en minutes depuis midi : 22:30 → 630, 06:30 → 1110 (la nuit ne se coupe pas à minuit)
+// heure d'une date en minutes depuis midi : 22:30 -> 630, 06:30 -> 1110 (la nuit ne se coupe pas à minuit)
 export const minutesDepuisMidi = (date: Date) => ((date.getHours() + 12) % 24) * 60 + date.getMinutes()
 
-// une durée en secondes, arrondie à la minute : 18 900 → « 5 h 15 », 360 → « 6 min »
+// une durée en secondes, arrondie à la minute : 18 900 -> "5 h 15", 360 -> "6 min"
 export const dureeNuit = (secondes: number) => {
   const minutes = Math.round(secondes / 60)
   const h = Math.floor(minutes / 60)
@@ -13,5 +12,5 @@ export const dureeNuit = (secondes: number) => {
   return m ? `${h} h ${String(m).padStart(2, '0')}` : `${h} h`
 }
 
-// « 01:18 » → « 01 h 18 »
+// "01:18" -> "01 h 18"
 export const heureNuit = (heure: string) => heure.replace(':', ' h ')

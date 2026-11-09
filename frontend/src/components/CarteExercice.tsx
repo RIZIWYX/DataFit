@@ -55,7 +55,7 @@ function CarteExercice({ exercice: ex, perfs, profil, onChange }: Props) {
         <div className="sport-ex-saisie">
           {ex.type === 'ladder' ? (
             <select id={idChamp} value={perfs[ex.id] ?? ''} onChange={(e) => onChange(ex.id, e.target.value)}>
-              <option value="">Choisir…</option>
+              <option value="">Choisir...</option>
               {ex.etapes?.map((etape, i) => (
                 <option key={etape} value={i}>{RANGS[i]} · {etape}</option>
               ))}

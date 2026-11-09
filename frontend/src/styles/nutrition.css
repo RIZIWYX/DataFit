@@ -9,7 +9,7 @@
   cursor: not-allowed;
 }
 
-/* ---------- jour affiché ---------- */
+/* jour affiché */
 
 .nutrition-jour {
   display: flex;
@@ -32,7 +32,7 @@
   color: var(--gris-2);
 }
 
-/* ---------- résumé de la journée ---------- */
+/* résumé de la journée */
 
 .nutrition-apercu {
   display: grid;
@@ -66,7 +66,7 @@
   color: var(--gris-2);
 }
 
-/* ---------- journal alimentaire ---------- */
+/* journal alimentaire */
 
 .nutrition-repas + .nutrition-repas {
   margin-top: 1.5rem;
@@ -125,7 +125,7 @@
   white-space: nowrap;
 }
 
-/* ---------- grille et composition ---------- */
+/* grille et composition */
 
 .nutrition-grille {
   display: grid;
@@ -160,30 +160,80 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------- hydratation ---------- */
+/* hydratation */
 
-.nutrition-eau {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.9rem;
-}
-
-.nutrition-eau p {
-  margin: 0;
-  font-size: 2rem;
+.nutrition-eau-total {
+  margin: 0 0 0.75rem;
+  color: var(--gris);
   font-variant-numeric: tabular-nums;
 }
 
-.nutrition-eau .bouton-icone {
-  width: 44px;
-  height: 44px;
-  font-size: 1.4rem;
-  line-height: 1;
+.nutrition-eau-total strong {
+  font-size: 2rem;
+  color: var(--blanc);
 }
 
-/* ---------- analyse nutritionnelle ---------- */
+.nutrition-eau-barre {
+  height: 8px;
+  margin-bottom: 1rem;
+  border-radius: 999px;
+  background: var(--trait);
+  overflow: hidden;
+}
+
+.nutrition-eau-barre span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--turquoise);
+  transition: width 0.3s ease;
+}
+
+.nutrition-eau-ajouts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.nutrition-eau-ajouts .bouton {
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.nutrition-eau-pied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.nutrition-eau-pied .nutrition-note {
+  margin: 0;
+}
+
+.nutrition-eau-annuler {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--turquoise);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.nutrition-eau-annuler:hover:not(:disabled) {
+  color: var(--turquoise-survol);
+  text-decoration: underline;
+}
+
+.nutrition-eau-annuler:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* analyse nutritionnelle */
 
 .nutrition-analyse {
   display: flex;
@@ -296,7 +346,7 @@
   font-size: 0.75rem;
 }
 
-/* ---------- graphique hebdomadaire ---------- */
+/* graphique hebdomadaire */
 
 .nutrition-semaine-zone {
   position: relative;
@@ -383,7 +433,7 @@
   color: var(--gris-2);
 }
 
-/* ---------- informations et formulaire ---------- */
+/* informations et formulaire */
 
 .nutrition-note {
   margin: 0.8rem 0 0;
@@ -412,7 +462,7 @@
   gap: 1.1rem;
 }
 
-/* ---------- tablette ---------- */
+/* tablette */
 
 @media (max-width: 1099px) {
   .nutrition-apercu {
@@ -428,7 +478,7 @@
   }
 }
 
-/* ---------- téléphone ---------- */
+/* téléphone */
 
 @media (max-width: 640px) {
   .nutrition-apercu {

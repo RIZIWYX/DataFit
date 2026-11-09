@@ -35,7 +35,7 @@ function useProgression() {
   // premier jour de la période, à minuit
   const debut = new Date(aujourdHui.getFullYear(), aujourdHui.getMonth(), aujourdHui.getDate() - nbSemaines * 7 + 1)
 
-  // ---------- vue d'ensemble : les séances de la montre ----------
+  // vue d'ensemble : les séances de la montre
   const duSport = seances.filter((seance) => sport === 'tous' || seance.sport === sport)
   const ecart = (seance: (typeof seances)[number]) => joursEcoules(seance.date, aujourdHui)
   const periode = duSport.filter((s) => ecart(s) >= 0 && ecart(s) < nbSemaines * 7)
@@ -43,7 +43,7 @@ function useProgression() {
   const avant = duSport.filter((s) => ecart(s) >= nbSemaines * 7 && ecart(s) < nbSemaines * 14)
   const toutesPeriode = seances.filter((s) => ecart(s) >= 0 && ecart(s) < nbSemaines * 7)
 
-  // ---------- un exercice ----------
+  // un exercice
   const records = exercice ? dansPeriode(pointsRecord(exercice, historique), debut) : []
   const realisees = exercice ? realisations(planning, exercice.id).filter((r) => r.date >= debut) : []
 

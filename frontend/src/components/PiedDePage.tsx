@@ -6,7 +6,7 @@ import Logo from './Logo.tsx'
 const ANNEE = new Date().getFullYear()
 
 // Pied de page commun à la page de garde et aux pages légales.
-// Les liens « Découvrir » visent des sections de la page de garde : on écrit "/#..."
+// Les liens "Découvrir" visent des sections de la page de garde : on écrit "/#..."
 // (et pas "#...") pour qu'ils marchent aussi depuis /cgu ou /donnees-personnelles.
 // C'est la page de garde qui fait défiler jusqu'à la section (voir Landing.tsx).
 function PiedDePage() {

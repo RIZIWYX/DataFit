@@ -17,7 +17,7 @@ const debutDuJour = (date: Date) => new Date(date.getFullYear(), date.getMonth()
 const decaler = (date: Date, jours: number) =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate() + jours)
 
-// Nombre de jours entre une date et aujourd'hui (0 = aujourd'hui, 1 = hier…).
+// Nombre de jours entre une date et aujourd'hui (0 = aujourd'hui, 1 = hier...).
 export function joursEcoules(date: Date, aujourdHui: Date): number {
   return Math.round((debutDuJour(aujourdHui).getTime() - debutDuJour(date).getTime()) / JOUR)
 }

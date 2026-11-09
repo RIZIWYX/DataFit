@@ -18,7 +18,7 @@
   color: var(--gris-2);
 }
 
-/* ---------- colonne des programmes ---------- */
+/* colonne des programmes */
 
 .prog-cote {
   display: flex;
@@ -133,7 +133,7 @@
   color: var(--gris-2);
 }
 
-/* ---------- calendrier ---------- */
+/* calendrier */
 
 .prog-calendrier {
   display: flex;
@@ -409,7 +409,7 @@
   background: var(--turquoise);
 }
 
-/* ---------- fenêtres ---------- */
+/* fenêtres */
 
 .prog-formulaire,
 .prog-modeles {
@@ -524,7 +524,7 @@
   color: var(--gris);
 }
 
-/* ---------- ordinateur : les programmes et le calendrier exactement à la même hauteur ---------- */
+/* ordinateur : les programmes et le calendrier exactement à la même hauteur */
 
 @media (min-width: 1100px) {
   .prog-mise-en-page {
@@ -535,7 +535,7 @@
   .prog-calendrier {
     min-height: 0;
   }
-  /* le bloc des programmes prend la place laissée par « À venir », et défile s'il déborde */
+  /* le bloc des programmes prend la place laissée par "À venir", et défile s'il déborde */
   .prog-cote > .panneau:first-child {
     flex: 1;
     min-height: 0;
@@ -565,7 +565,7 @@
   }
 }
 
-/* ---------- tablette et téléphone ---------- */
+/* tablette et téléphone */
 
 @media (max-width: 1099px) {
   .prog-mise-en-page {

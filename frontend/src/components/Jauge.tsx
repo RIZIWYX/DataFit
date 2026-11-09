@@ -1,6 +1,6 @@
 type Props = {
   part: number // de 0 à 1
-  libelle: string // pour les lecteurs d'écran : « Progression vers l'objectif »
+  libelle: string // pour les lecteurs d'écran : "Progression vers l'objectif"
   couleur?: string // blanc par défaut
 }
 

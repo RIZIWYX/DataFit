@@ -73,7 +73,7 @@ const PROFIL_SPORTIF: GroupeChamps[] = [
 function valeurAffichee(champ: DefinitionChamp, profil: DonneesProfil | null): string {
   const brut = profil?.[champ.cle]
   if (champ.type === 'nombre') return typeof brut === 'number' && brut > 0 ? `${nombre(brut)} ${champ.unite}` : ''
-  // « T00:00 » : la date est lue à minuit, heure locale (sinon en UTC, la veille selon le fuseau)
+  // "T00:00" : la date est lue à minuit, heure locale (sinon en UTC, la veille selon le fuseau)
   if (champ.type === 'date') return typeof brut === 'string' && brut ? formatDateLongue(new Date(`${brut}T00:00`)) : ''
   if (champ.type === 'choix') return champ.options?.find((o) => o.valeur === brut)?.nom ?? ''
   if (champ.type === 'multi')

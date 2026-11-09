@@ -1,4 +1,4 @@
-// Service pour la discipline « Souplesse » : appels REST vers /api/souplesse.
+// Service pour la discipline "Souplesse" : appels REST vers /api/souplesse.
 // Les champs renvoyés par le backend correspondent aux colonnes de la table.
 import {
   envoyerSeance,

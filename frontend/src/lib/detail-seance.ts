@@ -1,7 +1,5 @@
-// Détail d'une séance, minute par minute.
-// Démonstration : ces courbes sont fabriquées à partir de la durée, de la distance et de la
-// fréquence cardiaque moyenne de la séance. Elles seront remplacées par les mesures de la montre.
-// Le tirage dépend de l'identifiant de la séance : une même séance donne toujours les mêmes courbes.
+// Détail minute par minute d'une séance
+// courbes générées à partir des moyennes (en attendant les vraies mesures), l'id sert de graine
 import { type Seance } from '../data/seances.ts'
 
 export interface DetailSeance {
@@ -12,7 +10,7 @@ export interface DetailSeance {
   vitesses?: { libelle: string; minutes: number }[] // temps passé dans chaque tranche de vitesse
 }
 
-// générateur de nombres « au hasard » reproductible (mulberry32)
+// générateur de nombres "au hasard" reproductible (mulberry32)
 function tirage(graine: number) {
   let etat = graine
   return () => {

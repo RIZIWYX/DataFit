@@ -69,9 +69,9 @@ export function convertirSeance(sport: SportMontre, s: ResultatSeance): Seance {
   }
   if (sport === 'muscu') {
     ajouter('nbSeries', 'Séries', (n) => nombre(n, 0))
-    ajouter('fcMoyEffort', 'FC moyenne à l’effort', bpm)
+    ajouter('fcMoyEffort', "FC moyenne à l'effort", bpm)
     ajouter('fcMoyPause', 'FC moyenne au repos', bpm)
-    ajouter('dureeEffortS', 'Temps d’effort', formatDureeSecondes)
+    ajouter('dureeEffortS', "Temps d'effort", formatDureeSecondes)
     ajouter('dureePauseS', 'Temps de repos', formatDureeSecondes)
     ajouter('dureeMoyPauseS', 'Repos moyen', formatDureeSecondes)
     ajouter('baisseFcApres60s', 'Baisse de FC après 60 s', bpm)

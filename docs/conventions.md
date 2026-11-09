@@ -109,7 +109,7 @@ docs: explique le déploiement sur Render et Neon
   gh pr review NUMERO --request-changes --body "Ce qui doit être corrigé..."
   gh pr review NUMERO --comment --body "Remarque non bloquante"
   ```
-- On critique **le code, pas la personne** : « cette fonction plante si la liste est vide », pas « t'as mal codé ».
+- On critique **le code, pas la personne** : "cette fonction plante si la liste est vide", pas "t'as mal codé".
 
 ### Si de nouveaux commits arrivent après une approbation
 L'approbation est annulée : il faut une nouvelle relecture.

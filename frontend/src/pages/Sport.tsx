@@ -10,7 +10,7 @@ import useSport from '../hooks/useSport.ts'
 import { nombre } from '../lib/format.ts'
 import { MIN_DISCIPLINES_RANG_GLOBAL } from '../lib/rangs.ts'
 
-// Performance (ex-« Sport ») : les records par exercice et leur rang, de E à Z.
+// Performance (ex-"Sport") : les records par exercice et leur rang, de E à Z.
 function Sport() {
   const {
     profilRempli,
@@ -91,7 +91,7 @@ function Sport() {
               <p className="sport-note">
                 {rangAthlete.rang >= 0
                   ? `Moyenne de vos rangs sur ${rangAthlete.disciplines} ${rangAthlete.disciplines > 1 ? 'disciplines travaillées' : 'discipline travaillée'}.`
-                  : `Travaillez au moins ${MIN_DISCIPLINES_RANG_GLOBAL} disciplines sur ${resume.length} pour l’obtenir (${rangAthlete.disciplines}/${MIN_DISCIPLINES_RANG_GLOBAL}).`}
+                  : `Travaillez au moins ${MIN_DISCIPLINES_RANG_GLOBAL} disciplines sur ${resume.length} pour l'obtenir (${rangAthlete.disciplines}/${MIN_DISCIPLINES_RANG_GLOBAL}).`}
               </p>
             </div>
           </section>

@@ -64,7 +64,7 @@ function useConnexion() {
           ? "Impossible de créer le compte."
           : "Impossible de se connecter."
         // nos contrôleurs renvoient { error: "message en français" } ; les erreurs produites par
-        // Spring lui-même (validation…) ont un champ path et un texte technique
+        // Spring lui-même (validation...) ont un champ path et un texte technique
         setErreur(data.error && !data.path ? data.error : parDefaut)
         return
       }

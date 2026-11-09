@@ -8,7 +8,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)
 [![Licence MIT](https://img.shields.io/badge/licence-MIT-green)](LICENSE)
 
-Application de suivi sportif. DataFit récupère les séances d'une montre connectée (fréquence cardiaque, vitesse, position), les range par sport (course, natation, musculation) et montre au sportif ses progrès : performances, rangs E → Z par exercice, programmation des séances dans un calendrier, sommeil.
+Application de suivi sportif. DataFit récupère les séances d'une montre connectée (fréquence cardiaque, vitesse, position), les range par sport (course, natation, musculation) et montre au sportif ses progrès : performances, rangs E -> Z par exercice, programmation des séances dans un calendrier, sommeil.
 
 ## Architecture
 
@@ -61,7 +61,7 @@ Le site est sur http://localhost:5173, rechargé à chaque sauvegarde. Ses appel
 
 ## Pour aller plus loin
 
-- [Documentation technique](docs/README.md) : architecture, API, base de données, contribution.
+- [Architecture](docs/architecture.md), [API](docs/api.md), [Base de données](docs/base-de-donnees.md), [Sécurité](docs/securite.md), [Conventions Git](docs/conventions.md)
 - [Guide de développement](docs/developpement.md) : installation détaillée et problèmes fréquents.
 - [Charte graphique](docs/charte-graphique.md) : couleurs, typographie et composants du site.
 

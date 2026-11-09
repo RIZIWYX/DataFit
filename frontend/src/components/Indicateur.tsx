@@ -5,14 +5,14 @@ import Icone from './Icone.tsx'
 
 type Props = {
   nom: string
-  valeur: string // « 2 h 27 », « 6,4 km » : les unités sont écrites plus petit que les chiffres
+  valeur: string // "2 h 27", "6,4 km" : les unités sont écrites plus petit que les chiffres
   ecart?: Ecart // comparaison avec la période précédente
 }
 
 // un chiffre clé, à poser dans une liste <dl className="indicateurs">
 function Indicateur({ nom, valeur, ecart }: Props) {
-  // les morceaux impairs sont les nombres (« +12,5 », « 4:30 », « 6'09 »), les autres les unités ;
-  // une valeur sans chiffre (« A ») s'affiche telle quelle
+  // les morceaux impairs sont les nombres ("+12,5", "4:30", "6'09"), les autres les unités ;
+  // une valeur sans chiffre ("A") s'affiche telle quelle
   const morceaux = /\d/.test(valeur) ? valeur.split(/([+−-]?\d+(?:[,.:']\d+)*)/) : ['', valeur, '']
 
   return (

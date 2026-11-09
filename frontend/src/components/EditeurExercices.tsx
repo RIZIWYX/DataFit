@@ -18,7 +18,7 @@ type Props = {
 
 // Les exercices d'une séance. Chacun vient du catalogue de la page Performance (ou est libre),
 // et ne propose que les réglages qui ont un sens pour lui : séries, répétitions et charge pour
-// un squat, distance et durée pour un 10 km, tenue pour un L-sit…
+// un squat, distance et durée pour un 10 km, tenue pour un L-sit...
 function EditeurExercices({ exercices, onChange }: Props) {
   const idAjout = useId()
 
@@ -105,7 +105,7 @@ function EditeurExercices({ exercices, onChange }: Props) {
       {/* choisir dans la liste ajoute l'exercice aussitôt */}
       <label className="visuellement-cache" htmlFor={idAjout}>Ajouter un exercice</label>
       <select id={idAjout} className="editeur-ajout" value="" onChange={(e) => ajouter(e.target.value)}>
-        <option value="">+ Ajouter un exercice…</option>
+        <option value="">+ Ajouter un exercice...</option>
         {DISCIPLINES.map((discipline) => (
           <optgroup key={discipline.id} label={discipline.nom}>
             {discipline.exercices.map((ex) => (

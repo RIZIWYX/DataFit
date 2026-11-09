@@ -32,7 +32,7 @@ function Sommeil() {
     return (
       <div className="ecran sommeil">
         <TitrePage surtitre="Suivi" titre="Sommeil" />
-        {chargement ? <p role="status">Chargement des nuits…</p> : erreur ? (
+        {chargement ? <p role="status">Chargement des nuits...</p> : erreur ? (
           <EtatVide icone={ICONES.info} titre="Chargement impossible"
             action={<button className="bouton secondaire" onClick={recharger}>Réessayer</button>}>{erreur}</EtatVide>
         ) : <EtatVide icone={ICONES.sommeil} titre="Aucune nuit reçue"

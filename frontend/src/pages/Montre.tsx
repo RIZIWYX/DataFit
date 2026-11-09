@@ -82,7 +82,7 @@ function Montre() {
           <div className="montre-actions">
             <button type="button" className="bouton" disabled={!m.connectee || m.enCours} onClick={m.synchroniser}>
               <Icone trace={ICONES.synchro} />
-              {m.enCours ? 'Synchronisation…' : 'Synchroniser'}
+              {m.enCours ? 'Synchronisation...' : 'Synchroniser'}
             </button>
             <button type="button" className="bouton secondaire" onClick={m.basculerConnexion}>
               {m.connectee ? 'Déconnecter la montre' : 'Reconnecter la montre'}
@@ -127,7 +127,7 @@ function Montre() {
         </Panneau>
       </section>
 
-      {m.chargement && <p role="status">Chargement des résultats…</p>}
+      {m.chargement && <p role="status">Chargement des résultats...</p>}
       <div className="montre-grille">
         <Panneau titre="Ce que la montre mesure">
           <div className="montre-tableau">

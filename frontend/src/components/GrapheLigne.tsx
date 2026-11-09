@@ -3,7 +3,7 @@ import '../styles/graphes.css'
 import { graduations } from '../lib/activite.ts'
 
 export interface Point {
-  libelle: string // en clair, pour la bulle et le tableau : « 12e minute »
+  libelle: string // en clair, pour la bulle et le tableau : "12e minute"
   valeur: number
 }
 
@@ -11,7 +11,7 @@ type Props = {
   points: Point[]
   reperes: { index: number; texte: string }[] // étiquettes sous l'axe horizontal
   couleur: string
-  format: (valeur: number) => string // la valeur avec son unité : « 146 bpm »
+  format: (valeur: number) => string // la valeur avec son unité : "146 bpm"
   formatAxe?: (valeur: number) => string // version courte pour l'axe vertical
   inverse?: boolean // petites valeurs en haut (pour une allure : plus bas = plus rapide)
   depuisZero?: boolean // l'axe vertical part de 0

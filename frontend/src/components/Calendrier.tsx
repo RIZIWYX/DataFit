@@ -68,7 +68,7 @@ function Calendrier(props: Props) {
   return props.vue === 'mois' ? <VueMois {...props} /> : <VueHoraire {...props} />
 }
 
-// ---------- mois : une case par jour, trois séances visibles au plus ----------
+// mois : une case par jour, trois séances visibles au plus
 
 function VueMois({ reference, seances, couleur, aujourdHui, onOuvrir, onCreer, onDeplacer, onVoirJour }: Props) {
   const premier = new Date(reference.getFullYear(), reference.getMonth(), 1)
@@ -132,7 +132,7 @@ function VueMois({ reference, seances, couleur, aujourdHui, onOuvrir, onCreer, o
   )
 }
 
-// ---------- semaine et jour : une grille horaire ----------
+// semaine et jour : une grille horaire
 
 function VueHoraire({ vue, reference, seances, couleur, aujourdHui, onOuvrir, onCreer, onDeplacer }: Props) {
   const jours =
@@ -181,7 +181,7 @@ function VueHoraire({ vue, reference, seances, couleur, aujourdHui, onOuvrir, on
 
           {jours.map((jour) => {
             const liste = duJour(seances, jour)
-            // séances qui se chevauchent : côte à côte, sur des « couloirs »
+            // séances qui se chevauchent : côte à côte, sur des "couloirs"
             const finsCouloirs: number[] = []
             const places = liste.map((seance) => {
               const debut = depuisIso(seance.debut).getTime()

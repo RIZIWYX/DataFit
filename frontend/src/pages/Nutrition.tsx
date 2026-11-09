@@ -18,7 +18,7 @@ import {
   type Aliment,
   REPAS,
   type Repas,
-  VERRE_ML,
+  AJOUTS_EAU_ML,
   kcalDesMacros,
 } from '../lib/nutrition.ts'
 
@@ -112,8 +112,10 @@ function Nutrition() {
 
         <div className="nutrition-apercu-carte">
           <span>Hydratation enregistrée</span>
-          <strong>{nombre((n.verres * VERRE_ML) / 1000)} L</strong>
-          <small>{n.verres} verre(s) enregistré(s)</small>
+          <strong>{nombre(n.eauMl / 1000, 2)} L</strong>
+          <small>
+            {n.besoins ? `Objectif : ${nombre(n.besoins.eauMl / 1000, 2)} L` : `${n.nombreAjoutsEau} ajout(s) enregistré(s)`}
+          </small>
         </div>
       </section>
 
@@ -237,7 +239,7 @@ function Nutrition() {
           disabled={n.chargementAnalyse || totalAliments === 0}
         >
           {n.chargementAnalyse
-            ? 'Analyse en cours…'
+            ? 'Analyse en cours...'
             : 'Analyser cette journée'}
         </button>
 
@@ -248,7 +250,7 @@ function Nutrition() {
         )}
 
         {n.chargementAnalyse && (
-          <p aria-live="polite">Calcul des statistiques en cours…</p>
+          <p aria-live="polite">Calcul des statistiques en cours...</p>
         )}
 
         {afficherAnalyse && n.analyse && (
@@ -416,40 +418,62 @@ function LigneAliment({
 }
 
 function Hydratation({ n }: { n: DonneesNutrition }) {
-  const bu = n.verres * VERRE_ML
-  const litres = (ml: number) => `${nombre(ml / 1000)} L`
+  const litres = (ml: number) => `${nombre(ml / 1000, 2)} L`
+  const objectif = n.besoins?.eauMl
+  const progression = objectif ? Math.min(100, Math.round((n.eauMl / objectif) * 100)) : 0
 
   return (
     <Panneau titre="Hydratation">
-      <div className="nutrition-eau">
-        <button
-          type="button"
-          className="bouton-icone"
-          onClick={() => n.changerVerres(n.verres - 1)}
-          disabled={n.verres === 0}
-        >
-          <span aria-hidden="true">−</span>
-          <span className="visuellement-cache">Retirer un verre</span>
-        </button>
+      <p className="nutrition-eau-total" aria-live="polite">
+        <strong className="chiffre">{litres(n.eauMl)}</strong>
+        {objectif !== undefined && <span> / {litres(objectif)}</span>}
+      </p>
 
-        <p className="chiffre" aria-live="polite">
-          {litres(bu)}
-        </p>
-
-        <button
-          type="button"
-          className="bouton-icone"
-          onClick={() => n.changerVerres(n.verres + 1)}
+      {objectif !== undefined && (
+        <div
+          className="nutrition-eau-barre"
+          role="progressbar"
+          aria-label="Objectif d'hydratation"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progression}
         >
-          <Icone trace={ICONES.ajouter} />
-          <span className="visuellement-cache">Ajouter un verre</span>
-        </button>
+          <span style={{ width: `${progression}%` }} />
+        </div>
+      )}
+
+      <div className="nutrition-eau-ajouts">
+        {AJOUTS_EAU_ML.map((ml) => (
+          <button
+            key={ml}
+            type="button"
+            className="bouton secondaire"
+            onClick={() => n.ajouterEau(ml)}
+            disabled={n.chargementEau}
+          >
+            +{litres(ml)}
+            <span className="visuellement-cache"> d'eau</span>
+          </button>
+        ))}
       </div>
 
-      <p className="nutrition-note">
-        {n.verres} verre{n.verres > 1 ? 's' : ''} de {VERRE_ML} ml enregistré
-        {n.verres > 1 ? 's' : ''}.
-      </p>
+      <div className="nutrition-eau-pied">
+        <p className="nutrition-note">
+          {objectif === undefined
+            ? 'Complétez votre profil pour obtenir un objectif.'
+            : n.eauMl >= objectif
+              ? 'Objectif atteint pour cette journée.'
+              : `Encore ${litres(objectif - n.eauMl)} pour atteindre l'objectif (35 ml par kilo).`}
+        </p>
+        <button
+          type="button"
+          className="nutrition-eau-annuler"
+          onClick={n.annulerEau}
+          disabled={n.chargementEau || n.nombreAjoutsEau === 0}
+        >
+          Annuler le dernier ajout
+        </button>
+      </div>
     </Panneau>
   )
 }
@@ -630,7 +654,7 @@ function FenetreAjout({
             id="aliment-nom"
             value={nom}
             maxLength={80}
-            placeholder="ex. Poulet et riz, fruit et yaourt…"
+            placeholder="ex. Poulet et riz, fruit et yaourt..."
             onChange={(e) => setNom(e.target.value)}
           />
         </div>

@@ -15,7 +15,7 @@ function Cgu() {
         <p>
           Les présentes conditions générales d'utilisation (CGU) définissent les règles d'accès
           et d'utilisation de DataFit, ainsi que les engagements réciproques entre l'équipe
-          projet et toute personne qui utilise le service (l'« utilisateur »).
+          projet et toute personne qui utilise le service (l'"utilisateur").
         </p>
       </section>
 
