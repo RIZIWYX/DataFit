@@ -1,12 +1,10 @@
-// Nutrition : les besoins estimés à partir du profil, et le journal des repas saisis.
-// Fonctions pures, sauf la lecture et l'écriture du journal (gardé dans le navigateur).
-// Les besoins sont des estimations (équation de Mifflin-St Jeor), pas une prescription.
+// Nutrition : besoins estimés (formule de Mifflin-St Jeor) et journal des repas
 
 import { cleDuCompte } from './compte.ts'
 import { type Profil } from './profil.ts'
 import { nouvelId } from './programmation.ts'
 
-// ---------- besoins ----------
+// besoins
 
 export type NiveauActivite = 'sedentaire' | 'leger' | 'modere' | 'intense'
 
@@ -44,6 +42,8 @@ export const kcalDesMacros = (proteines: number, glucides: number, lipides: numb
 // repère d'hydratation courant : 35 ml par kilo, boissons comprises
 const EAU_PAR_KG = 35
 export const VERRE_ML = 250
+// boutons d'ajout rapide d'eau, en ml
+export const AJOUTS_EAU_ML = [250, 500, 1000]
 
 export function age(dateNaissance: string, aujourdHui: Date): number {
   const naissance = new Date(`${dateNaissance}T00:00`)
@@ -108,7 +108,7 @@ export function calculerBesoins(
   }
 }
 
-// ---------- journal ----------
+// journal
 
 export type Repas = 'petit-dejeuner' | 'dejeuner' | 'diner' | 'collation'
 
@@ -121,7 +121,7 @@ export const REPAS: { valeur: Repas; nom: string }[] = [
 
 export interface Aliment {
   id: string
-  jour: string // « AAAA-MM-JJ »
+  jour: string // "AAAA-MM-JJ"
   repas: Repas
   nom: string
   kcal: number
@@ -133,7 +133,8 @@ export interface Aliment {
 
 export interface Journal {
   aliments: Aliment[]
-  verres: Record<string, number> // verres d'eau bus, par jour
+  verres: Record<string, number> // ancien format : verres de 250 ml par jour (lu pour ne rien perdre)
+  eau?: Record<string, number[]> // eau bue par jour : la liste des ajouts en ml (pour annuler le dernier)
   // choisis sur la page ; sinon, ceux du profil
   objectif?: string
   activite?: NiveauActivite
@@ -163,8 +164,13 @@ export function enregistrerJournal(journal: Journal) {
   try {
     localStorage.setItem(cleDuCompte(CLE_STOCKAGE), JSON.stringify(journal))
   } catch {
-    // stockage indisponible (navigation privée…) : le journal ne sera pas gardé
+    // stockage indisponible (navigation privée...) : le journal ne sera pas gardé
   }
+}
+
+// les ajouts d'eau d'un jour ; un journal de l'ancien format est converti (n verres = n ajouts de 250 ml)
+export function ajoutsEau(journal: Journal, cle: string): number[] {
+  return journal.eau?.[cle] ?? Array<number>(journal.verres[cle] ?? 0).fill(VERRE_ML)
 }
 
 export const nouvelAliment = (aliment: Omit<Aliment, 'id'>): Aliment => ({ ...aliment, id: nouvelId() })
@@ -181,7 +187,7 @@ export function totaux(aliments: Aliment[]): Totaux {
   )
 }
 
-// date locale → « AAAA-MM-JJ » (la clé d'un jour dans le journal)
+// date locale -> "AAAA-MM-JJ" (la clé d'un jour dans le journal)
 export function cleJour(date: Date): string {
   const deux = (n: number) => String(n).padStart(2, '0')
   return `${date.getFullYear()}-${deux(date.getMonth() + 1)}-${deux(date.getDate())}`
