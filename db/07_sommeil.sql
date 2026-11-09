@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS sommeil (
     duree_leger_s            INT       NOT NULL,   -- sommeil léger
     duree_profond_s          INT       NOT NULL,   -- sommeil profond
     duree_paradoxal_s        INT       NOT NULL,   -- sommeil paradoxal (REM)
+    -- jour de la nuit = jour du réveil ("la nuit du 21" quand on se réveille le 21), calculé par la base
+    date_nuit                DATE      GENERATED ALWAYS AS (heure_reveil::date) STORED,
 
     CONSTRAINT sommeil_horaires CHECK (heure_reveil > heure_coucher),
     CONSTRAINT sommeil_durees_positives CHECK (
@@ -27,7 +29,7 @@ CREATE TABLE IF NOT EXISTS sommeil (
         AND duree_eveil_s >= 0 AND duree_leger_s >= 0 AND duree_profond_s >= 0 AND duree_paradoxal_s >= 0),
     CONSTRAINT sommeil_efficacite CHECK (efficacite_sommeil_pct BETWEEN 0 AND 100),
     CONSTRAINT sommeil_fc CHECK (fc_min > 0 AND fc_min <= fc_moyenne AND fc_moyenne <= fc_max),
-    -- une même nuit n'est pas enregistrée deux fois
-    CONSTRAINT sommeil_nuit_unique UNIQUE (utilisateur_id, heure_coucher)
+    -- une seule nuit par jour et par utilisateur
+    CONSTRAINT sommeil_une_nuit_par_jour UNIQUE (utilisateur_id, date_nuit)
 );
 CREATE INDEX IF NOT EXISTS idx_sommeil_user_reveil ON sommeil (utilisateur_id, heure_reveil);

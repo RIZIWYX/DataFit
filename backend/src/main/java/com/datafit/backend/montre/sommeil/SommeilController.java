@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 // Une nuit = une ligne (voir Sommeil). Utilisateur ou nuit inconnus → 404, données invalides → 400,
-// nuit déjà enregistrée ou renvoyée invalide par l'analyse → 409.
+// nuit renvoyée invalide par l'analyse → 409.
 @RestController
 @RequestMapping("/api/sommeil")
 public class SommeilController {
@@ -25,13 +25,14 @@ public class SommeilController {
         this.utilisateurRepo = utilisateurRepo;
     }
 
-    // Analyse une nuit (simulateur puis analyse) et l'enregistre : renvoie la ligne
-    // créée, avec son id (pour pouvoir la supprimer ensuite)
+    // Analyse une nuit (simulateur puis analyse) et l'enregistre.
+    // 201 + la nuit créée ; 200 + la nuit déjà en base si ce jour-là en a déjà une.
     @PostMapping("/{utilisateurId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Sommeil ajouter(@PathVariable Long utilisateurId) {
+    public ResponseEntity<Sommeil> ajouter(@PathVariable Long utilisateurId) {
         Utilisateur user = utilisateurRepo.findById(utilisateurId).orElseThrow();
-        return service.valider(user);
+        SommeilService.NuitSynchronisee resultat = service.valider(user);
+        return ResponseEntity.status(resultat.nouvelle() ? HttpStatus.CREATED : HttpStatus.OK)
+                .body(resultat.nuit());
     }
 
     // Une nuit retirée de l'historique

@@ -50,10 +50,14 @@ public class SommeilService {
         this.archives = archives;
     }
 
+    // Ce que renvoie une synchronisation : la nuit, et si elle vient d'être enregistrée
+    // (false : une nuit existait déjà ce jour-là, c'est elle qui est renvoyée)
+    public record NuitSynchronisee(Sommeil nuit, boolean nouvelle) {}
+
     // Analyse une nuit : simulateur -> analyse -> vérifications -> enregistrement.
-    // Nuit invalide ou déjà enregistrée → IllegalStateException (409 via
-    // ApiExceptionHandler).
-    public Sommeil valider(Utilisateur user) {
+    // Une seule nuit par jour de réveil : si elle existe déjà, la nuit générée n'est pas
+    // enregistrée et on renvoie celle de la base. Nuit invalide → IllegalStateException (409).
+    public NuitSynchronisee valider(Utilisateur user) {
         Profil profil = profilRepo.findById(user.getId())
                 .orElseThrow(() -> new IllegalStateException("L'utilisateur n'a pas de profil."));
 
@@ -85,16 +89,17 @@ public class SommeilService {
                     + erreurs.iterator().next().getMessage());
         }
 
-        // 4. la même nuit (même heure de coucher) n'est pas enregistrée deux fois
-        if (repo.existsByUtilisateurAndHeureCoucher(user, nuit.heureCoucher())) {
-            throw new IllegalStateException("Cette nuit est déjà enregistrée");
+        // 4. une seule nuit par jour de réveil : si elle existe, on ne l'enregistre pas
+        Optional<Sommeil> existante = duJour(user, nuit.heureReveil().toLocalDate());
+        if (existante.isPresent()) {
+            return new NuitSynchronisee(existante.get(), false);
         }
 
         // 5. on enregistre, puis on conserve les mesures et leurs graphiques
         // (annulés avec la transaction si l'enregistrement échoue)
         Sommeil enregistree = repo.save(new Sommeil(user, nuit));
         archives.enregistrer(TYPE, user.getId(), enregistree.getId(), mesures);
-        return enregistree;
+        return new NuitSynchronisee(enregistree, true);
     }
 
     // Sans effet si la nuit n'existe plus (déjà supprimée) ou appartient à un autre
