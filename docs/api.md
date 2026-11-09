@@ -118,6 +118,18 @@ Une ligne par utilisateur et par jour pour chaque discipline.
 
 `{discipline}` vaut `sbd`, `halterofilie`, `streetlifting`, `calisthenics`, `natation`, `souplesse` ou `athletisme`.
 
+### Abonnement premium
+
+Démonstration : aucun paiement réel. Pas de ligne en base = formule gratuite. Les dates et la fin de période sont calculées par le backend.
+
+| Méthode | Adresse | Description |
+|---|---|---|
+| `GET` | `/api/abonnement/{utilisateurId}` | Abonnement en cours, `204` si formule gratuite |
+| `POST` | `/api/abonnement/{utilisateurId}` | Souscrit : `{ periodicite: "mensuel" \| "annuel" }` (`409` si déjà abonné) |
+| `POST` | `/api/abonnement/{utilisateurId}/resilier` | Plus de renouvellement, accès jusqu'à la fin de la période |
+| `POST` | `/api/abonnement/{utilisateurId}/reactiver` | Annule la résiliation tant que la période court |
+| `PUT` | `/api/abonnement/{utilisateurId}/periodicite` | Change la périodicité au prochain renouvellement |
+
 ## Services Python
 
 Appelés **uniquement par le backend**, jamais par le front. Tous deux sont écrits avec FastAPI, qui publie leur documentation interactive sur `/docs`.
