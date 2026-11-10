@@ -91,7 +91,7 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-/* une précision sous les chiffres : les exercices prévus, la suite du programme */
+/* une précision sous les chiffres */
 .carte-seance-detail {
   margin: 0;
   font-size: 0.875rem;

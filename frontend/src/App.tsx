@@ -2,7 +2,6 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-route
 import './styles/App.css'
 import AppLayout from './components/AppLayout.tsx'
 import Cgu from './pages/Cgu.tsx'
-import Chatbot from './pages/Chatbot.tsx'
 import Connexion from './pages/Connexion.tsx'
 import Contact from './pages/Contact.tsx'
 import CreationProfil from './pages/CreationProfil.tsx'
@@ -16,7 +15,6 @@ import Nutrition from './pages/Nutrition.tsx'
 import PageIntrouvable from './pages/PageIntrouvable.tsx'
 import Premium from './pages/Premium.tsx'
 import Profil from './pages/Profil.tsx'
-import Programmation from './pages/Programmation.tsx'
 import Progression from './pages/Progression.tsx'
 import Seance from './pages/Seance.tsx'
 import SeanceCardio from './pages/SeanceCardio.tsx'
@@ -48,7 +46,6 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/performance" element={<Sport />} />
           <Route path="/sport" element={<VersPerformance />} />
-          <Route path="/programmation" element={<Programmation />} />
           <Route path="/montre" element={<Montre />} />
           <Route path="/historique" element={<Historique />} />
           <Route path="/historique/cardio/:id" element={<SeanceCardio />} />
@@ -56,7 +53,6 @@ function App() {
           <Route path="/progression" element={<Progression />} />
           <Route path="/sommeil" element={<Sommeil />} />
           <Route path="/nutrition" element={<Nutrition />} />
-          <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/premium" element={<Premium />} />
           <Route path="/profil" element={<Profil />} />
           {/* toute autre adresse */}

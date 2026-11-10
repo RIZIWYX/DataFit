@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { useSeancesMontre } from './useResultatsMontre.ts'
 import { joursEcoules } from '../lib/activite.ts'
-import { type Categorie, type Entree, entreesHistorique, normaliser, texteRecherche } from '../lib/historique.ts'
-import { chargerPlanning } from '../lib/programmation.ts'
+import { type Categorie, type Entree, entreesHistorique, normaliser, seancesRecentes, texteRecherche } from '../lib/historique.ts'
 
 // nombre de séances affichées d'un coup ; "Afficher plus" en ajoute autant
 const PAR_LOT = 15
@@ -36,11 +35,10 @@ function useHistorique() {
   const [recherche, setRecherche] = useState('')
   const [nbAffichees, setNbAffichees] = useState(PAR_LOT)
   const [aujourdHui] = useState(() => new Date())
-  const [planning] = useState(chargerPlanning)
 
   const mots = normaliser(recherche).split(/\s+/).filter(Boolean)
   // la période et la recherche d'abord : les compteurs des catégories en dépendent
-  const candidates = entreesHistorique(seances, planning)
+  const candidates = entreesHistorique(seancesRecentes(seances))
     .filter((entree) => !nbSemaines || joursEcoules(entree.date, aujourdHui) < nbSemaines * 7)
     .filter((entree) => {
       const texte = texteRecherche(entree)

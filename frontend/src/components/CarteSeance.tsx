@@ -7,11 +7,11 @@ import Icone from './Icone.tsx'
 type Props = {
   surtitre: string // "Dernière séance · Mardi · 18:10"
   titre: string
-  icone: string // tracé de l'icône (sport, ou calendrier pour une séance planifiée)
-  couleur: string // couleur du sport ou du programme, portée par l'icône
+  icone: string // tracé de l'icône (celle du sport)
+  couleur: string // couleur du sport, portée par l'icône
   image?: string // photo de la discipline ; sans photo, la carte garde un fond uni
   mesures: { nom: string; valeur: string }[]
-  children?: ReactNode // un détail en plus : exercices prévus, suite du programme...
+  children?: ReactNode // un détail en plus : un message quand il n'y a pas de séance
   lien: string
   action: string // texte du bouton
 }

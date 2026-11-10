@@ -1,6 +1,6 @@
 // Historique des records (une valeur par exercice et par jour), sert pour la page Progression
 import { cleDuCompte } from './compte.ts'
-import { cleJour } from './programmation.ts'
+import { cleJour } from './dates.ts'
 
 // { exercice : { "2026-10-15" : "102,5" } } ; la valeur est le texte saisi, comme dans Performance
 export type HistoriqueRecords = Record<string, Record<string, string>>
