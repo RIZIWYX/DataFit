@@ -24,7 +24,8 @@ function Indicateur({ nom, valeur, ecart }: Props) {
             <span key={i}>{morceau}</span>
           ) : (
             morceau.trim() && (
-              <span key={i} className="unite">
+              // un tiret entre deux nombres (22 h 47 – 06 h 52) n'est pas une unité
+              <span key={i} className={morceau.trim() === '–' ? 'separateur' : 'unite'}>
                 {morceau.trim()}
               </span>
             )
