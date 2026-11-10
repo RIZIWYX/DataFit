@@ -10,8 +10,9 @@ export function simulerSeance(utilisateurId: IdentifiantUtilisateur, sport: Spor
   return envoyerSeance<{ nom: string }, unknown>(`/api/seances/${sport}`, utilisateurId, 'POST', { nom })
 }
 
-// une nuit : pas de corps, tout vient du simulateur et de l'analyse
-export async function simulerNuit(utilisateurId: IdentifiantUtilisateur): Promise<unknown> {
+// une nuit : pas de corps, tout vient du simulateur et de l'analyse.
+// nouvelle = false quand une nuit existait déjà ce jour-là (le backend répond 200 au lieu de 201)
+export async function simulerNuit(utilisateurId: IdentifiantUtilisateur): Promise<{ nouvelle: boolean }> {
   const reponse = await fetch(`${API_URL}/api/sommeil/${utilisateurId}`, { method: 'POST' })
 
   if (!reponse.ok) {
@@ -19,5 +20,5 @@ export async function simulerNuit(utilisateurId: IdentifiantUtilisateur): Promis
     throw new Error(detail || `Erreur HTTP ${reponse.status}`)
   }
 
-  return reponse.json()
+  return { nouvelle: reponse.status === 201 }
 }

@@ -55,7 +55,7 @@ function useMontre() {
 
     const recues = [
       seance.status === 'fulfilled' && `une séance de ${NOMS_SPORTS[sport]}`,
-      nuit.status === 'fulfilled' && 'une nuit',
+      nuit.status === 'fulfilled' && nuit.value.nouvelle && 'une nuit',
     ].filter(Boolean)
     if (recues.length) {
       // Ne pas attribuer les résultats à un compte changé pendant la requête.

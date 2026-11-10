@@ -17,8 +17,6 @@ public interface SommeilRepository extends JpaRepository<Sommeil, Long> {
     // récente à la plus ancienne
     List<Sommeil> findByUtilisateurOrderByHeureCoucherDesc(Utilisateur utilisateur);
 
-    // Une nuit déjà enregistrée avec la même heure de coucher
-    boolean existsByUtilisateurAndHeureCoucher(Utilisateur utilisateur, LocalDateTime heureCoucher);
 
     // Supprime une nuit seulement si elle appartient à cet utilisateur ; renvoie le
     // nombre de lignes supprimées
