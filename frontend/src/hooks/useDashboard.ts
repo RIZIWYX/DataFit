@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSeancesMontre } from './useResultatsMontre.ts'
 import { bilan, parJour } from '../lib/activite.ts'
+import { seancesRecentes } from '../lib/historique.ts'
 import { lireProfil } from '../lib/profil.ts'
 import { lireResumeRangs } from './useSport.ts'
 
@@ -13,10 +14,8 @@ function useDashboard() {
   // la date du jour est lue une seule fois, à l'ouverture de la page
   const [aujourdHui] = useState(() => new Date())
 
-  // de la plus récente à la plus ancienne. Le service les range déjà dans l'ordre (à date égale,
-  // la séance tout juste synchronisée en dernier) : on inverse, sans retrier par date seule,
-  // sinon deux séances du même jour gardent l'ordre de la plus ancienne en premier.
-  const seances = [...resultats.seances].reverse()
+  // même ordre que la page Historique
+  const seances = seancesRecentes(resultats.seances)
 
   const jours = parJour(seances, 7, aujourdHui)
 
