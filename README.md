@@ -8,7 +8,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)
 [![Licence MIT](https://img.shields.io/badge/licence-MIT-green)](LICENSE)
 
-Application de suivi sportif. DataFit récupère les séances d'une montre connectée (fréquence cardiaque, vitesse, position), les range par sport (course, natation, musculation) et montre au sportif ses progrès : performances, rangs E -> Z par exercice, programmation des séances dans un calendrier, sommeil.
+Application de suivi sportif. DataFit récupère les séances d'une montre connectée (fréquence cardiaque, vitesse, position), les range par sport (course, natation, musculation) et montre au sportif ses progrès : performances, rangs E -> Z par exercice, sommeil, nutrition et abonnement Premium.
 
 ## Architecture
 
@@ -30,7 +30,6 @@ Projet d'équipe de 5 étudiants (informatique et sciences des données).
 | `db/` | le script qui crée les tables PostgreSQL au premier démarrage |
 | `analyse/` | le service d'analyse des séances (Python, FastAPI) |
 | `simulateur/` | le simulateur de montre connectée (Python, FastAPI) |
-| `analyse/notebooks/` | les carnets Jupyter de l'équipe sciences des données |
 | `docs/` | la documentation technique |
 
 ## Lancer le projet
@@ -58,6 +57,18 @@ npm run dev
 ```
 
 Le site est sur http://localhost:5173, rechargé à chaque sauvegarde. Ses appels `/api/...` sont transmis au backend sur le port 8080.
+
+## Version en ligne
+
+| Partie | Hébergement |
+|---|---|
+| site | Vercel |
+| backend | Render |
+| base de données | Neon (PostgreSQL) |
+
+**Le premier chargement peut prendre jusqu'à une minute.** Le backend est sur l'offre gratuite de Render : après une quinzaine de minutes sans visite, il se met en veille, et la visite suivante le réveille. Pendant ce temps, les pages qui appellent l'API (connexion, séances, nutrition...) restent en chargement ou affichent une erreur : il suffit d'attendre un peu et de recharger. Ensuite, tout répond normalement.
+
+La base Neon est mise à jour automatiquement : à chaque merge sur `main` qui modifie `db/`, l'action [Base Neon](.github/workflows/neon.yml) y applique les fichiers `.sql` (seul ce qui manque est ajouté, rien n'est effacé).
 
 ## Pour aller plus loin
 

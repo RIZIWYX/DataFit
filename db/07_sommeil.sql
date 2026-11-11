@@ -33,3 +33,16 @@ CREATE TABLE IF NOT EXISTS sommeil (
     CONSTRAINT sommeil_une_nuit_par_jour UNIQUE (utilisateur_id, date_nuit)
 );
 CREATE INDEX IF NOT EXISTS idx_sommeil_user_reveil ON sommeil (utilisateur_id, heure_reveil);
+
+-- Bases créées avant la règle "une nuit par date" (#17), comme Neon : CREATE TABLE IF NOT EXISTS
+-- ne modifie pas une table existante, on ajoute donc la contrainte si elle manque.
+-- S'il reste des doublons, l'ajout échoue avec un message clair au lieu d'effacer des nuits.
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'sommeil_une_nuit_par_jour') THEN
+        IF EXISTS (SELECT 1 FROM sommeil GROUP BY utilisateur_id, date_nuit HAVING count(*) > 1) THEN
+            RAISE EXCEPTION 'sommeil : plusieurs nuits à la même date pour un utilisateur, à dédoublonner avant d''ajouter la contrainte';
+        END IF;
+        ALTER TABLE sommeil ADD CONSTRAINT sommeil_une_nuit_par_jour UNIQUE (utilisateur_id, date_nuit);
+    END IF;
+END $$;

@@ -1,0 +1,38 @@
+name: Base Neon
+
+# Applique les fichiers db/*.sql sur la base en ligne (Neon) à chaque merge sur main qui touche db/.
+# Les fichiers sont écrits pour pouvoir être rejoués (IF NOT EXISTS, blocs DO) : rien n'est recréé
+# ni effacé, seul ce qui manque est ajouté. Le tout passe en une seule transaction :
+# à la moindre erreur, rien n'est appliqué et l'action échoue.
+# Lancement à la main possible : onglet Actions > Base Neon > Run workflow.
+
+on:
+  push:
+    branches: [main]
+    paths: ['db/**']
+  workflow_dispatch:
+
+# deux merges rapprochés ne lancent pas deux migrations en même temps
+concurrency:
+  group: base-neon
+  cancel-in-progress: false
+
+jobs:
+  migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Appliquer db/*.sql sur Neon
+        env:
+          # adresse de connexion Neon (postgresql://...?sslmode=require), dans Settings > Secrets > Actions
+          NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+          PGOPTIONS: '-c client_min_messages=warning'
+        run: |
+          if [ -z "$NEON_DATABASE_URL" ]; then
+            echo "::error::Secret NEON_DATABASE_URL absent (Settings > Secrets and variables > Actions)"
+            exit 1
+          fi
+          # dans l'ordre des numéros : 01_utilisateur_profil.sql d'abord
+          cat $(ls db/*.sql | sort) | psql "$NEON_DATABASE_URL" -q -v ON_ERROR_STOP=1 --single-transaction
+          echo "Schéma Neon à jour : $(ls db/*.sql | wc -l) fichiers appliqués"
