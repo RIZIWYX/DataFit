@@ -59,6 +59,18 @@ npm run dev
 
 Le site est sur http://localhost:5173, rechargé à chaque sauvegarde. Ses appels `/api/...` sont transmis au backend sur le port 8080.
 
+## Version en ligne
+
+| Partie | Hébergement |
+|---|---|
+| site | Vercel |
+| backend | Render |
+| base de données | Neon (PostgreSQL) |
+
+**Le premier chargement peut prendre jusqu'à une minute.** Le backend est sur l'offre gratuite de Render : après une quinzaine de minutes sans visite, il se met en veille, et la visite suivante le réveille. Pendant ce temps, les pages qui appellent l'API (connexion, séances, nutrition...) restent en chargement ou affichent une erreur : il suffit d'attendre un peu et de recharger. Ensuite, tout répond normalement.
+
+La base Neon est mise à jour automatiquement : à chaque merge sur `main` qui modifie `db/`, l'action [Base Neon](.github/workflows/neon.yml) y applique les fichiers `.sql` (seul ce qui manque est ajouté, rien n'est effacé).
+
 ## Pour aller plus loin
 
 - [Architecture](docs/architecture.md), [API](docs/api.md), [Base de données](docs/base-de-donnees.md), [Sécurité](docs/securite.md), [Conventions Git](docs/conventions.md)
