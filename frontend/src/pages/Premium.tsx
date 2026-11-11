@@ -30,6 +30,11 @@ function Premium() {
   const economie = economieAnnuelle(PREMIUM)
   const fermer = () => setConfirmation(false)
 
+  // une erreur (paiement indisponible...) ferme la fenêtre de confirmation pour rester visible
+  useEffect(() => {
+    if (erreur) setConfirmation(false)
+  }, [erreur])
+
   // une fois l'abonnement chargé, le sélecteur montre sa périodicité
   useEffect(() => {
     if (abonnement) setPeriodicite(abonnement.periodicite)

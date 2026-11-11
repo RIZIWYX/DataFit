@@ -66,6 +66,7 @@
   padding: 0;
   list-style: none;
   flex: 1;
+  align-content: start; /* la liste s'étire pour aligner les boutons, pas ses lignes */
 }
 .premium-avantages li {
   display: flex;
@@ -127,8 +128,14 @@
   background: var(--noir-1);
   color: var(--gris);
 }
+.alerte.premium-info .icone {
+  color: var(--turquoise);
+}
 .alerte.premium-succes {
   border-color: rgb(62 207 142 / 0.45);
   background: rgb(62 207 142 / 0.1);
+  color: var(--vert);
+}
+.alerte.premium-succes .icone {
   color: var(--vert);
 }
