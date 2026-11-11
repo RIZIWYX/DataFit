@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router'
 import '../styles/premium.css'
 import EtatVide from '../components/EtatVide.tsx'
 import Fenetre from '../components/Fenetre.tsx'
@@ -16,26 +17,25 @@ const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
 const unite = (p: Periodicite) => (p === 'mensuel' ? '/ mois' : '/ an')
 
-type Confirmation = 'souscrire' | 'resilier' | null
-
-// Page de l'abonnement premium : choix mensuel / annuel, souscription et résiliation.
-// Démonstration : aucun paiement n'est effectué ; l'état est gardé par le backend (/api/abonnement).
+// Page de l'abonnement premium : choix mensuel / annuel, paiement et gestion sur les pages de Stripe.
+// L'abonnement affiché vient du backend, lui-même tenu à jour par le webhook Stripe.
 function Premium() {
-  const {
-    connecte, abonnement, chargement, enCours, erreur, recharger,
-    souscrire, resilier, reactiver, changerPeriodicite,
-  } = useAbonnement()
+  // retour de Stripe : /premium?paiement=reussi ou /premium?paiement=annule
+  const [parametres] = useSearchParams()
+  const retour = parametres.get('paiement')
+  const { connecte, abonnement, chargement, enCours, activation, erreur, recharger, payer, gerer } =
+    useAbonnement(retour === 'reussi')
   const [periodicite, setPeriodicite] = useState<Periodicite>('annuel')
-  const [confirmation, setConfirmation] = useState<Confirmation>(null)
+  const [confirmation, setConfirmation] = useState(false)
   const economie = economieAnnuelle(PREMIUM)
-  const fermer = () => setConfirmation(null)
+  const fermer = () => setConfirmation(false)
 
   // une fois l'abonnement chargé, le sélecteur montre sa périodicité
   useEffect(() => {
     if (abonnement) setPeriodicite(abonnement.periodicite)
   }, [abonnement])
 
-  if (!connecte || (chargement && !abonnement)) {
+  if (!connecte || (chargement && !abonnement && !activation)) {
     return (
       <div className="ecran premium">
         <TitrePage surtitre="Services" titre="Premium" />
@@ -55,10 +55,26 @@ function Premium() {
         Débloquez toute l'analyse de vos performances. Sans engagement, résiliable en un clic.
       </TitrePage>
 
-      <p className="alerte premium-demo" role="note">
+      <p className="alerte premium-info premium-demo" role="note">
         <Icone trace={ICONES.info} />
-        Mode démonstration : aucun paiement n'est réellement effectué.
+        Paiement en mode test Stripe : utilisez la carte 4242 4242 4242 4242, une date future et n'importe quel code.
       </p>
+
+      {retour === 'reussi' && (activation ? (
+        <p className="alerte premium-info" role="status">Paiement reçu, activation de votre abonnement...</p>
+      ) : abonnement ? (
+        <p className="alerte premium-succes" role="status">
+          <Icone trace={ICONES.valide} />Bienvenue dans Premium : votre abonnement est actif.
+        </p>
+      ) : (
+        <p className="alerte" role="alert">
+          Paiement reçu, mais l'abonnement n'est pas encore activé. Réessayez dans un instant.{' '}
+          <button type="button" className="bouton fantome petit" onClick={recharger}>Actualiser</button>
+        </p>
+      ))}
+      {retour === 'annule' && !abonnement && (
+        <p className="alerte premium-info" role="status">Paiement annulé : aucun montant n'a été prélevé.</p>
+      )}
 
       {erreur && (
         <p className="alerte" role="alert">
@@ -90,30 +106,25 @@ function Premium() {
               <dd>{formatDate(abonnement.renouvellement)}</dd>
             </div>
           </dl>
-          {abonnement.resilie ? (
-            <div className="premium-actions">
+          <div className="premium-actions">
+            {abonnement.resilie && (
               <p className="premium-note">
                 Votre abonnement ne sera pas renouvelé. Vous gardez l'accès Premium jusqu'au{' '}
                 {formatDate(abonnement.renouvellement)}.
               </p>
-              <button type="button" className="bouton" disabled={enCours} onClick={reactiver}>Réactiver l'abonnement</button>
-            </div>
-          ) : (
-            <div className="premium-actions">
-              <button
-                type="button"
-                className="bouton fantome"
-                disabled={enCours}
-                onClick={() => changerPeriodicite(abonnement.periodicite === 'mensuel' ? 'annuel' : 'mensuel')}
-              >
-                Passer en {abonnement.periodicite === 'mensuel' ? 'annuel' : 'mensuel'} au prochain renouvellement
-              </button>
-              <button type="button" className="bouton contour premium-resilier" disabled={enCours}
-                onClick={() => setConfirmation('resilier')}>
+            )}
+            <button type="button" className="bouton" disabled={enCours} onClick={gerer}>
+              {abonnement.resilie ? 'Réactiver l\'abonnement' : 'Gérer mon abonnement'}
+            </button>
+            {!abonnement.resilie && (
+              <button type="button" className="bouton contour premium-resilier" disabled={enCours} onClick={gerer}>
                 Résilier l'abonnement
               </button>
-            </div>
-          )}
+            )}
+            <p className="premium-note">
+              Changement de formule, de carte, résiliation et factures se font sur l'espace sécurisé de Stripe.
+            </p>
+          </div>
         </Panneau>
       )}
 
@@ -156,7 +167,7 @@ function Premium() {
               {actuelle ? (
                 <button type="button" className="bouton secondaire" disabled>Formule actuelle</button>
               ) : estPremium ? (
-                <button type="button" className="bouton" disabled={enCours} onClick={() => setConfirmation('souscrire')}>
+                <button type="button" className="bouton" disabled={enCours} onClick={() => setConfirmation(true)}>
                   S'abonner
                 </button>
               ) : null}
@@ -166,15 +177,14 @@ function Premium() {
       </div>
 
       <Fenetre
-        ouverte={confirmation === 'souscrire'}
+        ouverte={confirmation}
         titre="Confirmer l'abonnement"
         onFermer={fermer}
         pied={
           <>
             <button type="button" className="bouton fantome" onClick={fermer}>Annuler</button>
-            <button type="button" className="bouton" disabled={enCours}
-              onClick={async () => { await souscrire(periodicite); fermer() }}>
-              Payer {formatPrix(PREMIUM.prix[periodicite])} (simulation)
+            <button type="button" className="bouton" disabled={enCours} onClick={() => payer(periodicite)}>
+              {enCours ? 'Redirection...' : `Payer ${formatPrix(PREMIUM.prix[periodicite])}`}
             </button>
           </>
         }
@@ -184,30 +194,9 @@ function Premium() {
           Renouvellement automatique, résiliable à tout moment.
         </p>
         <p className="premium-note">
-          Dans la version finale, ce bouton redirigera vers la page de paiement sécurisée du prestataire.
+          Vous allez être redirigé vers la page de paiement sécurisée de Stripe : DataFit ne voit jamais
+          votre numéro de carte.
         </p>
-      </Fenetre>
-
-      <Fenetre
-        ouverte={confirmation === 'resilier'}
-        titre="Résilier l'abonnement ?"
-        onFermer={fermer}
-        pied={
-          <>
-            <button type="button" className="bouton fantome" onClick={fermer}>Garder Premium</button>
-            <button type="button" className="bouton contour premium-resilier" disabled={enCours}
-              onClick={async () => { await resilier(); fermer() }}>
-              Confirmer la résiliation
-            </button>
-          </>
-        }
-      >
-        {abonnement && (
-          <p>
-            Vous ne serez plus prélevé. Vous gardez l'accès Premium jusqu'au{' '}
-            <strong>{formatDate(abonnement.renouvellement)}</strong>, puis votre compte repassera en formule gratuite.
-          </p>
-        )}
       </Fenetre>
     </div>
   )

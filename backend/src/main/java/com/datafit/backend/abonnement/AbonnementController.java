@@ -9,13 +9,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-// L'abonnement premium d'un compte (page Premium). Démonstration : aucun paiement réel.
-//   GET  /api/abonnement/{utilisateurId}              -> l'abonnement, ou 204 si formule gratuite
-//   POST /api/abonnement/{utilisateurId}              -> { periodicite } ; souscrit (409 si déjà abonné)
-//   POST /api/abonnement/{utilisateurId}/resilier     -> plus de renouvellement, accès jusqu'à la fin de période
-//   POST /api/abonnement/{utilisateurId}/reactiver    -> annule la résiliation tant que la période court
-//   PUT  /api/abonnement/{utilisateurId}/periodicite  -> { periodicite } ; s'applique au prochain renouvellement
-// Le contrôleur ne fait que traduire HTTP <-> service : les règles sont dans AbonnementService.
+// L'abonnement premium d'un compte (page Premium), payé via Stripe.
+//   GET  /api/abonnement/{utilisateurId}           -> l'abonnement, ou 204 si formule gratuite
+//   POST /api/abonnement/{utilisateurId}/paiement  -> { periodicite } ; renvoie { url } de la page de paiement Stripe
+//   POST /api/abonnement/{utilisateurId}/portail   -> renvoie { url } du portail Stripe (gérer, résilier, réactiver)
+// L'abonnement lui-même n'est jamais créé ici : c'est le webhook Stripe qui le fait (StripeWebhookController).
 @RestController
 @RequestMapping("/api/abonnement")
 public class AbonnementController {
@@ -33,38 +31,32 @@ public class AbonnementController {
             .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
-    @PostMapping("/{utilisateurId}")
-    public ResponseEntity<?> souscrire(
+    @PostMapping("/{utilisateurId}/paiement")
+    public ResponseEntity<?> paiement(
             @PathVariable Long utilisateurId,
             @Valid @RequestBody AbonnementRequest request) {
-        return repondre(HttpStatus.CREATED, () -> abonnementService.souscrire(utilisateurId, request.periodicite()));
+        return redirection(() -> abonnementService.paiement(utilisateurId, request.periodicite()));
     }
 
-    @PostMapping("/{utilisateurId}/resilier")
-    public ResponseEntity<?> resilier(@PathVariable Long utilisateurId) {
-        return repondre(HttpStatus.OK, () -> abonnementService.resilier(utilisateurId));
+    @PostMapping("/{utilisateurId}/portail")
+    public ResponseEntity<?> portail(@PathVariable Long utilisateurId) {
+        return redirection(() -> abonnementService.portail(utilisateurId));
     }
 
-    @PostMapping("/{utilisateurId}/reactiver")
-    public ResponseEntity<?> reactiver(@PathVariable Long utilisateurId) {
-        return repondre(HttpStatus.OK, () -> abonnementService.reactiver(utilisateurId));
-    }
-
-    @PutMapping("/{utilisateurId}/periodicite")
-    public ResponseEntity<?> changerPeriodicite(
-            @PathVariable Long utilisateurId,
-            @Valid @RequestBody AbonnementRequest request) {
-        return repondre(HttpStatus.OK, () -> abonnementService.changerPeriodicite(utilisateurId, request.periodicite()));
-    }
-
-    // exécute l'action du service et renvoie l'abonnement, ou { error } avec le bon code
-    private ResponseEntity<?> repondre(HttpStatus succes, Supplier<Abonnement> action) {
+    // renvoie { url } vers Stripe, ou { error } avec le bon code
+    private ResponseEntity<?> redirection(Supplier<String> action) {
         try {
-            return ResponseEntity.status(succes).body(AbonnementResponse.depuis(action.get()));
+            return ResponseEntity.ok(Map.of("url", action.get()));
         } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return erreur(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage()));
+            return erreur(HttpStatus.CONFLICT, e.getMessage());
+        } catch (PaiementIndisponibleException e) {
+            return erreur(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
         }
+    }
+
+    private static ResponseEntity<Map<String, String>> erreur(HttpStatus statut, String message) {
+        return ResponseEntity.status(statut).body(Map.of("error", message));
     }
 }

@@ -122,3 +122,13 @@
     grid-template-columns: 1fr;
   }
 }
+.alerte.premium-info {
+  border-color: var(--trait-fort);
+  background: var(--noir-1);
+  color: var(--gris);
+}
+.alerte.premium-succes {
+  border-color: rgb(62 207 142 / 0.45);
+  background: rgb(62 207 142 / 0.1);
+  color: var(--vert);
+}

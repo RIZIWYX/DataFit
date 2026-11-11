@@ -10,9 +10,11 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-// Règles de l'abonnement, testées sans base ni serveur (dépôts simulés par Mockito)
+// Règles de l'abonnement, testées sans base, sans serveur et sans Stripe (tout est simulé par Mockito)
 class AbonnementServiceTest {
 
     private static final Long ID = 1L;
@@ -20,25 +22,27 @@ class AbonnementServiceTest {
 
     private AbonnementRepository abonnements;
     private UtilisateurRepository utilisateurs;
+    private StripeService stripe;
     private AbonnementService service;
 
     @BeforeEach
     void preparer() {
         abonnements = mock(AbonnementRepository.class);
         utilisateurs = mock(UtilisateurRepository.class);
-        service = new AbonnementService(abonnements, utilisateurs);
+        stripe = mock(StripeService.class);
+        service = new AbonnementService(abonnements, utilisateurs, stripe);
     }
 
-    private Abonnement abonnement(String periodicite, LocalDateTime debut) {
-        Abonnement abo = new Abonnement(mock(Utilisateur.class), periodicite, debut);
+    private static EtatStripe etat(String periodicite, LocalDateTime fin, boolean resilie, boolean actif) {
+        return new EtatStripe("sub_1", "cus_1", periodicite, fin, resilie, actif);
+    }
+
+    private Abonnement abonnement(LocalDateTime fin, boolean resilie) {
+        Abonnement abo = new Abonnement(mock(Utilisateur.class), "cus_1", "sub_1",
+            MAINTENANT.minusMonths(1), etat("mensuel", fin, resilie, true));
         when(abonnements.findById(ID)).thenReturn(Optional.of(abo));
+        when(abonnements.findByStripeSubscriptionId("sub_1")).thenReturn(Optional.of(abo));
         return abo;
-    }
-
-    @Test
-    void finDePeriodeMensuelleEtAnnuelle() {
-        assertEquals(MAINTENANT.plusMonths(1), Abonnement.finDePeriode(MAINTENANT, "mensuel"));
-        assertEquals(MAINTENANT.plusYears(1), Abonnement.finDePeriode(MAINTENANT, "annuel"));
     }
 
     @Test
@@ -48,30 +52,17 @@ class AbonnementServiceTest {
     }
 
     @Test
-    void periodeEnCoursRienNeChange() {
-        Abonnement abo = abonnement("mensuel", MAINTENANT.minusDays(10));
-        LocalDateTime fin = abo.getRenouvellement();
+    void periodeFinieNonResilieeNestJamaisRenouveleeSansStripe() {
+        Abonnement abo = abonnement(MAINTENANT.minusDays(1), false);
 
         assertSame(abo, service.aJour(ID, MAINTENANT).orElseThrow());
-        assertEquals(fin, abo.getRenouvellement());
-    }
-
-    @Test
-    void periodeFinieNonResilieeSeRenouvelle() {
-        // commencé il y a 3 mois et demi : renouvelé jusqu'au mois suivant
-        Abonnement abo = abonnement("mensuel", MAINTENANT.minusMonths(3).minusDays(15));
-
-        service.aJour(ID, MAINTENANT);
-
-        assertTrue(abo.getRenouvellement().isAfter(MAINTENANT));
-        assertFalse(abo.getRenouvellement().isAfter(MAINTENANT.plusMonths(1)));
+        assertEquals(MAINTENANT.minusDays(1), abo.getRenouvellement());
         verify(abonnements, never()).delete(any());
     }
 
     @Test
     void periodeFinieEtResilieeRepasseEnGratuit() {
-        Abonnement abo = abonnement("mensuel", MAINTENANT.minusMonths(2));
-        abo.resilier();
+        Abonnement abo = abonnement(MAINTENANT.minusDays(1), true);
 
         assertTrue(service.aJour(ID, MAINTENANT).isEmpty());
         verify(abonnements).delete(abo);
@@ -79,24 +70,74 @@ class AbonnementServiceTest {
 
     @Test
     void resilieMaisPeriodeEnCoursGardeLAcces() {
-        Abonnement abo = abonnement("annuel", MAINTENANT.minusMonths(2));
-        abo.resilier();
+        abonnement(MAINTENANT.plusDays(10), true);
 
         assertTrue(service.aJour(ID, MAINTENANT).isPresent());
         verify(abonnements, never()).delete(any());
     }
 
     @Test
-    void onNePeutPasSabonnerDeuxFois() {
-        when(utilisateurs.findById(ID)).thenReturn(Optional.of(mock(Utilisateur.class)));
-        abonnement("mensuel", LocalDateTime.now().minusDays(1));
+    void paiementDemandeAvecLePrixChoisiCoteServeur() {
+        Utilisateur utilisateur = mock(Utilisateur.class);
+        when(utilisateur.getEmail()).thenReturn("a@b.fr");
+        when(utilisateurs.findById(ID)).thenReturn(Optional.of(utilisateur));
+        when(abonnements.findById(ID)).thenReturn(Optional.empty());
+        when(stripe.creerPagePaiement(ID, "a@b.fr", "annuel")).thenReturn("https://checkout.stripe.com/x");
 
-        assertThrows(IllegalStateException.class, () -> service.souscrire(ID, "annuel"));
+        assertEquals("https://checkout.stripe.com/x", service.paiement(ID, "annuel"));
     }
 
     @Test
-    void resilierSansAbonnementEstRefuse() {
+    void onNePeutPasPayerDeuxFois() {
+        when(utilisateurs.findById(ID)).thenReturn(Optional.of(mock(Utilisateur.class)));
+        abonnement(LocalDateTime.now().plusDays(10), false);
+
+        assertThrows(IllegalStateException.class, () -> service.paiement(ID, "annuel"));
+        verify(stripe, never()).creerPagePaiement(any(), anyString(), anyString());
+    }
+
+    @Test
+    void portailSansAbonnementEstRefuse() {
         when(abonnements.findById(ID)).thenReturn(Optional.empty());
-        assertThrows(NoSuchElementException.class, () -> service.resilier(ID));
+        assertThrows(NoSuchElementException.class, () -> service.portail(ID));
+    }
+
+    @Test
+    void paiementValideCreeLAbonnement() {
+        when(utilisateurs.findById(ID)).thenReturn(Optional.of(mock(Utilisateur.class)));
+        when(abonnements.findById(ID)).thenReturn(Optional.empty());
+
+        service.paiementValide(ID, etat("annuel", MAINTENANT.plusYears(1), false, true));
+
+        verify(abonnements).save(any(Abonnement.class));
+    }
+
+    @Test
+    void paiementValideRecuDeuxFoisNeCreePasDeDoublon() {
+        Abonnement abo = abonnement(MAINTENANT.plusMonths(1), false);
+        when(utilisateurs.findById(ID)).thenReturn(Optional.of(mock(Utilisateur.class)));
+
+        service.paiementValide(ID, etat("annuel", MAINTENANT.plusYears(1), false, true));
+
+        verify(abonnements, never()).save(any());
+        assertEquals("annuel", abo.getPeriodicite());
+    }
+
+    @Test
+    void resiliationDansLePortailEstRecopiee() {
+        Abonnement abo = abonnement(MAINTENANT.plusMonths(1), false);
+
+        service.synchroniser(etat("mensuel", MAINTENANT.plusMonths(1), true, true));
+
+        assertTrue(abo.isResilie());
+    }
+
+    @Test
+    void abonnementTermineChezStripeRepasseEnGratuit() {
+        Abonnement abo = abonnement(MAINTENANT.plusMonths(1), true);
+
+        service.synchroniser(etat("mensuel", MAINTENANT, true, false));
+
+        verify(abonnements).delete(abo);
     }
 }

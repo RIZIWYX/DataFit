@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 // Une ligne de la table "abonnement" (voir db/10_abonnement.sql) : l'abonnement premium d'un compte.
-// Pas de ligne = formule gratuite. Démonstration : aucun paiement réel.
+// Pas de ligne = formule gratuite. Créée et mise à jour uniquement à partir des événements Stripe.
 @Entity
 @Table(name = "abonnement")
 public class Abonnement {
@@ -38,46 +38,35 @@ public class Abonnement {
     @Column(name = "resilie", nullable = false)
     private boolean resilie;
 
+    @Column(name = "stripe_customer_id")
+    private String stripeCustomerId;
+
+    @Column(name = "stripe_subscription_id", unique = true)
+    private String stripeSubscriptionId;
+
     protected Abonnement() {
         // Constructeur par défaut requis par JPA
     }
 
-    public Abonnement(Utilisateur utilisateur, String periodicite, LocalDateTime debut) {
+    public Abonnement(Utilisateur utilisateur, String stripeCustomerId, String stripeSubscriptionId,
+            LocalDateTime debut, EtatStripe etat) {
         this.utilisateur = utilisateur;
-        this.periodicite = periodicite;
+        this.stripeCustomerId = stripeCustomerId;
+        this.stripeSubscriptionId = stripeSubscriptionId;
         this.debut = debut;
-        this.renouvellement = finDePeriode(debut, periodicite);
-        this.resilie = false;
+        synchroniser(etat);
     }
 
-    public static LocalDateTime finDePeriode(LocalDateTime depart, String periodicite) {
-        return "annuel".equals(periodicite) ? depart.plusYears(1) : depart.plusMonths(1);
+    // recopie ce que Stripe dit de l'abonnement (périodicité, fin de période, résiliation)
+    public void synchroniser(EtatStripe etat) {
+        this.periodicite = etat.periodicite();
+        this.renouvellement = etat.finDePeriode();
+        this.resilie = etat.resilie();
     }
 
     // la période payée est-elle terminée ?
     public boolean estEchu(LocalDateTime maintenant) {
         return !renouvellement.isAfter(maintenant);
-    }
-
-    // renouvellement automatique : avance la fin de période jusqu'après "maintenant"
-    // (en vrai, chaque renouvellement sera confirmé par le webhook de paiement)
-    public void renouveler(LocalDateTime maintenant) {
-        while (estEchu(maintenant)) {
-            renouvellement = finDePeriode(renouvellement, periodicite);
-        }
-    }
-
-    public void resilier() {
-        this.resilie = true;
-    }
-
-    public void reactiver() {
-        this.resilie = false;
-    }
-
-    // la nouvelle périodicité s'applique au prochain renouvellement
-    public void changerPeriodicite(String periodicite) {
-        this.periodicite = periodicite;
     }
 
     public Long getUtilisateurId() {
@@ -102,5 +91,13 @@ public class Abonnement {
 
     public boolean isResilie() {
         return resilie;
+    }
+
+    public String getStripeCustomerId() {
+        return stripeCustomerId;
+    }
+
+    public String getStripeSubscriptionId() {
+        return stripeSubscriptionId;
     }
 }

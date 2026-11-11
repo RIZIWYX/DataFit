@@ -3,42 +3,59 @@ import { lireCompte } from '../lib/compte.ts'
 import type { Abonnement, Periodicite } from '../lib/abonnement.ts'
 import * as service from '../services/abonnementService.ts'
 
-// état de l'abonnement du compte connecté, lu et modifié via le backend (aucun paiement réel)
-function useAbonnement() {
+// au retour de Stripe, le webhook peut arriver quelques secondes après : on relit plusieurs fois
+const ESSAIS_APRES_PAIEMENT = 8
+const DELAI_ESSAI_MS = 2000
+
+// état de l'abonnement du compte connecté (lu sur le backend) et redirections vers Stripe
+function useAbonnement(retourPaiement: boolean) {
   const compte = lireCompte()
   const [abonnement, setAbonnement] = useState<Abonnement | null>(null)
   const [chargement, setChargement] = useState(compte !== null)
-  const [enCours, setEnCours] = useState(false) // une action est en cours d'envoi
+  const [enCours, setEnCours] = useState(false) // redirection vers Stripe en préparation
+  const [activation, setActivation] = useState(retourPaiement) // paiement fait, abonnement pas encore reçu
   const [erreur, setErreur] = useState<string | null>(null)
   const id = compte?.id
 
   const recharger = useCallback(async () => {
-    if (id === undefined) return
+    if (id === undefined) return null
     setChargement(true)
     setErreur(null)
     try {
-      setAbonnement(await service.lireAbonnement(id))
+      const lu = await service.lireAbonnement(id)
+      setAbonnement(lu)
+      return lu
     } catch (e) {
       setErreur(e instanceof Error ? e.message : 'Chargement impossible.')
+      return null
     } finally {
       setChargement(false)
     }
   }, [id])
 
   useEffect(() => {
-    void recharger()
-  }, [recharger])
+    let annule = false
+    void (async () => {
+      let lu = await recharger()
+      // retour de Stripe : on attend que le webhook ait enregistré l'abonnement
+      for (let essai = 1; retourPaiement && !lu && !annule && essai < ESSAIS_APRES_PAIEMENT; essai++) {
+        await new Promise((fin) => setTimeout(fin, DELAI_ESSAI_MS))
+        if (!annule) lu = await recharger()
+      }
+      if (!annule) setActivation(false)
+    })()
+    return () => { annule = true }
+  }, [recharger, retourPaiement])
 
-  // envoie une action puis affiche l'état renvoyé par le backend
-  const agir = async (action: (id: number) => Promise<Abonnement | null>) => {
+  // demande l'adresse Stripe au backend puis quitte le site pour y aller
+  const allerSur = async (demande: (id: number) => Promise<string>) => {
     if (id === undefined) return
     setEnCours(true)
     setErreur(null)
     try {
-      setAbonnement(await action(id))
+      window.location.assign(await demande(id))
     } catch (e) {
-      setErreur(e instanceof Error ? e.message : 'Action impossible.')
-    } finally {
+      setErreur(e instanceof Error ? e.message : 'Paiement indisponible.')
       setEnCours(false)
     }
   }
@@ -48,12 +65,11 @@ function useAbonnement() {
     abonnement,
     chargement,
     enCours,
+    activation,
     erreur,
     recharger,
-    souscrire: (p: Periodicite) => agir((i) => service.souscrire(i, p)),
-    resilier: () => agir(service.resilier),
-    reactiver: () => agir(service.reactiver),
-    changerPeriodicite: (p: Periodicite) => agir((i) => service.changerPeriodicite(i, p)),
+    payer: (p: Periodicite) => allerSur((i) => service.demanderPaiement(i, p)),
+    gerer: () => allerSur(service.demanderPortail),
   }
 }
 

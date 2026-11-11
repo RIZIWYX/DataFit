@@ -118,17 +118,16 @@ Une ligne par utilisateur et par jour pour chaque discipline.
 
 `{discipline}` vaut `sbd`, `halterofilie`, `streetlifting`, `calisthenics`, `natation`, `souplesse` ou `athletisme`.
 
-### Abonnement premium
+### Abonnement premium (Stripe)
 
-Démonstration : aucun paiement réel. Pas de ligne en base = formule gratuite. Les dates et la fin de période sont calculées par le backend.
+Paiement par Stripe, en mode test. Pas de ligne en base = formule gratuite. L'abonnement n'est créé, renouvelé ou supprimé que par le webhook, après vérification de la signature Stripe : le navigateur ne peut jamais s'activer Premium lui-même.
 
 | Méthode | Adresse | Description |
 |---|---|---|
 | `GET` | `/api/abonnement/{utilisateurId}` | Abonnement en cours, `204` si formule gratuite |
-| `POST` | `/api/abonnement/{utilisateurId}` | Souscrit : `{ periodicite: "mensuel" \| "annuel" }` (`409` si déjà abonné) |
-| `POST` | `/api/abonnement/{utilisateurId}/resilier` | Plus de renouvellement, accès jusqu'à la fin de la période |
-| `POST` | `/api/abonnement/{utilisateurId}/reactiver` | Annule la résiliation tant que la période court |
-| `PUT` | `/api/abonnement/{utilisateurId}/periodicite` | Change la périodicité au prochain renouvellement |
+| `POST` | `/api/abonnement/{utilisateurId}/paiement` | `{ periodicite: "mensuel" \| "annuel" }` ; renvoie `{ url }` de la page de paiement Stripe (`409` si déjà abonné, `503` si Stripe n'est pas configuré) |
+| `POST` | `/api/abonnement/{utilisateurId}/portail` | Renvoie `{ url }` du portail Stripe : changer de formule ou de carte, résilier, réactiver |
+| `POST` | `/api/stripe/webhook` | Appelé par Stripe uniquement (en-tête `Stripe-Signature`) : `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted` |
 
 ## Services Python
 

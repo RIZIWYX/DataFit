@@ -1,5 +1,7 @@
 // Abonnement premium : formules, prix affichés et types. L'état de l'abonnement vient du backend
-// (/api/abonnement, voir services/abonnementService.ts) ; démonstration, sans vrai paiement.
+// (/api/abonnement, voir services/abonnementService.ts).
+// Les prix ci-dessous sont affichés seulement : le montant payé est celui des prix créés dans Stripe
+// (mêmes valeurs à garder des deux côtés).
 
 export type Periodicite = 'mensuel' | 'annuel'
 

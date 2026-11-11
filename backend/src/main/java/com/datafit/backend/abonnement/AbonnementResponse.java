@@ -2,7 +2,7 @@ package com.datafit.backend.abonnement;
 
 import java.time.LocalDateTime;
 
-// Ce que l'API renvoie : l'abonnement sans l'entité JPA (ni l'utilisateur lié)
+// Ce que l'API renvoie : l'abonnement sans l'entité JPA ni les identifiants Stripe
 public record AbonnementResponse(
     String formule,
     String periodicite,
