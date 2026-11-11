@@ -33,3 +33,27 @@ CREATE TABLE IF NOT EXISTS sommeil (
     CONSTRAINT sommeil_une_nuit_par_jour UNIQUE (utilisateur_id, date_nuit)
 );
 CREATE INDEX IF NOT EXISTS idx_sommeil_user_reveil ON sommeil (utilisateur_id, heure_reveil);
+
+-- Bases créées avant la règle « une seule nuit par jour » (CREATE TABLE IF NOT EXISTS ne modifie
+-- pas une table existante) : on leur ajoute date_nuit et la nouvelle contrainte ici.
+-- Relancé à chaque ./lancer.sh : sans effet sur une base neuve ou déjà mise à jour.
+ALTER TABLE sommeil ADD COLUMN IF NOT EXISTS
+    date_nuit DATE GENERATED ALWAYS AS (heure_reveil::date) STORED;
+-- l'ancienne règle (une nuit par heure de coucher) est remplacée par celle-ci
+ALTER TABLE sommeil DROP CONSTRAINT IF EXISTS sommeil_nuit_unique;
+-- avant d'ajouter la contrainte : s'il y a déjà plusieurs nuits le même jour, on garde celle que
+-- l'appli affiche (le réveil le plus tard, comme SommeilService.duJour) et on supprime les autres
+DELETE FROM sommeil s
+USING sommeil autre
+WHERE autre.utilisateur_id = s.utilisateur_id
+  AND autre.date_nuit = s.date_nuit
+  AND (autre.heure_reveil > s.heure_reveil
+       OR (autre.heure_reveil = s.heure_reveil AND autre.id > s.id));
+-- PostgreSQL n'a pas de ADD CONSTRAINT IF NOT EXISTS : on vérifie d'abord qu'elle n'existe pas
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint
+                   WHERE conrelid = 'sommeil'::regclass AND conname = 'sommeil_une_nuit_par_jour') THEN
+        ALTER TABLE sommeil ADD CONSTRAINT sommeil_une_nuit_par_jour UNIQUE (utilisateur_id, date_nuit);
+    END IF;
+END $$;

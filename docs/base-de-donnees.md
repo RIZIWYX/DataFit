@@ -102,6 +102,7 @@ Quelques choix expliqués :
 - **`JSONB` pour une partie de l'analyse nutritionnelle** : les statistiques détaillées évoluent avec le travail de l'équipe SD ; les garder en JSON évite de modifier la table à chaque nouvel indicateur.
 - **`ON DELETE CASCADE` partout** : supprimer un compte supprime toutes ses données, ce qui répond au droit à l'effacement du RGPD.
 - **Contraintes `CHECK` sur le sommeil** : réveil après le coucher, durées positives, efficacité entre 0 et 100 %, FC cohérente. La base refuse une donnée incohérente même si le code a un bug.
+- **Une seule nuit par jour et par utilisateur** : `date_nuit` (le jour du réveil) est calculée par la base, et `UNIQUE (utilisateur_id, date_nuit)` refuse une deuxième nuit le même jour, même si deux synchronisations arrivent en même temps.
 
 ## Conventions de nommage
 
