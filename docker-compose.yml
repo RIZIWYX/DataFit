@@ -46,6 +46,12 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      # Paiement Stripe (mode test), voir .env.example
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_PRIX_MENSUEL: ${STRIPE_PRIX_MENSUEL:-}
+      STRIPE_PRIX_ANNUEL: ${STRIPE_PRIX_ANNUEL:-}
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
       # Services Python SD
       SIMULATEUR_URL: http://simulateur:8000
       ANALYSE_URL: http://analyse:8001

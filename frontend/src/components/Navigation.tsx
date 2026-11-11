@@ -34,6 +34,10 @@ const GROUPES: { titre?: string; pages: Page[] }[] = [
       { to: '/montre', nom: 'Montre', icone: ICONES.montre },
     ],
   },
+  {
+    titre: 'Services',
+    pages: [{ to: '/premium', nom: 'Premium', icone: ICONES.premium }],
+  },
 ]
 
 // Sur téléphone : quatre onglets en bas de l'écran, le reste derrière "Plus".
