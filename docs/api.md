@@ -69,6 +69,7 @@ Liste tirée du code (`backend/src/main/java/com/datafit/backend/`). `{utilisate
 | `POST` | `/api/auth/login` | Vérifie les identifiants, renvoie `{ id, email }` |
 | `POST` | `/api/profil/register/profil` | Crée le profil (nom, sexe, poids, taille, objectif, niveau, activité, date de naissance) |
 | `POST` | `/api/compte/{utilisateurId}/suppression` | Supprime définitivement le compte, confirmé par `{ motDePasse }` : arrête l'abonnement Stripe, efface toutes les tables (`ON DELETE CASCADE`) puis les mesures de la montre. `204` ; `403` mot de passe incorrect ; `404` compte inconnu ; `503` si Stripe ne répond pas (rien n'est effacé). `POST` et pas `DELETE` : le mot de passe est dans le corps, qu'un `DELETE` ne transmet pas partout |
+| `POST` | `/api/compte/{utilisateurId}/effacement` | Efface certaines données en gardant le compte, le profil et l'abonnement : `{ categories, motDePasse }`, `categories` parmi `seances`, `sommeil`, `nutrition`, `performances` (tables de chacune : `CategorieDonnees.java`), avec les mesures de la montre correspondantes. `204` ; `400` aucune catégorie ou catégorie inconnue ; `403` mot de passe incorrect ; `404` compte inconnu |
 | `POST` | `/api/contact` | Enregistre un message du formulaire de contact |
 
 ### Séances de la montre
