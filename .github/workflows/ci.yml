@@ -20,6 +20,28 @@ jobs:
     defaults:
       run:
         working-directory: backend
+    # Une base PostgreSQL jetable, la même version que dans docker-compose : un des tests
+    # (BackendApplicationTests) démarre toute l'application, qui a besoin d'une vraie base.
+    # Elle est créée pour ce job et effacée à la fin : aucun lien avec la base locale ni avec Neon.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: datafit_user
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: datafit
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U datafit_user -d datafit"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    # lues par application.properties (pas de .env dans la CI)
+    env:
+      DB_URL: jdbc:postgresql://localhost:5432/datafit
+      DB_USER: datafit_user
+      DB_PASSWORD: ci
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -27,4 +49,13 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: maven
-      - run: ./mvnw -B -DskipTests package
+      # les tables de db/, dans l'ordre des numéros, comme le fait lancer.sh en local
+      - name: Créer les tables
+        working-directory: .
+        env:
+          PGPASSWORD: ci
+          PGOPTIONS: '-c client_min_messages=warning'
+        run: cat $(ls db/*.sql | sort) | psql -h localhost -U datafit_user -d datafit -q -v ON_ERROR_STOP=1
+      # tests puis .jar : un test qui échoue fait échouer la CI, et la PR affiche une croix rouge
+      - name: Tests et compilation
+        run: ./mvnw -B package
