@@ -45,16 +45,18 @@ export function convertirSeance(sport: SportMontre, s: ResultatSeance): Seance {
   const ajouter = (champ: string, nom: string, format: (n: number) => string) => {
     if (valeur(s[champ])) indicateurs.push({ nom, valeur: format(s[champ]) })
   }
-  const vitesse = (n: number) => `${nombre(n, 2)} km/h`
+  // une décimale suffit à lire une vitesse (11,1 km/h) ; un pourcentage de variation se lit entier
+  const vitesse = (n: number) => `${nombre(n, 1)} km/h`
+  const pourcentage = (n: number) => `${nombre(n, 0)} %`
   const bpm = (n: number) => `${nombre(n)} bpm`
   if (sport === 'cardio' || sport === 'velo') {
     ajouter('vitesseMoyKmh', 'Vitesse moyenne', vitesse)
     ajouter('vitesseMaxKmh', 'Vitesse maximale', vitesse)
-    ajouter('variationVitesse', 'Variation de vitesse', (n) => `${nombre(n, 2)} %`)
+    ajouter('variationVitesse', 'Variation de vitesse', pourcentage)
   }
-  if (sport === 'cardio') ajouter('correlationVitesseFc', 'Corrélation vitesse–FC', (n) => nombre(n, 2))
+  // la corrélation vitesse–FC (correlationVitesseFc, correlationFcVitesse) reste calculée par l'analyse
+  // mais n'est plus affichée (issue #19) : un coefficient comme 0,89 ne dit rien à un sportif
   if (sport === 'velo') {
-    ajouter('correlationFcVitesse', 'Corrélation vitesse–FC', (n) => nombre(n, 2))
     ajouter('tempsPedalageS', 'Pédalage', formatDureeSecondes)
     ajouter('tempsRoueLibreS', 'Roue libre', formatDureeSecondes)
     ajouter('tempsPauseS', 'Pauses', formatDureeSecondes)
@@ -62,7 +64,7 @@ export function convertirSeance(sport: SportMontre, s: ResultatSeance): Seance {
   if (sport === 'natation') {
     ajouter('dureeLongueurRapideS', 'Meilleure longueur', formatDureeSecondes)
     ajouter('dureeMoyLongueurS', 'Durée moyenne par longueur', formatDureeSecondes)
-    ajouter('variationDureeLongueurs', 'Variation des longueurs', (n) => `${nombre(n, 2)} %`)
+    ajouter('variationDureeLongueurs', 'Variation des longueurs', pourcentage)
     ajouter('totalCyclesBras', 'Cycles de bras', (n) => nombre(n, 0))
     ajouter('tempsNageS', 'Temps de nage', formatDureeSecondes)
     ajouter('tempsPauseS', 'Pauses', formatDureeSecondes)
