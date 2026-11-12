@@ -2,10 +2,15 @@ import { cleDuCompte, lireCompte } from '../lib/compte.ts'
 import { SERVICES_SPORT, type SeanceSport } from '../services/sport/index.ts'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
-import { CATEGORIES, DISCIPLINES, type Sexe } from '../data/paliers.ts'
+import { CATEGORIES, DISCIPLINES, type Sexe, TOUS_LES_EXERCICES } from '../data/paliers.ts'
 import { lireProfil } from '../lib/profil.ts'
 import { noterRecord } from '../lib/records.ts'
 import { type Perfs, type Profil, type ResumeDiscipline, categoriePourPoids, rangGlobal, resumeDisciplines } from '../lib/rangs.ts'
+import { FORMATS_TEMPS, ecrireTemps, lireTemps } from '../lib/temps.ts'
+
+// les exercices par identifiant front ('r100', 'crawl'...), pour savoir lesquels sont des temps
+const EXERCICES = new Map(TOUS_LES_EXERCICES.map((ex) => [ex.id, ex]))
+const estUnTemps = (idFront: string) => EXERCICES.get(idFront)?.type === 'time'
 
 
 // un état par compte (voir cleDuCompte)
@@ -106,7 +111,9 @@ function useSport() {
           for (const [back, front] of Object.entries(service.champs)) {
             const valeur = (seance as unknown as Record<string, unknown>)[back]
             if (typeof valeur === 'number') {
-              perfsAjoutees[front] = String(valeur)
+              // un temps arrive en secondes (270) : on l'affiche comme on le tape (4:30) ;
+              // un autre nombre s'affiche avec une virgule (5,6 m), comme on l'a tapé
+              perfsAjoutees[front] = estUnTemps(front) ? ecrireTemps(valeur) : String(valeur).replace('.', ',')
             }
           }
           setEtat((ancien) => ({
@@ -182,18 +189,36 @@ function useSport() {
   }
 
   // Construit le DTO back à partir des perfs saisies, selon le mapping du service.
-  // Renvoie null si une valeur manque ou n'est pas un nombre fini.
+  // Un temps est lu comme sur l'écran ("4:30" -> 270 s, envoyé en secondes) ; le reste est un nombre.
+  // Renvoie le message à afficher si une valeur manque ou n'est pas comprise.
   function construireDTO(
     champs: Record<string, string>,
-  ): Record<string, number> | null {
+  ): { dto: Record<string, number> } | { erreur: string } {
     const dto: Record<string, number> = {}
+    const tempsManquants: string[] = []
     for (const [back, front] of Object.entries(champs)) {
-      const brut = String(etat.perfs[front] ?? '').replace(',', '.')
-      const n = Number(brut)
-      if (!Number.isFinite(n)) return null
+      const brut = String(etat.perfs[front] ?? '').trim()
+      if (estUnTemps(front)) {
+        const nom = EXERCICES.get(front)!.nom
+        if (!brut) {
+          tempsManquants.push(nom)
+          continue
+        }
+        const secondes = lireTemps(brut)
+        if (Number.isNaN(secondes)) return { erreur: `${nom} : temps non reconnu. Exemples : ${FORMATS_TEMPS}.` }
+        dto[back] = secondes
+        continue
+      }
+      const n = Number(brut.replace(',', '.'))
+      if (!Number.isFinite(n)) {
+        return { erreur: "Renseignez toutes les valeurs avec des nombres (positifs si c'est une charge ou une distance)." }
+      }
       dto[back] = n
     }
-    return dto
+    if (tempsManquants.length) {
+      return { erreur: `Renseignez tous les temps avant d'enregistrer. Il manque : ${tempsManquants.join(', ')}.` }
+    }
+    return { dto }
   }
 
   async function envoyerSeance(
@@ -214,15 +239,12 @@ function useSport() {
     const etatCourant = sauvegardes[disciplineId] ?? ETAT_SAUVEGARDE_VIDE
     if (etatCourant.chargement || etatCourant.sauvegarde) return
 
-    const dto = construireDTO(service.champs)
-    if (!dto) {
-      majSauvegarde(disciplineId, {
-        erreur: true,
-        message:
-          "Renseignez toutes les valeurs avec des nombres (positifs si c'est une charge, un temps ou une distance).",
-      })
+    const resultat = construireDTO(service.champs)
+    if ('erreur' in resultat) {
+      majSauvegarde(disciplineId, { erreur: true, message: resultat.erreur })
       return
     }
+    const dto = resultat.dto
 
     majSauvegarde(disciplineId, {
       sauvegarde: true,
