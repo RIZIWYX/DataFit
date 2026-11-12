@@ -91,6 +91,17 @@ class ArchivesMesuresTests {
         }
     }
 
+    @Test void effacerCertainesMesuresGardeLesAutres() {
+        ArchivesMesures archives = troisArchives();
+
+        archives.supprimerMesures(7L, List.of("sommeil"));
+
+        assertTrue(archives.lireGraphiques("sommeil", 7L, 2L).isEmpty());
+        assertTrue(archives.lireGraphiques("cardio", 7L, 1L).isPresent());
+        assertTrue(archives.lireGraphiques("cardio", 8L, 1L).isPresent());
+        assertThrows(IllegalArgumentException.class, () -> archives.supprimerMesures(7L, List.of("../8")));
+    }
+
     @Test void unIdentifiantDeCompteInvalideEstRefuse() {
         ArchivesMesures archives = new ArchivesMesures(dossier.toString(), JsonMapper.builder().build(), mock(AnalyseClient.class));
         assertThrows(IllegalArgumentException.class, () -> archives.supprimerCompte(0L));

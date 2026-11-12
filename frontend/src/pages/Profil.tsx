@@ -5,8 +5,10 @@ import Icone from '../components/Icone.tsx'
 import TitrePage from '../components/TitrePage.tsx'
 import { ICONES } from '../data/icones.ts'
 import { LISTE_SPORTS, SPORTS } from '../data/sports.ts'
+import useEffacementDonnees from '../hooks/useEffacementDonnees.ts'
 import useProfil, { type ChampProfil } from '../hooks/useProfil.ts'
 import useSuppressionCompte from '../hooks/useSuppressionCompte.ts'
+import { CATEGORIES_DONNEES } from '../lib/compte.ts'
 import { formatDateLongue, nombre } from '../lib/format.ts'
 import {
   type Profil as DonneesProfil,
@@ -136,6 +138,7 @@ function Saisie({ champ, profil, autoFocus = false }: { champ: DefinitionChamp; 
 function Profil() {
   const { profil, enEdition, editer, annuler, enregistrer, message } = useProfil()
   const suppression = useSuppressionCompte()
+  const effacement = useEffacementDonnees()
   const nomComplet = `${profil?.prenom ?? ''} ${profil?.nom ?? ''}`.trim()
 
   function enregistrerChamp(champ: DefinitionChamp, event: SubmitEvent<HTMLFormElement>) {
@@ -233,6 +236,84 @@ function Profil() {
                 <dd className="vide">Modifiable quand les comptes existeront</dd>
                 <span className="etiquette">Bientôt</span>
               </div>
+
+              {/* effacement de certaines données : le compte et le profil restent */}
+              {effacement.ouvert ? (
+                <form
+                  className="profil-ligne en-edition profil-suppression"
+                  aria-labelledby="effacement-titre"
+                  onSubmit={effacement.confirmer}
+                  onKeyDown={(e) => e.key === 'Escape' && !effacement.enCours && effacement.fermer()}
+                >
+                  <p id="effacement-titre" className="profil-suppression-titre">
+                    Effacer vos données ?
+                  </p>
+                  <p className="profil-suppression-texte">
+                    Votre compte, votre profil et votre abonnement restent. Ce que vous cochez est
+                    effacé pour de bon, sur le serveur et dans ce navigateur.
+                  </p>
+                  <span id="effacement-choix" className="champ-nom">
+                    Données à effacer
+                  </span>
+                  <div className="profil-options" role="group" aria-labelledby="effacement-choix">
+                    {CATEGORIES_DONNEES.map((categorie) => (
+                      <label key={categorie.valeur}>
+                        <input type="checkbox" name="categorie" value={categorie.valeur} defaultChecked />
+                        {categorie.nom}
+                      </label>
+                    ))}
+                  </div>
+                  <label htmlFor="effacement-mdp" className="champ-nom">
+                    Votre mot de passe, pour confirmer
+                  </label>
+                  <input
+                    id="effacement-mdp"
+                    name="mot-de-passe"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    autoFocus
+                  />
+                  <p className="champ-aide">
+                    Compte créé avec « Continuer avec Google » ? Il n'a pas de mot de passe :
+                    demandez l'effacement depuis la page <Link to="/contact">Contact</Link>.
+                  </p>
+                  {effacement.erreur && (
+                    <p className="alerte" role="alert">
+                      <Icone trace={ICONES.info} />
+                      {effacement.erreur}
+                    </p>
+                  )}
+                  <div className="profil-ligne-actions">
+                    <button type="submit" className="bouton petit profil-danger plein" disabled={effacement.enCours}>
+                      {effacement.enCours ? 'Effacement…' : 'Effacer'}
+                    </button>
+                    <button
+                      type="button"
+                      className="bouton secondaire petit"
+                      disabled={effacement.enCours}
+                      onClick={effacement.fermer}
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="profil-ligne">
+                  <dt>Données</dt>
+                  {effacement.message ? (
+                    <dd className="message-ok" role="status">
+                      <Icone trace={ICONES.valide} />
+                      {effacement.message}
+                    </dd>
+                  ) : (
+                    <dd className="vide">Séances, nuits, repas, performances</dd>
+                  )}
+                  <button type="button" className="bouton petit profil-danger" onClick={effacement.ouvrir}>
+                    Effacer mes données
+                  </button>
+                </div>
+              )}
 
               {/* suppression du compte : un bouton, puis une confirmation par mot de passe */}
               {suppression.ouverte ? (

@@ -10,7 +10,10 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import tools.jackson.databind.json.JsonMapper;
 import java.nio.file.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -87,19 +90,38 @@ public class ArchivesMesures {
     // Compte supprimé : toutes ses mesures (le dossier <racine>/<utilisateur>/, tous sports confondus)
     // sont effacées une fois la suppression validée en base. Si elle est annulée, elles restent.
     public void supprimerCompte(Long utilisateur) {
+        effacerApresValidation(utilisateur, List.of(dossierDu(utilisateur)));
+    }
+
+    // « Effacer mes données » : seulement les mesures de ces sports (<racine>/<utilisateur>/<sport>/),
+    // le compte reste. Même règle : effacées une fois l'effacement validé en base.
+    public void supprimerMesures(Long utilisateur, Collection<String> sports) {
+        Path dossier = dossierDu(utilisateur);
+        List<Path> dossiers = new ArrayList<>();
+        for (String sport : sports) {
+            if (!SPORTS.contains(sport)) throw new IllegalArgumentException("Sport de mesures inconnu : " + sport);
+            dossiers.add(dossier.resolve(sport));
+        }
+        if (!dossiers.isEmpty()) effacerApresValidation(utilisateur, dossiers);
+    }
+
+    private Path dossierDu(Long utilisateur) {
         if (utilisateur == null || utilisateur <= 0)
             throw new IllegalArgumentException("Identifiant de compte invalide.");
-        Path dossier = racine.resolve(utilisateur.toString());
+        return racine.resolve(utilisateur.toString());
+    }
+
+    private void effacerApresValidation(Long utilisateur, List<Path> dossiers) {
         if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-            effacerDossier(dossier);
+            dossiers.forEach(ArchivesMesures::effacerDossier);
             return;
         }
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override public void afterCommit() {
-                // le compte est déjà effacé en base : une erreur ici ne doit pas faire croire à
-                // l'utilisateur que la suppression a échoué, on la note pour la corriger à la main
-                try { effacerDossier(dossier); }
-                catch (IllegalStateException e) { journal.error("Compte {} supprimé, mais pas ses mesures ({})", utilisateur, dossier, e); }
+                // les données sont déjà effacées en base : une erreur ici ne doit pas faire croire à
+                // l'utilisateur que l'effacement a échoué, on la note pour la corriger à la main
+                try { dossiers.forEach(ArchivesMesures::effacerDossier); }
+                catch (IllegalStateException e) { journal.error("Données du compte {} effacées en base, mais pas ses mesures ({})", utilisateur, dossiers, e); }
             }
         });
     }
