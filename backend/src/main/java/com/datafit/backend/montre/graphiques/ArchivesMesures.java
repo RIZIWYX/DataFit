@@ -1,6 +1,8 @@
 package com.datafit.backend.montre.graphiques;
 
 import com.datafit.backend.montre.client.AnalyseClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -8,13 +10,16 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import tools.jackson.databind.json.JsonMapper;
 import java.nio.file.*;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /** Conservation des relevés et des séries graphiques sans modifier le schéma SQL. */
 @Service
 public class ArchivesMesures {
+    private static final Logger journal = LoggerFactory.getLogger(ArchivesMesures.class);
     private static final Set<String> SPORTS = Set.of("cardio", "velo", "natation", "muscu", "sommeil");
     private final Path racine;
     private final JsonMapper json;
@@ -77,5 +82,35 @@ public class ArchivesMesures {
     void supprimer(String sport, Long utilisateur, Long seance) {
         try { Files.deleteIfExists(chemin(sport, utilisateur, seance)); }
         catch (IOException e) { throw new IllegalStateException("Impossible de supprimer une archive annulée.", e); }
+    }
+
+    // Compte supprimé : toutes ses mesures (le dossier <racine>/<utilisateur>/, tous sports confondus)
+    // sont effacées une fois la suppression validée en base. Si elle est annulée, elles restent.
+    public void supprimerCompte(Long utilisateur) {
+        if (utilisateur == null || utilisateur <= 0)
+            throw new IllegalArgumentException("Identifiant de compte invalide.");
+        Path dossier = racine.resolve(utilisateur.toString());
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            effacerDossier(dossier);
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override public void afterCommit() {
+                // le compte est déjà effacé en base : une erreur ici ne doit pas faire croire à
+                // l'utilisateur que la suppression a échoué, on la note pour la corriger à la main
+                try { effacerDossier(dossier); }
+                catch (IllegalStateException e) { journal.error("Compte {} supprimé, mais pas ses mesures ({})", utilisateur, dossier, e); }
+            }
+        });
+    }
+
+    private static void effacerDossier(Path dossier) {
+        if (!Files.exists(dossier)) return;
+        try (Stream<Path> chemins = Files.walk(dossier)) {
+            // les fichiers d'abord, puis les dossiers qui les contenaient
+            for (Path chemin : chemins.sorted(Comparator.reverseOrder()).toList()) Files.delete(chemin);
+        } catch (IOException e) {
+            throw new IllegalStateException("Impossible d'effacer les mesures du compte.", e);
+        }
     }
 }
