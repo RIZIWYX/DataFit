@@ -197,7 +197,7 @@ Règle importante : **les notebooks servent à explorer, le code dans `app/` ser
 | Nutrition : repas et analyse de la journée | ✅ fait |
 | Performances déclarées par discipline | ✅ fait |
 | Docker Compose (5 services) | ✅ fait |
-| CI GitHub Actions (build du front et du back) | ✅ fait |
+| CI GitHub Actions (build du front, tests et build du back sur une base PostgreSQL jetable) | ✅ fait |
 | Authentification par session ou jeton | 🚧 prévu (voir [Sécurité](securite.md#authentification)) |
 | Back et services Python hébergés en ligne | 🚧 prévu |
 | Vraie montre connectée | 🚧 prévu |
@@ -207,6 +207,6 @@ Règle importante : **les notebooks servent à explorer, le code dans `app/` ser
 
 - **Pas d'authentification sur les endpoints** : l'identifiant de l'utilisateur est passé dans l'adresse et n'est pas vérifié côté serveur. C'est le chantier prioritaire, voir [Sécurité](securite.md#authentification).
 - **Données de démonstration** : plusieurs hooks (`useDashboard`, `useProgression`, `useMontre`, `useSeance`) lisent encore `data/seances.ts` au lieu de l'API.
-- **Peu de tests automatisés** : la CI vérifie que le projet compile, mais les calculs (rangs côté front, analyses côté Python) ne sont presque pas testés.
+- **Peu de tests automatisés** : la CI lance les tests du backend (JUnit) à chaque push et chaque PR, mais les calculs du front (rangs) et les analyses Python ne sont presque pas testés, et leurs tests ne sont pas lancés par la CI.
 - **Schéma géré par des scripts SQL numérotés** (`db/01_...sql` à `db/07_...sql`), rejoués par `lancer.sh`. Ça marche pour ajouter des tables, pas pour modifier une colonne existante. Voir [Base de données](base-de-donnees.md#faire-évoluer-le-schéma).
 - **Un ancien mot de passe** de base de développement est visible dans l'historique Git (dépôt public). Voir [Sécurité](securite.md).
