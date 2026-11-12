@@ -10,7 +10,6 @@ import useHistorique, { PERIODES, type Tri } from '../hooks/useHistorique.ts'
 import { nbSeances } from '../lib/colonnes.ts'
 import { formatDuree, formatHeure, nombre } from '../lib/format.ts'
 import { type Categorie } from '../lib/historique.ts'
-import { formatDureeSecondes } from '../lib/cardio.ts'
 
 // Toutes les séances, de la plus récente à la plus ancienne, regroupées par mois.
 // On cherche, on filtre, on ouvre le détail ; rien d'autre sur la page.
@@ -69,10 +68,10 @@ function Historique() {
       <div className="historique-outils">
         <label className="historique-recherche">
           <Icone trace={ICONES.recherche} />
-          <span className="visuellement-cache">Rechercher une séance</span>
+          <span className="visuellement-cache">Rechercher une séance par sport, jour ou mois</span>
           <input
             type="search"
-            placeholder='Rechercher : "course", "mardi", "squat"...'
+            placeholder="Rechercher : vélo, mardi, octobre…"
             value={recherche}
             onChange={(e) => chercher(e.target.value)}
           />
@@ -115,7 +114,7 @@ function Historique() {
         >
           {recherche || nbSemaines || categorie !== 'tous'
             ? 'Essayez une autre recherche, ou élargissez la période.'
-            : <>Vos séances cardio apparaîtront ici après leur enregistrement. <Link to="/montre">Ouvrir la montre</Link>.</>}
+            : <>Vos séances apparaîtront ici après leur synchronisation. <Link to="/montre">Ouvrir la montre</Link>.</>}
         </EtatVide>
       ) : (
         groupes.map((groupe) => (
@@ -139,13 +138,14 @@ function Historique() {
                     </span>
                     <span className="ligne-historique-titre">
                       <strong>{entree.titre}</strong>
+                      {/* l'heure seule : toutes les séances viennent de la montre, inutile de le répéter */}
                       <small>
-                        {entree.heureConnue !== false && <>{formatHeure(entree.date)} · </>}{entree.sousTitre}
-                        {entree.exercices.length > 0 && ` · ${entree.exercices.join(', ')}`}
+                        {[entree.heureConnue !== false && formatHeure(entree.date), ...entree.exercices].filter(Boolean).join(' · ')}
                       </small>
                     </span>
                     <span className="ligne-historique-mesure">{entree.mesure}</span>
-                    <span className="ligne-historique-mesure secondaire">{entree.dureeSecondes !== undefined ? formatDureeSecondes(entree.dureeSecondes) : formatDuree(entree.dureeMin)}</span>
+                    {/* à la minute près dans la liste ; les secondes restent dans le détail de la séance */}
+                    <span className="ligne-historique-mesure secondaire">{formatDuree(entree.dureeMin)}</span>
                     <span className="ligne-historique-mesure secondaire">{entree.fc ? `${entree.fc} bpm` : '–'}</span>
                     <Icone trace={ICONES.chevron} />
                   </Link>
