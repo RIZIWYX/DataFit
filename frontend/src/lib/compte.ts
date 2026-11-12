@@ -32,3 +32,18 @@ export function cleDuCompte(nom: string): string {
   const compte = lireCompte()
   return compte ? `${nom}:${compte.id}` : nom
 }
+
+// Compte supprimé : on efface ce que l'application gardait pour lui dans ce navigateur, le compte
+// lui-même et toutes les clés rangées par compte ("datafit-nutrition:12"...). Le profil, gardé
+// sans numéro de compte, est effacé à part (effacerProfil).
+export function oublierCompte(id: number) {
+  try {
+    for (const cle of Object.keys(localStorage)) {
+      if (cle === CLE_STOCKAGE || (cle.startsWith('datafit-') && cle.endsWith(`:${id}`))) {
+        localStorage.removeItem(cle)
+      }
+    }
+  } catch {
+    // stockage indisponible : rien à effacer
+  }
+}

@@ -1,10 +1,12 @@
 import { type SubmitEvent } from 'react'
+import { Link } from 'react-router'
 import '../styles/profil.css'
 import Icone from '../components/Icone.tsx'
 import TitrePage from '../components/TitrePage.tsx'
 import { ICONES } from '../data/icones.ts'
 import { LISTE_SPORTS, SPORTS } from '../data/sports.ts'
 import useProfil, { type ChampProfil } from '../hooks/useProfil.ts'
+import useSuppressionCompte from '../hooks/useSuppressionCompte.ts'
 import { formatDateLongue, nombre } from '../lib/format.ts'
 import {
   type Profil as DonneesProfil,
@@ -133,6 +135,7 @@ function Saisie({ champ, profil, autoFocus = false }: { champ: DefinitionChamp; 
 
 function Profil() {
   const { profil, enEdition, editer, annuler, enregistrer, message } = useProfil()
+  const suppression = useSuppressionCompte()
   const nomComplet = `${profil?.prenom ?? ''} ${profil?.nom ?? ''}`.trim()
 
   function enregistrerChamp(champ: DefinitionChamp, event: SubmitEvent<HTMLFormElement>) {
@@ -230,6 +233,67 @@ function Profil() {
                 <dd className="vide">Modifiable quand les comptes existeront</dd>
                 <span className="etiquette">Bientôt</span>
               </div>
+
+              {/* suppression du compte : un bouton, puis une confirmation par mot de passe */}
+              {suppression.ouverte ? (
+                <form
+                  className="profil-ligne en-edition profil-suppression"
+                  aria-labelledby="suppression-titre"
+                  onSubmit={suppression.confirmer}
+                  onKeyDown={(e) => e.key === 'Escape' && !suppression.enCours && suppression.fermer()}
+                >
+                  <p id="suppression-titre" className="profil-suppression-titre">
+                    Supprimer définitivement votre compte ?
+                  </p>
+                  <p className="profil-suppression-texte">
+                    Votre profil, vos séances, vos nuits, vos repas, vos performances et les mesures de
+                    votre montre seront effacés. Un abonnement Premium en cours sera arrêté tout de
+                    suite. Rien ne pourra être récupéré.
+                  </p>
+                  <label htmlFor="suppression-mdp" className="champ-nom">
+                    Votre mot de passe, pour confirmer
+                  </label>
+                  <input
+                    id="suppression-mdp"
+                    name="mot-de-passe"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    autoFocus
+                  />
+                  <p className="champ-aide">
+                    Compte créé avec « Continuer avec Google » ? Il n'a pas de mot de passe :
+                    demandez sa suppression depuis la page <Link to="/contact">Contact</Link>.
+                  </p>
+                  {suppression.erreur && (
+                    <p className="alerte" role="alert">
+                      <Icone trace={ICONES.info} />
+                      {suppression.erreur}
+                    </p>
+                  )}
+                  <div className="profil-ligne-actions">
+                    <button type="submit" className="bouton petit profil-danger plein" disabled={suppression.enCours}>
+                      {suppression.enCours ? 'Suppression…' : 'Supprimer définitivement'}
+                    </button>
+                    <button
+                      type="button"
+                      className="bouton secondaire petit"
+                      disabled={suppression.enCours}
+                      onClick={suppression.fermer}
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="profil-ligne">
+                  <dt>Compte</dt>
+                  <dd className="vide">Suppression définitive, avec toutes vos données</dd>
+                  <button type="button" className="bouton petit profil-danger" onClick={suppression.ouvrir}>
+                    Supprimer mon compte
+                  </button>
+                </div>
+              )}
             </dl>
           </div>
         </section>
