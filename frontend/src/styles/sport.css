@@ -241,6 +241,16 @@
 .sport-rang-nom {
   font-weight: 650;
 }
+/* temps non reconnu (ChampTemps) : sous le champ, sur toute la largeur */
+.sport-ex-saisie input[aria-invalid='true'] {
+  border-color: var(--erreur);
+}
+.sport-erreur {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--erreur);
+}
 .sport-jauge {
   height: 6px;
   overflow: hidden;
