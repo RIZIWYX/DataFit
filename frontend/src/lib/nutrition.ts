@@ -18,7 +18,7 @@ export const ACTIVITES: { valeur: NiveauActivite; nom: string; detail: string; f
 
 // proposé tant que l'utilisateur n'a rien choisi, d'après le niveau du profil
 export const activiteParDefaut = (niveau: string): NiveauActivite =>
-  niveau === 'pro' ? 'intense' : niveau === 'intermediaire' ? 'modere' : 'leger'
+  niveau === 'confirmer' ? 'intense' : niveau === 'intermediaire' ? 'modere' : 'leger'
 
 // selon l'objectif : un écart à la dépense, et les protéines par kilo de poids
 // (les objectifs sont ceux du profil, voir OBJECTIFS dans profil.ts)

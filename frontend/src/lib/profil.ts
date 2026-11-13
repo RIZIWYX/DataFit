@@ -41,6 +41,8 @@ export function lireProfil(): Profil | null {
       ...garde,
       // les profils enregistrés avant n'avaient qu'un seul "sport pratiqué"
       activites: garde.activites ?? (garde.sport ? [garde.sport] : []),
+      // l'ancien niveau « pro » s'appelle « confirmer » (la valeur attendue par le simulateur)
+      niveau: garde.niveau === 'pro' ? 'confirmer' : (garde.niveau ?? ''),
     }
   } catch {
     return null
@@ -89,7 +91,7 @@ export const SEXES = [
 export const NIVEAUX = [
   { valeur: 'novice', nom: 'Novice' },
   { valeur: 'intermediaire', nom: 'Intermédiaire' },
-  { valeur: 'pro', nom: 'Confirmé' },
+  { valeur: 'confirmer', nom: 'Confirmé' },
 ]
 // l'objectif est gardé en toutes lettres : l'accueil l'affiche tel quel
 export const OBJECTIFS = [

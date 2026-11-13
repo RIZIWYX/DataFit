@@ -31,3 +31,6 @@ CREATE TABLE IF NOT EXISTS profil (
     activite       VARCHAR(50)  NOT NULL,
     date_naissance DATE         NOT NULL
 );
+
+-- le niveau « pro » s'appelle « confirmer » : la valeur attendue par le simulateur de la montre
+UPDATE profil SET niveau = 'confirmer' WHERE niveau = 'pro';
