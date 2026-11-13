@@ -26,6 +26,7 @@ interface DefinitionChamp {
   options?: { valeur: string; nom: string }[]
   aide?: string
   autoComplete?: string
+  lectureSeule?: boolean // affiché sans crayon : ne se modifie pas ici
 }
 
 interface GroupeChamps {
@@ -39,7 +40,7 @@ const IDENTITE: GroupeChamps = {
   champs: [
     { cle: 'prenom', nom: 'Prénom', type: 'texte', autoComplete: 'given-name' },
     { cle: 'nom', nom: 'Nom', type: 'texte', autoComplete: 'family-name' },
-    { cle: 'email', nom: 'Adresse e-mail', type: 'email', autoComplete: 'email' },
+    { cle: 'email', nom: 'Adresse e-mail', type: 'email', autoComplete: 'email', lectureSeule: true },
   ],
 }
 
@@ -132,7 +133,7 @@ function Saisie({ champ, profil, autoFocus = false }: { champ: DefinitionChamp; 
 }
 
 function Profil() {
-  const { profil, enEdition, editer, annuler, enregistrer, message } = useProfil()
+  const { profil, enEdition, editer, annuler, enregistrer, message, erreur, envoi } = useProfil()
   const nomComplet = `${profil?.prenom ?? ''} ${profil?.nom ?? ''}`.trim()
 
   function enregistrerChamp(champ: DefinitionChamp, event: SubmitEvent<HTMLFormElement>) {
@@ -165,8 +166,15 @@ function Profil() {
               )}
               <Saisie champ={champ} profil={profil} autoFocus />
               {champ.aide && <p className="champ-aide">{champ.aide}</p>}
+              {erreur && (
+                <p className="alerte" role="alert">
+                  {erreur}
+                </p>
+              )}
               <div className="profil-ligne-actions">
-                <button type="submit" className="bouton petit">Enregistrer</button>
+                <button type="submit" className="bouton petit" disabled={envoi}>
+                  {envoi ? 'Enregistrement…' : 'Enregistrer'}
+                </button>
                 <button type="button" className="bouton secondaire petit" onClick={annuler}>
                   Annuler
                 </button>
@@ -176,10 +184,14 @@ function Profil() {
             <div key={champ.cle} className="profil-ligne">
               <dt>{champ.nom}</dt>
               <dd className={valeur ? undefined : 'vide'}>{valeur || 'Non renseigné'}</dd>
-              <button type="button" className="bouton-icone discret" onClick={() => editer(champ.cle)}>
-                <Icone trace={ICONES.crayon} />
-                <span className="visuellement-cache">Modifier : {champ.nom}</span>
-              </button>
+              {champ.lectureSeule ? (
+                <span aria-hidden="true" />
+              ) : (
+                <button type="button" className="bouton-icone discret" onClick={() => editer(champ.cle)}>
+                  <Icone trace={ICONES.crayon} />
+                  <span className="visuellement-cache">Modifier : {champ.nom}</span>
+                </button>
+              )}
             </div>
           )
         })}
