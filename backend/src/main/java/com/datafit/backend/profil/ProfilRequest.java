@@ -43,8 +43,10 @@ public record ProfilRequest(
     @Size(max = 255)
     String objectif,
 
+    // les valeurs acceptées par le simulateur de la montre
     @NotBlank(message = "Le niveau est obligatoire")
-    @Size(max = 50)
+    @Pattern(regexp = "^(novice|intermediaire|confirmer)$",
+        message = "Le niveau doit être novice, intermediaire ou confirmer")
     String niveau,
 
     // une ou plusieurs activités, séparées par des virgules : « course,natation »
