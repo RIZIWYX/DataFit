@@ -75,6 +75,28 @@ public class Profil {
         this.dateNaissance = dateNaissance;
     }
 
+    // Modification depuis la page Profil : toutes les informations sont remplacées
+    public void modifier(
+            String nom,
+            String prenom,
+            String sexe,
+            double poids,
+            double taille,
+            String objectif,
+            String niveau,
+            String activite,
+            LocalDate dateNaissance) {
+        this.nom = nom;
+        this.prenom = prenom;
+        this.sexe = sexe;
+        this.poids = poids;
+        this.taille = taille;
+        this.objectif = objectif;
+        this.niveau = niveau;
+        this.activite = activite;
+        this.dateNaissance = dateNaissance;
+    }
+
     public Long getUtilisateurId() {
         return utilisateurId;
     }
