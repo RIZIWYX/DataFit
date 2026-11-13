@@ -1,5 +1,6 @@
 // Calcul des rangs (de E à Z)
 import { type Exercice, type Sexe, CATEGORIES, DISCIPLINES, POIDS_CALIBRAGE, TOUS_LES_EXERCICES } from '../data/paliers.ts'
+import { formatTemps, lireTemps } from './temps.ts'
 
 export type Perfs = Record<string, string>
 
@@ -31,15 +32,7 @@ export function seuils(ex: Exercice, profil: Profil): number[] | null {
   return bareme
 }
 
-// "4:30" -> 270 s ; "1:25:00" -> 5100 s ; "12,3" -> 12,3 s
-export function lireTemps(texte: string): number {
-  const t = texte.trim().replace(',', '.')
-  if (!t) return NaN
-  const morceaux = t.split(':').map(Number)
-  if (morceaux.some(Number.isNaN)) return NaN
-  return morceaux.reduce((total, v) => total * 60 + v, 0)
-}
-
+// La valeur d'une perf, en nombre : un temps est lu par lib/temps.ts ("4:30" -> 270 s)
 export function valeur(ex: Exercice, perfs: Perfs): number {
   const brut = perfs[ex.id]
   if (brut === undefined || brut === '') return NaN
@@ -133,15 +126,6 @@ export function rangGlobal(resume: ResumeDiscipline[]) {
 const nombre = (n: number, decimales = 1) =>
   n.toLocaleString('fr-FR', { maximumFractionDigits: decimales })
 
-export function formatTemps(t: number): string {
-  const h = Math.floor(t / 3600)
-  const m = Math.floor((t % 3600) / 60)
-  const s = t % 60
-  if (h) return `${h} h ${String(m).padStart(2, '0')}`
-  if (m) return `${m}:${String(Math.round(s)).padStart(2, '0')}`
-  return `${nombre(s, 2)} s`
-}
-
 export function formatValeur(ex: Exercice, x: number): string {
   switch (ex.type) {
     case 'load': return `${nombre(x)} kg`
@@ -179,7 +163,7 @@ export function libelleMesure(ex: Exercice): string {
     case 'reps': return ex.unite ?? 'reps max'
     case 'hold': return 'tenue max, en secondes'
     case 'dist': return 'meilleure marque, en mètres'
-    case 'time': return `${ex.unite ? `${ex.unite} · ` : ''}temps (m:ss ou h:mm:ss)`
+    case 'time': return `${ex.unite ? `${ex.unite} · ` : ''}temps (secondes, m:ss ou h:mm:ss)`
     case 'ladder': return 'étape atteinte'
   }
 }

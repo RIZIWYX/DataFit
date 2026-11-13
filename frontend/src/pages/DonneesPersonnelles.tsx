@@ -183,10 +183,19 @@ function DonneesPersonnelles() {
       <section>
         <h2>7. Combien de temps nous les gardons</h2>
         <p>
-          Tes données sont conservées tant que ton compte existe. Si tu supprimes ton compte,
-          elles sont effacées définitivement. DataFit étant un projet universitaire, les comptes
-          et les données associées seront supprimés à la fin du projet si le service n'est pas
-          poursuivi.
+          Tes données sont conservées tant que ton compte existe. Si tu supprimes ton compte
+          (bouton « Supprimer mon compte » de ta page profil), elles sont effacées définitivement
+          et tout de suite : ton profil, tes séances, tes nuits, tes repas, tes performances et
+          les mesures enregistrées par ta montre. DataFit étant un projet universitaire, les
+          comptes et les données associées seront supprimés à la fin du projet si le service
+          n'est pas poursuivi.
+        </p>
+        <p>
+          Si tu as un abonnement Premium, il est arrêté au même moment chez Stripe, notre
+          prestataire de paiement, qui conserve de son côté la trace des paiements passés, comme
+          la loi l'y oblige. Les messages envoyés depuis la page{' '}
+          <Link to="/contact">Contact</Link> ne sont pas liés à ton compte : pour les faire
+          effacer, demande-le-nous.
         </p>
       </section>
 
@@ -196,7 +205,10 @@ function DonneesPersonnelles() {
           DataFit n'utilise ni cookies publicitaires ni outils de mesure d'audience. Le site
           enregistre certaines informations dans ton navigateur (stockage local) pour fonctionner,
           par exemple pour garder tes préférences. Ces informations restent sur ton appareil et
-          tu peux les effacer depuis les réglages de ton navigateur.
+          tu peux les effacer depuis les réglages de ton navigateur. Quand tu effaces tes données
+          ou supprimes ton compte, DataFit efface aussi ce qu'il gardait dans ce navigateur ; sur
+          tes autres appareils, ces informations restent jusqu'à ce que tu les effaces depuis
+          leurs réglages.
         </p>
       </section>
 
@@ -212,8 +224,13 @@ function DonneesPersonnelles() {
           <li><strong>Retrait du consentement</strong> : à tout moment, pour les données de santé.</li>
         </ul>
         <p>
-          Tu peux modifier la plupart de tes informations directement depuis ta page profil.
-          Pour exercer les autres droits, contacte-nous via <Contact />. Si tu estimes que tes
+          Tu peux modifier la plupart de tes informations directement depuis ta page profil, et
+          y exercer toi-même ton droit à l'effacement, en confirmant avec ton mot de passe :
+          « Effacer mes données » efface tes séances, tes nuits, tes repas ou tes performances
+          (au choix) en gardant ton compte, et « Supprimer mon compte » efface tout. Un compte
+          créé avec « Continuer avec Google » n'a pas de mot de passe : demande l'effacement
+          depuis la page <Link to="/contact">Contact</Link>. Pour exercer les
+          autres droits, contacte-nous via <Contact />. Si tu estimes que tes
           droits ne sont pas respectés, tu peux adresser une réclamation à la CNIL
           (<a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">cnil.fr</a>).
         </p>

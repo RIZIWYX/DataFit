@@ -8,4 +8,4 @@ export const DEPOT_GITHUB = 'https://github.com/RIZIWYX/DataFit'
 export const CONTACT_EMAIL: string | null = null
 
 // date d'entrée en vigueur des pages légales (à mettre à jour à chaque modification)
-export const DATE_PAGES_LEGALES = '13 octobre 2026'
+export const DATE_PAGES_LEGALES = '12 novembre 2026'

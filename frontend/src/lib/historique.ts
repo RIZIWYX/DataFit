@@ -15,7 +15,6 @@ export interface Entree {
   icone: string
   couleur: string
   dureeMin: number
-  dureeSecondes?: number
   heureConnue?: boolean
   mesure: string // la mesure principale : "5,2 km", "3 exercices"
   km: number
@@ -44,7 +43,7 @@ export function entreesHistorique(seances: Seance[]): Entree[] {
     icone: SPORTS[seance.sport].icone,
     couleur: couleurSport(seance.sport),
     dureeMin: seance.dureeMin,
-    dureeSecondes: seance.dureeSecondes, heureConnue: Boolean(seance.heure),
+    heureConnue: Boolean(seance.heure),
     mesure: resumeSeance(seance),
     km: distanceKm(seance),
     fc: seance.fcMoyenne,

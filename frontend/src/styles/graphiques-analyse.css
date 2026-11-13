@@ -1,11 +1,13 @@
 /* Mesures et courbes de la montre : mise en page indépendante de Sommeil/Nutrition. */
 .graphiques-section { min-width: 0; display: grid; gap: 1rem; }
 .graphiques-section > h2 { font-size: 1.25rem; margin: 0; }
-.graphiques-grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+/* deux colonnes dès qu'elles font au moins 26rem : le tracé s'adapte à la largeur de son cadre
+   (GrapheAnalyse), en dessous une seule colonne garde les graphiques assez grands pour être lus */
+.graphiques-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); gap: 1.25rem; }
 .graphiques-grille > *, .analyse-graphe { min-width: 0; }
 .analyse-graphe { margin: 0; }
 .analyse-cadre { max-width: 100%; overflow-x: auto; }
-.analyse-svg { min-width: 480px; display: block; width: 100%; height: auto; overflow: visible; }
+.analyse-svg { display: block; width: 100%; height: auto; overflow: visible; }
 .analyse-svg text { fill: var(--d-encre-2, #53616a); font-family: inherit; font-size: 12px; font-variant-numeric: tabular-nums; }
 .analyse-grille { stroke: var(--d-grille, #e2e8ed); stroke-width: 1; }
 .analyse-legende { display: flex; flex-wrap: wrap; gap: .5rem 1rem; list-style: none; margin: 0 0 .5rem; padding: 0; font-size: .78rem; color: var(--d-encre-2, #53616a); }
@@ -32,7 +34,6 @@
 :is(.seance, .progression, .montre, .sommeil, .accueil) .indicateur-valeur > span { display: inline-block; }
 :is(.seance, .progression, .montre, .sommeil, .accueil) .indicateur dt { line-height: 1.4; overflow-wrap: anywhere; }
 .seance-grille > *, .progression-grille > *, .montre-grille > * { min-width: 0; }
-@media (max-width: 999px) { .graphiques-grille { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 599px) {
   :is(.seance, .progression, .montre, .sommeil, .accueil) .indicateurs { grid-template-columns: minmax(0, 1fr); }
   .analyse-svg text { font-size: 14px; }

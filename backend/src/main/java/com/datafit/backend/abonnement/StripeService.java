@@ -1,6 +1,7 @@
 package com.datafit.backend.abonnement;
 
 import com.stripe.Stripe;
+import com.stripe.exception.InvalidRequestException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 // Tout ce qui parle à Stripe : création des pages de paiement et du portail client,
-// vérification et lecture des webhooks. Les clés viennent du .env (jamais du code ni du navigateur).
+// vérification et lecture des webhooks, arrêt d'un abonnement quand le compte est supprimé. Les clés viennent du .env (jamais du code ni du navigateur).
 @Service
 public class StripeService {
 
@@ -115,6 +116,28 @@ public class StripeService {
             return etatDe(Subscription.retrieve(subscriptionId));
         } catch (StripeException e) {
             throw new PaiementIndisponibleException("Abonnement Stripe illisible.", e);
+        }
+    }
+
+    // Compte supprimé : l'abonnement est arrêté tout de suite chez Stripe (pas en fin de période),
+    // pour que la carte ne soit plus jamais prélevée. Déjà terminé ou inconnu chez Stripe : rien à faire.
+    public void arreterAbonnement(String subscriptionId) {
+        // seule la clé secrète sert ici (pas besoin des prix ni du secret du webhook)
+        if (cleSecrete.isBlank()) {
+            throw new PaiementIndisponibleException(
+                "Paiement non configuré : impossible d'arrêter l'abonnement Stripe.", null);
+        }
+        try {
+            Subscription abonnement = Subscription.retrieve(subscriptionId);
+            if (!"canceled".equals(abonnement.getStatus())) {
+                abonnement.cancel();
+            }
+        } catch (InvalidRequestException e) {
+            if (!"resource_missing".equals(e.getCode())) {
+                throw new PaiementIndisponibleException("L'abonnement Stripe n'a pas pu être arrêté.", e);
+            }
+        } catch (StripeException e) {
+            throw new PaiementIndisponibleException("L'abonnement Stripe n'a pas pu être arrêté.", e);
         }
     }
 

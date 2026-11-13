@@ -12,7 +12,9 @@ import {
   texteProchain,
   valeur,
 } from '../lib/rangs.ts'
+import { exempleTemps } from '../lib/temps.ts'
 import BadgeRang from './BadgeRang.tsx'
+import ChampTemps from './ChampTemps.tsx'
 
 interface Props {
   exercice: Exercice
@@ -24,8 +26,8 @@ interface Props {
 // couleur d'un rang ; le plus haut (Z) prend le turquoise de la charte
 const couleurRang = (lettre: string) => (lettre === 'Z' ? 'var(--turquoise)' : `var(--rang-${lettre})`)
 
+// les temps ont leur propre champ (ChampTemps), avec un exemple adapté à l'épreuve
 const PLACEHOLDERS: Record<string, string> = {
-  time: 'ex. 4:30',
   load: 'kg',
   lest: 'kg ajoutés',
   reps: 'reps',
@@ -60,10 +62,18 @@ function CarteExercice({ exercice: ex, perfs, profil, onChange }: Props) {
                 <option key={etape} value={i}>{RANGS[i]} · {etape}</option>
               ))}
             </select>
+          ) : ex.type === 'time' ? (
+            <ChampTemps
+              id={idChamp}
+              valeur={perfs[ex.id] ?? ''}
+              exemple={exempleTemps(ex[profil.sexe])}
+              desactive={verrouille}
+              onChange={(v) => onChange(ex.id, v)}
+            />
           ) : (
             <input
               id={idChamp}
-              inputMode={ex.type === 'time' ? 'text' : 'decimal'}
+              inputMode="decimal"
               placeholder={PLACEHOLDERS[ex.type]}
               value={perfs[ex.id] ?? ''}
               disabled={verrouille}

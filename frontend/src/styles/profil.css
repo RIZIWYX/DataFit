@@ -142,6 +142,30 @@
   border-color: var(--blanc);
 }
 
+/* suppression du compte : le rouge des actions irréversibles (--erreur), contour puis plein */
+.bouton.profil-danger {
+  border-color: var(--erreur);
+  background: transparent;
+  color: var(--erreur);
+}
+.bouton.profil-danger:hover,
+.bouton.profil-danger.plein {
+  background: var(--erreur);
+  color: var(--noir);
+}
+.profil-ligne.en-edition.profil-suppression {
+  border-color: var(--erreur);
+}
+.profil-suppression-titre {
+  margin: 0;
+  font-weight: 700;
+}
+.profil-suppression-texte {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--gris);
+}
+
 /* tablette et téléphone : un panneau sous l'autre, la page défile normalement
    (même seuil que les cartes de l'accueil) */
 @media (max-width: 1099px) {
