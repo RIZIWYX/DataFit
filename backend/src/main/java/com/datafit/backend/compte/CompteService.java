@@ -82,6 +82,37 @@ public class CompteService {
         }
     }
 
+    // Le compte a-t-il un mot de passe connu ? (faux : compte Google qui n'en a pas encore choisi)
+    @Transactional(readOnly = true)
+    public boolean motDePasseDefini(Long utilisateurId) {
+        return utilisateurRepository.findById(utilisateurId)
+            .orElseThrow(() -> new NoSuchElementException("Ce compte n'existe pas"))
+            .isMotDePasseDefini();
+    }
+
+    // Changement du mot de passe : l'actuel est vérifié, sauf pour un compte Google qui n'en a pas
+    // encore (personne ne le connaît). Le nouveau doit être différent de l'ancien.
+    @Transactional
+    public void changerMotDePasse(Long utilisateurId, String actuel, String nouveau) {
+        Utilisateur utilisateur = utilisateurRepository
+            .findById(utilisateurId)
+            .orElseThrow(() -> new NoSuchElementException("Ce compte n'existe pas"));
+
+        if (utilisateur.isMotDePasseDefini()) {
+            if (actuel == null || !passwordEncoder.matches(actuel, utilisateur.getPasswordHash())) {
+                throw new MotDePasseIncorrectException();
+            }
+            if (passwordEncoder.matches(nouveau, utilisateur.getPasswordHash())) {
+                throw new IllegalArgumentException(
+                    "Le nouveau mot de passe doit être différent de l'ancien"
+                );
+            }
+        }
+
+        // enregistré à la fin de la transaction (l'entité est suivie par JPA)
+        utilisateur.changerMotDePasse(passwordEncoder.encode(nouveau));
+    }
+
     // L'API ne sait pas encore qui appelle (l'identifiant est dans l'adresse, voir docs/securite.md) :
     // le mot de passe est donc la seule preuve que c'est bien le propriétaire du compte.
     private Utilisateur verifierMotDePasse(Long utilisateurId, String motDePasse) {
