@@ -20,6 +20,9 @@ export interface Exercice {
   F?: number[]
   // pour type ladder : les 8 étapes, de E à Z
   etapes?: string[]
+  // comment atteindre chaque rang (conseils[i] = ce qu'il faut travailler pour atteindre le rang i
+  // depuis le précédent ; conseils[0] n'est pas utilisé). Pour une échelle ou une tenue. Facultatif.
+  conseils?: string[]
   // id d'un exercice qu'il faut avoir validé (rang ≥ D) pour débloquer celui-ci
   verrou?: string
 }
@@ -93,9 +96,59 @@ export const DISCIPLINES: Discipline[] = [
       { id: 'pullup', nom: 'Tractions', type: 'reps', H: [1, 5, 10, 15, 22, 30, 40], F: [1, 3, 6, 10, 15, 20, 28] },
       { id: 'mu', nom: 'Muscle-up', type: 'reps', H: [1, 3, 5, 8, 12, 16, 20], F: [1, 2, 3, 5, 8, 10, 15] },
       { id: 'lsit', nom: 'L-sit', type: 'hold', H: [3, 10, 20, 30, 45, 60, 90], F: [3, 10, 20, 30, 45, 60, 90] },
-      { id: 'hspu', nom: 'Handstand / HSPU', type: 'ladder', etapes: ['Rien encore', 'Pike push-up ×10', 'ATR contre le mur 30 s', '1 HSPU contre le mur', 'ATR libre 10 s ou 5 HSPU mur', '1 HSPU libre', '5 HSPU libres', '90° push-up'] },
+      {
+        // Les poussées en équilibre : le seul contenu de cette échelle. La tenue (ATR, en secondes) a sa
+        // propre carte, « Handstand (tenue libre) » ci-dessous. Le champ « handstand » en base reste l'étape.
+        id: 'hspu',
+        nom: 'HSPU (pompes en équilibre)',
+        type: 'ladder',
+        etapes: ['Rien encore', 'Pike push-up ×10', 'Pike push-up pieds surélevés ×8', '1 HSPU contre le mur', '5 HSPU contre le mur', '1 HSPU libre', '5 HSPU libres', '90° push-up'],
+        conseils: [
+          '',
+          'Pike push-up : pieds au sol, hanches hautes, la tête descend entre les mains. 3 séries de 5 à 8, 3 fois par semaine, jusqu\'à 10 propres.',
+          'Pike push-up pieds surélevés : pieds sur un banc, hanches au-dessus des épaules, la tête descend entre les mains. 3 séries de 5 à 8.',
+          'HSPU contre le mur : tenez d\'abord 30 s contre le mur. Puis amplitude réduite (tête sur un coussin), puis complète. Négatives lentes de 3 à 5 s, 3 à 5 séries de 1 à 3.',
+          '5 HSPU au mur : 3 séries de 2 à 3, puis une répétition de plus chaque semaine. Amplitude complète, coudes près du corps.',
+          '1 HSPU libre : il faut une tenue libre stable (15 à 20 s, voir la carte « Handstand (tenue libre) »). Puis négatives libres, puis essais de poussée sans appui. Poignets échauffés.',
+          'Du volume : 5 séries de 2 à 3 HSPU libres, jusqu\'à 5 d\'affilée. Une série à la limite par séance, le reste propre.',
+          '90° push-up : avancez par étapes (planche inclinée, pike lent, négatives en 90°). Très exigeant pour les poignets et les épaules : progressez avec prudence.',
+        ],
+      },
+      {
+        // La tenue en équilibre sur les mains, sans appui, en secondes (comme le L-sit)
+        id: 'hs',
+        nom: 'Handstand (tenue libre)',
+        type: 'hold',
+        H: [3, 10, 20, 30, 45, 60, 90],
+        F: [3, 10, 20, 30, 45, 60, 90],
+        conseils: [
+          '',
+          'Équilibre libre : kick-up près du mur, puis sorties du mur en visant 3 s. Des essais courts et fréquents, quand vous êtes frais.',
+          'Allongez les tenues libres : 5 à 8 essais par séance, en cherchant 5 s puis 10 s. Corrigez l\'équilibre avec le bout des doigts.',
+          '20 s : 5 séries de 10 à 15 s, puis ajoutez 2 à 3 s par semaine. Travaillez la ligne : corps droit, fessiers serrés, regard entre les mains.',
+          '30 s : alternez des tenues libres (séries de 15 à 20 s) et des tenues contre le mur (45 à 60 s) pour le gainage.',
+          '45 s : 3 à 4 tenues longues, 2 minutes de repos. Variez la largeur des mains pour devenir régulier.',
+          '60 s : tenues longues en légère fatigue, puis quelques pas sur les mains sans casser la ligne.',
+          '90 s : très long. Une tenue à la limite par séance, le reste en qualité. Échauffez longuement les poignets et les épaules.',
+        ],
+      },
       { id: 'fl', nom: 'Front lever', type: 'ladder', etapes: ['Rien encore', 'Tuck 5 s', 'Tuck 15 s', 'Advanced tuck 10 s', 'One leg ou straddle 5 s', 'Full 3 s', 'Full 10 s', 'Full 20 s ou 5 front lever pull-ups'] },
-      { id: 'oap', nom: 'Traction à un bras (OAP)', type: 'ladder', etapes: ['Moins de 10 tractions', '10 tractions strictes', 'Tractions archer ×5', 'OAP assistée (serviette, doigt)', 'Négative à un bras 5 s', '1 OAP', '3 OAP chaque bras', '5+ OAP chaque bras'] },
+      {
+        id: 'oap',
+        nom: 'Traction à un bras (OAP)',
+        type: 'ladder',
+        etapes: ['Moins de 10 tractions', '10 tractions strictes', 'Tractions archer ×5', 'OAP assistée (serviette, doigt)', 'Négative à un bras 5 s', '1 OAP', '3 OAP chaque bras', '5+ OAP chaque bras'],
+        conseils: [
+          '',
+          '10 tractions strictes : menton au-dessus de la barre, bras tendus en bas, sans élan. Des séries de 3 à 5, 3 fois par semaine, jusqu\'à 10 d\'affilée.',
+          'Tractions archer : un bras tire, l\'autre reste tendu sur le côté. 5 par côté ; les négatives de 5 s aident à y arriver.',
+          'OAP assistée : traction à un bras, l\'autre main aide à peine (serviette ou doigts sur la barre). Réduisez l\'aide petit à petit.',
+          'Négative à un bras : montez à deux bras, descendez en 5 s sur un seul. 3 à 5 séries de 1 à 3 par bras.',
+          '1 OAP : négatives de 8 à 10 s, tractions archer lestées. 3 minutes de repos entre les essais, pas d\'essais à la fatigue.',
+          '3 OAP par bras : séries de 1 OAP, puis de 2. Gardez au moins 2 jours de repos entre séances : coudes et tendons récupèrent lentement.',
+          '5+ OAP par bras : du volume en séries de 3, les deux bras à l\'identique. Surveillez les coudes : au moindre doute, une semaine plus légère.',
+        ],
+      },
       { id: 'flag', nom: 'Drapeau (human flag)', type: 'ladder', etapes: ['Rien encore', 'Drapeau vertical 10 s', 'Tuck flag 5 s', 'Straddle 3 s', 'Straddle 10 s', 'Full 3 s', 'Full 10 s', 'Full 20 s ou flag press'] },
       { id: 'planche', nom: 'Planche', type: 'ladder', etapes: ['Rien encore', 'Frog stand 30 s', 'Tuck 10 s', 'Advanced tuck 10 s', 'Straddle 3 s', 'Straddle 10 s ou full 3 s', 'Full 5 s', 'Full 15 s ou planche push-ups'] },
       { id: 'cross', nom: 'Crucifix (anneaux)', type: 'ladder', etapes: ['Rien encore', 'Support anneaux 30 s', 'Support RTO 30 s', 'Cross avec élastique', 'Cross partielle (bras à 45°)', 'Iron cross 2 s', 'Iron cross 5 s', 'Iron cross 10 s ou maltese'] },

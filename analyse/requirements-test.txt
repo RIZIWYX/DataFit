@@ -1,0 +1,4 @@
+# Pour lancer les tests : pip install -r requirements-test.txt  puis  python -m unittest discover -s tests -v
+# (pas dans requirements.txt : l'image Docker n'a pas besoin de ce qui ne sert qu'aux tests)
+-r requirements.txt
+httpx==0.28.1

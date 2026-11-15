@@ -18,7 +18,8 @@ export const CHAMPS_CALISTHENICS: Record<string, string> = {
   traction: 'pullup',
   muscleup: 'mu',
   lSit: 'lsit',
-  handstand: 'hspu',
+  handstand: 'hspu', // l'étape de l'échelle des HSPU
+  handstandTenue: 'hs', // la tenue libre, en secondes
   frontLever: 'fl',
   oap: 'oap',
   flag: 'flag',
@@ -36,6 +37,7 @@ export interface SeanceCalisthenics {
   muscleup: number
   lSit: number
   handstand: number
+  handstandTenue: number
   frontLever: number
   oap: number
   flag: number
@@ -51,6 +53,7 @@ export interface CalisthenicsRequest {
   muscleup: number
   lSit: number
   handstand: number
+  handstandTenue: number
   frontLever: number
   oap: number
   flag: number

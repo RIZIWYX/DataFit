@@ -121,6 +121,17 @@ function Connexion() {
           </label>
         )}
 
+        {/* le consentement aux données de santé (RGPD, article 9) : une case à part, jamais cochée d'avance */}
+        {isInscription && (
+          <label className="cnx-cgu">
+            <input type="checkbox" name="sante" required />
+            <span>
+              Je consens au traitement de mes <strong>données de santé</strong> (fréquence cardiaque, sommeil,
+              poids) par DataFit, pour calculer mes indicateurs. Je peux retirer mon accord à tout moment.
+            </span>
+          </label>
+        )}
+
         {erreur && (
           <p className="alerte" role="alert">
             <Icone trace={ICONES.info} />

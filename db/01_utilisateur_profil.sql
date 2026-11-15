@@ -6,10 +6,12 @@ CREATE TABLE IF NOT EXISTS utilisateur (
     email         VARCHAR(255) NOT NULL UNIQUE,
     mot_de_passe  VARCHAR(255) NOT NULL,
     cree_le       TIMESTAMP NOT NULL DEFAULT now(),
-    cgu_acceptees_le TIMESTAMP  -- date d'acceptation des CGU, vide pour les comptes plus anciens
+    cgu_acceptees_le TIMESTAMP, -- date d'acceptation des CGU, vide pour les comptes plus anciens
+    sante_acceptee_le TIMESTAMP -- date du consentement aux données de santé, vide tant qu'il n'est pas donné
 );
--- bases créées avant cette colonne (CREATE TABLE IF NOT EXISTS ne modifie pas une table existante)
+-- bases créées avant ces colonnes (CREATE TABLE IF NOT EXISTS ne modifie pas une table existante)
 ALTER TABLE utilisateur ADD COLUMN IF NOT EXISTS cgu_acceptees_le TIMESTAMP;
+ALTER TABLE utilisateur ADD COLUMN IF NOT EXISTS sante_acceptee_le TIMESTAMP;
 
 -- l'adresse e-mail n'est plus confirmée par un lien envoyé par mail : on retire les colonnes
 -- de cette confirmation des bases qui les ont encore (sans effet sur une base neuve)

@@ -5,6 +5,10 @@
    (GrapheAnalyse), en dessous une seule colonne garde les graphiques assez grands pour être lus */
 .graphiques-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); gap: 1.25rem; }
 .graphiques-grille > *, .analyse-graphe { min-width: 0; }
+/* sous « Tous les sports » : la note et un bouton par sport pour ouvrir le détail */
+.graphiques-details { display: grid; gap: .75rem; }
+.graphiques-details .progression-note { margin: 0; }
+.graphiques-details-boutons { display: flex; flex-wrap: wrap; gap: .5rem; }
 .analyse-graphe { margin: 0; }
 .analyse-cadre { max-width: 100%; overflow-x: auto; }
 .analyse-svg { display: block; width: 100%; height: auto; overflow: visible; }

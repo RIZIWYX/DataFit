@@ -77,6 +77,16 @@ export default function GrapheAnalyse({ graphique: g }: { graphique: GraphiqueAn
       ymin -= ecart
       ymax += ecart
     }
+    // Des mesures presque constantes (10,08 à 10,15 km/h) ne doivent pas ressembler à de grandes
+    // variations : l'axe couvre au moins 10 % de la valeur (sauf barres ou axe qui part de zéro).
+    if (!barre && !g.depuisZero) {
+      const etendueMin = Math.abs(ymax || ymin) * 0.1
+      if (ymax - ymin < etendueMin) {
+        const milieu = (ymax + ymin) / 2
+        ymin = milieu - etendueMin / 2
+        ymax = milieu + etendueMin / 2
+      }
+    }
     // des mesures positives ne descendent pas sous zéro
     if (ymin < 0 && Math.min(...valeursY) >= 0) ymin = 0
     const grad = graduations(ymin, ymax, donneesY.every(Number.isInteger))

@@ -25,7 +25,7 @@ public Calisthenics valider(Utilisateur user, CalisthenicsRequest req) {
           "Une séance Calisthenics a déjà été enregistrée aujourd'hui."
           );
   }
-  Calisthenics entity = new Calisthenics(user, req.traction(), req.dip(), req.pompe(), req.muscleup(), req.pistol(), req.lSit(), req.handstand(), req.frontLever(), req.oap(), req.flag(), req.planche(), req.crucifix());
+  Calisthenics entity = new Calisthenics(user, req.traction(), req.dip(), req.pompe(), req.muscleup(), req.pistol(), req.lSit(), req.handstand(), req.frontLever(), req.oap(), req.flag(), req.planche(), req.crucifix(), req.handstandTenueOuZero());
   return repo.save(entity);
 }
 
@@ -72,5 +72,6 @@ private void appliquer(Calisthenics e, CalisthenicsRequest req) {
   e.setFlag(req.flag());
   e.setPlanche(req.planche());
   e.setCrucifix(req.crucifix());
+  e.setHandstandTenue(req.handstandTenueOuZero());
 }
 }
