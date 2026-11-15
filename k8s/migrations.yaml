@@ -1,0 +1,49 @@
+# Crée les tables : exécute les fichiers db/*.sql (dans l'ordre des numéros) sur la base, comme le fait
+# lancer.sh avec Docker et le workflow « Base Neon » en ligne. Les fichiers sont rejouables
+# (IF NOT EXISTS) : relancer ce Job ne détruit rien. Le ConfigMap « db-sql » est créé par
+# k8s/deployer.sh à partir du dossier db/ : il n'est donc jamais recopié ici.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrations
+  namespace: datafit
+  labels: { app: db-migrations, app.kubernetes.io/part-of: datafit }
+spec:
+  backoffLimit: 4
+  template:
+    metadata:
+      labels: { app: db-migrations, app.kubernetes.io/part-of: datafit }
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999   # l'utilisateur « postgres » de l'image
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: psql
+          image: postgres:17
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h db -U "$PGUSER" -d datafit; do echo "base pas prête..."; sleep 3; done
+              # le mot de passe du secret est celui de la base ; les .sql sont envoyés dans l'ordre
+              cat /sql/*.sql | psql -q -v ON_ERROR_STOP=1
+              echo "Tables à jour."
+          env:
+            - { name: PGHOST, value: db }
+            - { name: PGDATABASE, value: datafit }
+            - { name: PGOPTIONS, value: "-c client_min_messages=warning" }
+            - name: PGUSER
+              valueFrom: { secretKeyRef: { name: datafit-secrets, key: DB_USER } }
+            - name: PGPASSWORD
+              valueFrom: { secretKeyRef: { name: datafit-secrets, key: DB_PASSWORD } }
+          volumeMounts:
+            - { name: sql, mountPath: /sql, readOnly: true }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+      volumes:
+        - name: sql
+          configMap: { name: db-sql }

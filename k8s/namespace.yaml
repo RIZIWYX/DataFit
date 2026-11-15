@@ -1,0 +1,7 @@
+# Tout DataFit vit dans son propre « namespace » : un espace séparé du reste du cluster.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: datafit
+  labels:
+    app.kubernetes.io/part-of: datafit
