@@ -22,6 +22,27 @@ async function envoyer(chemin: string, corps: object, parDefaut: string): Promis
   }
 }
 
+// Le compte a-t-il un mot de passe ? (faux : compte créé avec Google, sans mot de passe choisi)
+export async function lireEtatMotDePasse(utilisateurId: IdentifiantUtilisateur): Promise<boolean> {
+  const reponse = await fetch(`${API_URL}/api/compte/${utilisateurId}/mot-de-passe`)
+  if (!reponse.ok) throw new Error(`Erreur HTTP ${reponse.status}`)
+  const data = (await reponse.json()) as { defini: boolean }
+  return data.defini
+}
+
+// Change le mot de passe ; l'actuel est vide pour un compte Google qui n'en a pas encore.
+export function changerMotDePasse(
+  utilisateurId: IdentifiantUtilisateur,
+  motDePasseActuel: string,
+  nouveauMotDePasse: string,
+): Promise<void> {
+  return envoyer(
+    `${utilisateurId}/mot-de-passe`,
+    { motDePasseActuel, nouveauMotDePasse },
+    "Le mot de passe n'a pas pu être changé.",
+  )
+}
+
 // Supprime définitivement le compte et toutes ses données. Le mot de passe sert de confirmation :
 // le backend le vérifie avant d'effacer quoi que ce soit.
 export function supprimerCompte(utilisateurId: IdentifiantUtilisateur, motDePasse: string): Promise<void> {

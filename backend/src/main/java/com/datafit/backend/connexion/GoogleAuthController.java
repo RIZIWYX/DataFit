@@ -76,10 +76,11 @@ public class GoogleAuthController {
         int id;
         if (ids.isEmpty()) {
             // nouveau compte : pas de mot de passe connu (une valeur aléatoire hachée, que personne
-            // ne connaît). Le bouton indique l'acceptation des CGU.
+            // ne connaît ; mot_de_passe_defini à faux, la page Profil propose d'en choisir un).
+            // Le bouton indique l'acceptation des CGU.
             id = jdbc.queryForObject(
-                    "INSERT INTO utilisateur (email, mot_de_passe, cgu_acceptees_le) "
-                            + "VALUES (?, ?, ?) RETURNING id",
+                    "INSERT INTO utilisateur (email, mot_de_passe, cgu_acceptees_le, mot_de_passe_defini) "
+                            + "VALUES (?, ?, ?, FALSE) RETURNING id",
                     Integer.class,
                     email, BCrypt.hashpw(UUID.randomUUID().toString(), BCrypt.gensalt()), LocalDateTime.now());
         } else {

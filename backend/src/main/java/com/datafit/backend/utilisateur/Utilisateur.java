@@ -24,6 +24,10 @@ public class Utilisateur {
     @Column(name = "cgu_acceptees_le")
     private LocalDateTime cguAccepteesLe;
 
+    // faux pour un compte créé avec Google tant qu'aucun mot de passe n'a été choisi
+    @Column(name = "mot_de_passe_defini", nullable = false)
+    private boolean motDePasseDefini = true;
+
     protected Utilisateur() {
         // Constructeur par défaut requis par JPA
     }
@@ -32,6 +36,12 @@ public class Utilisateur {
         this.email = email;
         this.passwordHash = passwordHash;
         this.createdAt = LocalDateTime.now();
+    }
+
+    // nouveau mot de passe, déjà haché (BCrypt) : le compte a désormais un mot de passe connu
+    public void changerMotDePasse(String nouveauHash) {
+        this.passwordHash = nouveauHash;
+        this.motDePasseDefini = true;
     }
 
     public void accepterCgu() {
@@ -56,5 +66,9 @@ public class Utilisateur {
 
     public LocalDateTime getCguAccepteesLe() {
         return cguAccepteesLe;
+    }
+
+    public boolean isMotDePasseDefini() {
+        return motDePasseDefini;
     }
 }

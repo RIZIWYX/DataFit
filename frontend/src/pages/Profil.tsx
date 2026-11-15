@@ -6,6 +6,7 @@ import TitrePage from '../components/TitrePage.tsx'
 import { ICONES } from '../data/icones.ts'
 import { LISTE_SPORTS, SPORTS } from '../data/sports.ts'
 import useEffacementDonnees from '../hooks/useEffacementDonnees.ts'
+import useMotDePasse, { LONGUEUR_MIN_MOT_DE_PASSE } from '../hooks/useMotDePasse.ts'
 import useProfil, { type ChampProfil } from '../hooks/useProfil.ts'
 import useSuppressionCompte from '../hooks/useSuppressionCompte.ts'
 import { CATEGORIES_DONNEES } from '../lib/compte.ts'
@@ -140,6 +141,7 @@ function Profil() {
   const { profil, enEdition, editer, annuler, enregistrer, message, erreur, envoi } = useProfil()
   const suppression = useSuppressionCompte()
   const effacement = useEffacementDonnees()
+  const motDePasse = useMotDePasse()
   const nomComplet = `${profil?.prenom ?? ''} ${profil?.nom ?? ''}`.trim()
 
   function enregistrerChamp(champ: DefinitionChamp, event: SubmitEvent<HTMLFormElement>) {
@@ -243,11 +245,99 @@ function Profil() {
           <div className="profil-groupe profil-securite">
             <h3>Sécurité</h3>
             <dl>
-              <div className="profil-ligne">
-                <dt>Mot de passe</dt>
-                <dd className="vide">Modifiable quand les comptes existeront</dd>
-                <span className="etiquette">Bientôt</span>
-              </div>
+              {/* mot de passe : un bouton, puis le formulaire (actuel, nouveau, confirmation) */}
+              {motDePasse.ouvert ? (
+                <form
+                  className="profil-ligne en-edition"
+                  aria-labelledby="mot-de-passe-titre"
+                  onSubmit={motDePasse.confirmer}
+                  onKeyDown={(e) => e.key === 'Escape' && !motDePasse.enCours && motDePasse.fermer()}
+                >
+                  <p id="mot-de-passe-titre" className="profil-suppression-titre">
+                    {motDePasse.aUnMotDePasse ? 'Changer le mot de passe' : 'Définir un mot de passe'}
+                  </p>
+                  {motDePasse.aUnMotDePasse ? (
+                    <>
+                      <label htmlFor="mdp-actuel" className="champ-nom">
+                        Mot de passe actuel
+                      </label>
+                      <input
+                        id="mdp-actuel"
+                        name="mot-de-passe-actuel"
+                        type="password"
+                        autoComplete="current-password"
+                        required
+                        autoFocus
+                      />
+                    </>
+                  ) : (
+                    <p className="profil-suppression-texte">
+                      Votre compte a été créé avec « Continuer avec Google » : choisissez un mot de passe
+                      pour pouvoir aussi vous connecter avec votre adresse e-mail.
+                    </p>
+                  )}
+                  <label htmlFor="mdp-nouveau" className="champ-nom">
+                    Nouveau mot de passe
+                  </label>
+                  <input
+                    id="mdp-nouveau"
+                    name="nouveau-mot-de-passe"
+                    type="password"
+                    autoComplete="new-password"
+                    minLength={LONGUEUR_MIN_MOT_DE_PASSE}
+                    required
+                    autoFocus={!motDePasse.aUnMotDePasse}
+                  />
+                  <p className="champ-aide">Au moins {LONGUEUR_MIN_MOT_DE_PASSE} caractères.</p>
+                  <label htmlFor="mdp-confirmation" className="champ-nom">
+                    Confirmer le nouveau mot de passe
+                  </label>
+                  <input
+                    id="mdp-confirmation"
+                    name="confirmation-mot-de-passe"
+                    type="password"
+                    autoComplete="new-password"
+                    minLength={LONGUEUR_MIN_MOT_DE_PASSE}
+                    required
+                  />
+                  {motDePasse.erreur && (
+                    <p className="alerte" role="alert">
+                      <Icone trace={ICONES.info} />
+                      {motDePasse.erreur}
+                    </p>
+                  )}
+                  <div className="profil-ligne-actions">
+                    <button type="submit" className="bouton petit" disabled={motDePasse.enCours}>
+                      {motDePasse.enCours ? 'Enregistrement…' : 'Enregistrer'}
+                    </button>
+                    <button
+                      type="button"
+                      className="bouton secondaire petit"
+                      disabled={motDePasse.enCours}
+                      onClick={motDePasse.fermer}
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="profil-ligne">
+                  <dt>Mot de passe</dt>
+                  {motDePasse.message ? (
+                    <dd className="message-ok" role="status">
+                      <Icone trace={ICONES.valide} />
+                      {motDePasse.message}
+                    </dd>
+                  ) : (
+                    <dd className={motDePasse.aUnMotDePasse ? undefined : 'vide'}>
+                      {motDePasse.aUnMotDePasse ? '••••••••' : 'Aucun (compte Google)'}
+                    </dd>
+                  )}
+                  <button type="button" className="bouton petit secondaire" onClick={motDePasse.ouvrir}>
+                    {motDePasse.aUnMotDePasse ? 'Changer' : 'Définir'}
+                  </button>
+                </div>
+              )}
 
               {/* effacement de certaines données : le compte et le profil restent */}
               {effacement.ouvert ? (
@@ -355,8 +445,9 @@ function Profil() {
                     autoFocus
                   />
                   <p className="champ-aide">
-                    Compte créé avec « Continuer avec Google » ? Il n'a pas de mot de passe :
-                    demandez sa suppression depuis la page <Link to="/contact">Contact</Link>.
+                    Compte créé avec « Continuer avec Google » ? Définissez d'abord un mot de passe
+                    (ligne « Mot de passe » ci-dessus), ou demandez la suppression depuis la page{' '}
+                    <Link to="/contact">Contact</Link>.
                   </p>
                   {suppression.erreur && (
                     <p className="alerte" role="alert">
