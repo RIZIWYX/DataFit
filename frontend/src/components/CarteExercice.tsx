@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { type Exercice, NOMS_RANGS, RANGS } from '../data/paliers.ts'
+import { lireProfil } from '../lib/profil.ts'
 import {
   type Perfs,
   type Profil,
+  conseilProchain,
   estVerrouille,
   formatValeur,
   libelleMesure,
@@ -37,8 +39,11 @@ const PLACEHOLDERS: Record<string, string> = {
 
 function CarteExercice({ exercice: ex, perfs, profil, onChange }: Props) {
   const [ouvert, setOuvert] = useState(false)
+  const [conseilOuvert, setConseilOuvert] = useState(false)
   const verrouille = estVerrouille(ex, perfs, profil)
   const r = verrouille ? -1 : rang(ex, perfs, profil)
+  // handstand, OAP : comment atteindre l'étape suivante, au rythme du niveau du profil
+  const conseil = conseilProchain(ex, r, lireProfil()?.niveau ?? '')
   const s = seuils(ex, profil)
   const pct = verrouille ? 0 : progression(ex, perfs, profil)
   const idChamp = `perf-${ex.id}`
@@ -98,9 +103,23 @@ function CarteExercice({ exercice: ex, perfs, profil, onChange }: Props) {
             : texteProchain(ex, perfs, profil, RANGS)}
         </p>
 
-        <button type="button" className="sport-lien" aria-expanded={ouvert} onClick={() => setOuvert(!ouvert)}>
-          {ouvert ? 'Masquer les paliers' : 'Voir les paliers'}
-        </button>
+        <div className="sport-liens">
+          <button type="button" className="sport-lien" aria-expanded={ouvert} onClick={() => setOuvert(!ouvert)}>
+            {ouvert ? 'Masquer les paliers' : 'Voir les paliers'}
+          </button>
+          {conseil && (
+            <button type="button" className="sport-lien" aria-expanded={conseilOuvert} onClick={() => setConseilOuvert(!conseilOuvert)}>
+              {conseilOuvert ? 'Masquer le conseil' : 'Comment y arriver ?'}
+            </button>
+          )}
+        </div>
+
+        {conseil && conseilOuvert && (
+          <div className="sport-conseil">
+            <p>{conseil.etape}</p>
+            <p className="sport-conseil-rythme">{conseil.rythme}</p>
+          </div>
+        )}
       </div>
 
       <BadgeRang rang={r} />
