@@ -7,8 +7,10 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - donnees-postgres:/var/lib/postgresql/data
+    # 127.0.0.1 : la base n'est joignable que depuis cette machine, pas depuis le réseau.
+    # (Les autres conteneurs la joignent par le réseau interne de Docker, sans ce port.)
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d datafit"]
       interval: 5s
@@ -18,10 +20,13 @@ services:
   simulateur:
     build: ./simulateur
     image: datafit-simulateur
+    environment:
+      DOCS_ACTIVES: ${DOCS_ACTIVES:-}
+    # service interne : seulement depuis cette machine (le backend passe par le réseau Docker)
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/openapi.json', timeout=3)"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/sante', timeout=3)"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -30,17 +35,31 @@ services:
   analyse:
     build: ./analyse
     image: datafit-analyse
+    environment:
+      DOCS_ACTIVES: ${DOCS_ACTIVES:-}
     ports:
-      - "8001:8001"
+      - "127.0.0.1:8001:8001"
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/openapi.json', timeout=3)"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/sante', timeout=3)"]
       interval: 5s
       timeout: 5s
       retries: 10
       start_period: 10s
 
+  # Le backend ne tourne plus en root (uid 10001) : ce service, lancé une fois avant lui, donne le
+  # volume des mesures à cet utilisateur (un volume créé avant ce changement appartient à root).
+  permissions-mesures:
+    image: datafit-backend
+    build: ./backend
+    user: "0:0"
+    entrypoint: ["chown", "-R", "10001:10001", "/app/donnees-montre"]
+    volumes:
+      - mesures-montre:/app/donnees-montre
+    restart: "no"
+
   backend:
     build: ./backend
+    image: datafit-backend
     environment:
       DB_URL: jdbc:postgresql://db:5432/datafit
       DB_USER: ${DB_USER}
@@ -52,6 +71,10 @@ services:
       STRIPE_PRIX_MENSUEL: ${STRIPE_PRIX_MENSUEL:-}
       STRIPE_PRIX_ANNUEL: ${STRIPE_PRIX_ANNUEL:-}
       SITE_URL: ${SITE_URL:-http://localhost:3000}
+      # Sécurité : sites autorisés (CORS), cookie réservé à HTTPS, requêtes SQL dans les logs
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:5173,https://datafit-riziwyx.vercel.app}
+      SESSION_COOKIE_SECURISE: ${SESSION_COOKIE_SECURISE:-false}
+      JPA_SHOW_SQL: ${JPA_SHOW_SQL:-false}
       # Services Python SD
       SIMULATEUR_URL: http://simulateur:8000
       ANALYSE_URL: http://analyse:8001
@@ -61,12 +84,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      permissions-mesures:
+        condition: service_completed_successfully
       simulateur:
         condition: service_healthy
       analyse:
         condition: service_healthy
+    # seul le site (nginx, :3000) doit être joignable depuis le réseau ; l'API reste locale
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
 
   frontend:
     build: ./frontend
