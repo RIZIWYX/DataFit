@@ -53,6 +53,8 @@ Avec le Docker de snap, `snap restart` ne suffit pas : le snap garde une copie f
 | Backend | http://localhost:8080 |
 | Base PostgreSQL | `localhost:5433` |
 
+Le backend, la base et les services Python ne sont publiés que sur `127.0.0.1` : joignables depuis ta machine, pas depuis le réseau. Seul le site (:3000) est visible des autres.
+
 Ce que fait le script, dans l'ordre :
 
 1. t'ajoute au groupe `docker` si ce n'est pas encore fait (une seule fois), pour utiliser Docker sans `sudo` ;
@@ -110,7 +112,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8001   # simulateur : uvicorn main:app --reload --port 8000
 ```
 
-La documentation interactive de chaque service est sur `http://localhost:8001/docs` et `http://localhost:8000/docs`.
+La documentation interactive de chaque service (`http://localhost:8001/docs` et `http://localhost:8000/docs`) est éteinte par défaut : lance-les avec `DOCS_ACTIVES=1 uvicorn ...` pour l'avoir.
 
 Un **environnement virtuel** (`.venv`) garde les bibliothèques du projet séparées de celles du système. Il ne doit jamais être poussé : `.venv/` est dans le `.gitignore`.
 
@@ -121,6 +123,10 @@ Un **environnement virtuel** (`.venv`) garde les bibliothèques du projet sépar
 | `DB_USER` | base, back | `datafit_user` (back) | utilisateur PostgreSQL |
 | `DB_PASSWORD` | base, back | **aucun**, obligatoire | mot de passe PostgreSQL |
 | `DB_URL` | back | `jdbc:postgresql://localhost:5433/datafit` | adresse de la base |
+| `CORS_ORIGINS` | back | `localhost:3000`, `localhost:5173`, site en ligne | sites autorisés à appeler l'API, séparés par des virgules |
+| `SESSION_COOKIE_SECURISE` | back | `false` | `true` en ligne (HTTPS) : le cookie de session ne circule qu'en HTTPS |
+| `JPA_SHOW_SQL` | back | `false` | écrit les requêtes SQL dans les logs (déboguer seulement : peuvent contenir des données de santé) |
+| `DOCS_ACTIVES` | simulateur, analyse | vide | `1` rallume les pages `/docs` |
 
 Toute nouvelle variable doit être ajoutée **ici et dans `.env.example`**, avec une valeur d'exemple sans danger.
 

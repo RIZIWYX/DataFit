@@ -145,4 +145,8 @@ Avec Docker lancé, la base écoute sur le port **5433** de ta machine (5432 dan
 docker compose exec db psql -U datafit_user -d datafit
 ```
 
-Ou avec un outil graphique (DBeaver, l'extension PostgreSQL de VS Code) : hôte `localhost`, port `5433`, base `datafit`, utilisateur et mot de passe de ton `.env`.
+Ou avec un outil graphique (DBeaver, l'extension PostgreSQL de VS Code) : hôte `localhost`, port `5433`, base `datafit`, utilisateur et mot de passe de ton `.env`. Le port n'est ouvert que sur `127.0.0.1` : il ne fonctionne que depuis ta machine.
+
+## Sessions de connexion
+
+`db/11_sessions.sql` crée `session_utilisateur` : une ligne par navigateur connecté (`jeton_hash` = empreinte SHA-256 du jeton du cookie, jamais le jeton lui-même ; `utilisateur_id` ; `expire_le`). Elle est supprimée à la déconnexion, à l'expiration (7 jours, nettoyée à chaque nouvelle connexion) et avec le compte (`ON DELETE CASCADE`). « Effacer mes données » n'y touche pas (`CompteService.TABLES_GARDEES`).
