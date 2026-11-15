@@ -286,6 +286,31 @@
 .sport-lien:hover {
   color: var(--blanc);
 }
+/* « Voir les paliers » et « Comment y arriver ? » côte à côte */
+.sport-liens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+}
+/* le conseil pour atteindre l'étape suivante (handstand, OAP) */
+.sport-conseil {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--noir-2);
+  border-left: 3px solid var(--turquoise);
+  border-radius: var(--rayon-s);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.sport-conseil p {
+  margin: 0;
+  color: var(--blanc);
+}
+.sport-conseil .sport-conseil-rythme {
+  color: var(--gris);
+}
 
 /* tableau des paliers */
 .sport-paliers {
