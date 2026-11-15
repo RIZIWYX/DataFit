@@ -14,6 +14,9 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
+      # bibliothèques du site avec une faille connue (gravité haute ou critique) : la CI échoue
+      - name: Audit des dépendances
+        run: npm audit --omit=dev --audit-level=high
       - run: npm run build
   backend:
     runs-on: ubuntu-latest

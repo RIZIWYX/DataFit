@@ -1,6 +1,7 @@
 import importlib
 import json
 import logging
+import os
 from datetime import date
 from typing import Literal
 
@@ -8,7 +9,21 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
 
-app = FastAPI(title="DataFit - Simulateurs")
+# La page Swagger (/docs) et le schéma (/openapi.json) décrivent toute l'API à qui les demande :
+# éteints par défaut. Pour les avoir en local : DOCS_ACTIVES=1 dans .env.
+_DOCS = os.getenv("DOCS_ACTIVES") == "1"
+app = FastAPI(
+    title="DataFit - Simulateurs",
+    docs_url="/docs" if _DOCS else None,
+    redoc_url=None,
+    openapi_url="/openapi.json" if _DOCS else None,
+)
+
+
+# utilisé par le healthcheck de docker-compose et par Kubernetes
+@app.get("/sante", include_in_schema=False)
+def sante():
+    return {"statut": "ok"}
 
 logger = logging.getLogger(__name__)
 

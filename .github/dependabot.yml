@@ -1,0 +1,40 @@
+# Dependabot ouvre une PR quand une bibliothèque a une nouvelle version ou une faille connue.
+# Une PR par écosystème et par semaine au plus : la CI la teste comme n'importe quelle autre.
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /backend
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: /analyse
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: /simulateur
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /backend
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /frontend
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /analyse
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /simulateur
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
