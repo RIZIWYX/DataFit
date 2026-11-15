@@ -1,0 +1,84 @@
+# Pare-feu interne du cluster : par défaut, personne ne peut joindre personne ; on ouvre seulement
+# les chemins dont l'application a besoin. Résultat : la base n'est joignable que par le backend,
+# et les services Python que par le backend (point 2 de l'audit de sécurité).
+# Nécessite un cluster dont le réseau applique les NetworkPolicy (Calico, Cilium...). Sans cela,
+# elles sont acceptées mais n'ont aucun effet.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: tout-interdire-en-entree
+  namespace: datafit
+spec:
+  podSelector: {}          # tous les pods du namespace
+  policyTypes: ["Ingress"]
+---
+# le site : joignable depuis l'extérieur du namespace (le contrôleur Ingress)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-depuis-ingress
+  namespace: datafit
+spec:
+  podSelector:
+    matchLabels: { app: frontend }
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - { port: 80, protocol: TCP }
+---
+# le backend : joignable seulement par le site (nginx)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-depuis-frontend
+  namespace: datafit
+spec:
+  podSelector:
+    matchLabels: { app: backend }
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels: { app: frontend }
+      ports:
+        - { port: 8080, protocol: TCP }
+---
+# la base : joignable seulement par le backend et par le Job qui crée les tables
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-depuis-backend
+  namespace: datafit
+spec:
+  podSelector:
+    matchLabels: { app: db }
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels: { app: backend }
+        - podSelector:
+            matchLabels: { app: db-migrations }
+      ports:
+        - { port: 5432, protocol: TCP }
+---
+# les services Python : joignables seulement par le backend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: services-python-depuis-backend
+  namespace: datafit
+spec:
+  podSelector:
+    matchExpressions:
+      - { key: app, operator: In, values: [simulateur, analyse] }
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels: { app: backend }
+      ports:
+        - { port: 8000, protocol: TCP }
+        - { port: 8001, protocol: TCP }

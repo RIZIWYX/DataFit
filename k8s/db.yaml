@@ -1,0 +1,78 @@
+# La base PostgreSQL : un StatefulSet (pod qui garde son identité et son disque) + un Service « db ».
+# Une seule réplique : PostgreSQL seul n'est pas répliqué ici.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+  namespace: datafit
+  labels: { app: db, app.kubernetes.io/part-of: datafit }
+spec:
+  serviceName: db
+  replicas: 1
+  selector:
+    matchLabels: { app: db }
+  template:
+    metadata:
+      labels: { app: db, app.kubernetes.io/part-of: datafit }
+    spec:
+      securityContext:
+        # PostgreSQL tourne directement avec l'utilisateur « postgres » de l'image (999) : par défaut
+        # l'image démarre en root puis change de droits, ce que « drop: ALL » ci-dessous interdit
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999            # ce même utilisateur peut écrire sur le disque
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: postgres
+          image: postgres:17
+          ports:
+            - { name: sql, containerPort: 5432 }
+          env:
+            - { name: POSTGRES_DB, value: datafit }
+            - name: POSTGRES_USER
+              valueFrom: { secretKeyRef: { name: datafit-secrets, key: DB_USER } }
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: datafit-secrets, key: DB_PASSWORD } }
+            # un sous-dossier : la racine du disque contient « lost+found », que PostgreSQL refuse
+            - { name: PGDATA, value: /var/lib/postgresql/data/pgdata }
+          volumeMounts:
+            - { name: donnees, mountPath: /var/lib/postgresql/data }
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U \"$POSTGRES_USER\" -d datafit"]
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U \"$POSTGRES_USER\" -d datafit"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { memory: 512Mi }
+  volumeClaimTemplates:
+    - metadata:
+        name: donnees
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests: { storage: 5Gi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: datafit
+  labels: { app: db, app.kubernetes.io/part-of: datafit }
+spec:
+  # ClusterIP : joignable seulement depuis l'intérieur du cluster (jamais exposé dehors)
+  type: ClusterIP
+  selector: { app: db }
+  ports:
+    - { name: sql, port: 5432, targetPort: sql }

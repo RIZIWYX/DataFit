@@ -41,3 +41,6 @@ backend/donnees-montre/
 # Notebooks Jupyter
 *.ipynb
 .ipynb_checkpoints/
+
+# Secrets Kubernetes (le modèle k8s/secret.example.yaml, lui, est commité)
+k8s/secret.yaml

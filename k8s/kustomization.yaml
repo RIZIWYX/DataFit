@@ -1,0 +1,15 @@
+# « kubectl apply -k k8s » applique tous ces fichiers d'un coup.
+# Le Secret (secret.yaml) et le ConfigMap des tables (db-sql) sont créés avant par k8s/deployer.sh.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: datafit
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - db.yaml
+  - migrations.yaml
+  - services-python.yaml
+  - backend.yaml
+  - frontend.yaml
+  - network-policies.yaml
+  - ingress.yaml

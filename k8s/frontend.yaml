@@ -1,0 +1,50 @@
+# Le site : nginx qui sert les fichiers React et transmet /api/ au Service « backend »
+# (voir frontend/nginx.conf, qui fait le même travail avec Docker Compose).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: datafit
+  labels: { app: frontend, app.kubernetes.io/part-of: datafit }
+spec:
+  replicas: 2   # sans état : on peut en avoir plusieurs
+  selector:
+    matchLabels: { app: frontend }
+  template:
+    metadata:
+      labels: { app: frontend, app.kubernetes.io/part-of: datafit }
+    spec:
+      securityContext:
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: frontend
+          image: datafit-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 80 }
+          readinessProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /, port: http }
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          # nginx démarre en root pour ouvrir le port 80 puis passe à un utilisateur sans droits :
+          # on ne peut donc pas imposer runAsNonRoot ici, mais on interdit toute élévation de droits
+          securityContext:
+            allowPrivilegeEscalation: false
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 128Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: datafit
+  labels: { app: frontend, app.kubernetes.io/part-of: datafit }
+spec:
+  type: ClusterIP
+  selector: { app: frontend }
+  ports:
+    - { name: http, port: 80, targetPort: http }

@@ -1,0 +1,20 @@
+# Réglages non secrets, lus par le backend (équivalent des variables d'environnement de docker-compose.yml).
+# Les secrets (mot de passe de la base, clés Stripe) sont dans secret.yaml, jamais ici.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datafit-config
+  namespace: datafit
+data:
+  # la base et les deux services Python sont joints par le nom de leur Service
+  DB_URL: jdbc:postgresql://db:5432/datafit
+  SIMULATEUR_URL: http://simulateur:8000
+  ANALYSE_URL: http://analyse:8001
+  DATAFIT_MESURES_DIR: /app/donnees-montre
+  # l'adresse du site (retour après paiement) et les sites autorisés à appeler l'API (CORS).
+  # À remplacer par ton vrai domaine : voir docs/kubernetes.md.
+  SITE_URL: http://datafit.local
+  CORS_ORIGINS: http://datafit.local
+  # false tant que le site est en HTTP (cluster local) ; true dès qu'il est servi en HTTPS
+  SESSION_COOKIE_SECURISE: "false"
+  JPA_SHOW_SQL: "false"
