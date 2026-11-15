@@ -59,15 +59,19 @@ Générer cette liste depuis le code avec `springdoc-openapi` (page Swagger sur 
 
 ## Endpoints du backend
 
-Liste tirée du code (`backend/src/main/java/com/datafit/backend/`). `{utilisateurId}` est l'identifiant renvoyé par la connexion. Voir [Sécurité § Authentification](securite.md#authentification) pour la limite actuelle de ce choix.
+Liste tirée du code (`backend/src/main/java/com/datafit/backend/`). `{utilisateurId}` est l'identifiant renvoyé par la connexion.
+
+**Authentification.** Toutes les routes exigent une session, sauf `/api/auth/*`, `POST /api/contact` et `/api/stripe/webhook`. La session est un cookie `datafit_session` (`HttpOnly`) posé par la connexion, l'inscription et Google : le navigateur le renvoie tout seul. Sans cookie valide : **`401`** `{ error }`. Si `{utilisateurId}` n'est pas le compte connecté : **`403`** `{ error }`. Trop d'essais : **`429`**. Détail : [Sécurité § Authentification](securite.md#authentification).
 
 ### Comptes
 
 | Méthode | Adresse | Description |
 |---|---|---|
-| `POST` | `/api/auth/register` | Crée un compte, utilisable tout de suite (aucun mail de confirmation), renvoie `{ id, email }` |
-| `POST` | `/api/auth/login` | Vérifie les identifiants, renvoie `{ id, email }` |
-| `POST` | `/api/profil/register/profil` | Crée le profil (nom, sexe, poids, taille, objectif, niveau, activité, date de naissance) |
+| `POST` | `/api/auth/register` | Crée un compte, utilisable tout de suite (aucun mail de confirmation), ouvre la session (cookie) et renvoie `{ id, email }`. `400` adresse déjà utilisée (majuscules ignorées) ou mot de passe de plus de 72 octets |
+| `POST` | `/api/auth/login` | Vérifie les identifiants, ouvre la session (cookie) et renvoie `{ id, email }`. `400` identifiants incorrects ; `429` après 5 échecs sur la même adresse e-mail (15 minutes) |
+| `POST` | `/api/auth/google` | Connexion « Continuer avec Google » : `{ credential }`, même réponse et même cookie que `/login` |
+| `POST` | `/api/auth/logout` | Ferme la session et efface le cookie, `204` (aussi sans session) |
+| `POST` | `/api/profil/register/profil` | Crée le profil (nom, sexe, poids, taille, objectif, niveau, activité, date de naissance). `403` si `utilisateurId` du corps n'est pas le compte connecté |
 | `POST` | `/api/compte/{utilisateurId}/suppression` | Supprime définitivement le compte, confirmé par `{ motDePasse }` : arrête l'abonnement Stripe, efface toutes les tables (`ON DELETE CASCADE`) puis les mesures de la montre. `204` ; `403` mot de passe incorrect ; `404` compte inconnu ; `503` si Stripe ne répond pas (rien n'est effacé). `POST` et pas `DELETE` : le mot de passe est dans le corps, qu'un `DELETE` ne transmet pas partout |
 | `POST` | `/api/compte/{utilisateurId}/effacement` | Efface certaines données en gardant le compte, le profil et l'abonnement : `{ categories, motDePasse }`, `categories` parmi `seances`, `sommeil`, `nutrition`, `performances` (tables de chacune : `CategorieDonnees.java`), avec les mesures de la montre correspondantes. `204` ; `400` aucune catégorie ou catégorie inconnue ; `403` mot de passe incorrect ; `404` compte inconnu |
 | `POST` | `/api/contact` | Enregistre un message du formulaire de contact |
@@ -133,7 +137,7 @@ Paiement par Stripe, en mode test. Pas de ligne en base = formule gratuite. L'ab
 
 ## Services Python
 
-Appelés **uniquement par le backend**, jamais par le front. Tous deux sont écrits avec FastAPI, qui publie leur documentation interactive sur `/docs`.
+Appelés **uniquement par le backend**, jamais par le front. Tous deux sont écrits avec FastAPI. Leur documentation interactive (`/docs`) est éteinte par défaut : `DOCS_ACTIVES=1` dans `.env` la rallume en local. Chacun a une route `/sante` (statut `ok`) pour les healthchecks.
 
 | Service | Méthode | Adresse | Entrée | Sortie |
 |---|---|---|---|---|
