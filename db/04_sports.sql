@@ -49,9 +49,15 @@ CREATE TABLE IF NOT EXISTS calisthenics (
     flag           FLOAT NOT NULL,
     planche        FLOAT NOT NULL,
     crucifix       FLOAT NOT NULL,
+    -- tenue libre en handstand, en secondes (0 = pas saisie). La colonne handstand ci-dessus est
+    -- l'étape de l'échelle des HSPU (pompes en équilibre), de 0 à 7.
+    handstand_tenue FLOAT NOT NULL DEFAULT 0,
     UNIQUE (utilisateur_id, date)
 );
 CREATE INDEX IF NOT EXISTS idx_calisthenics_user_date ON calisthenics (utilisateur_id, date);
+-- bases créées avant cette colonne (CREATE TABLE IF NOT EXISTS ne modifie pas une table existante) :
+-- les saisies déjà faites gardent 0 seconde
+ALTER TABLE calisthenics ADD COLUMN IF NOT EXISTS handstand_tenue FLOAT NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS natation (
     id             SERIAL PRIMARY KEY,

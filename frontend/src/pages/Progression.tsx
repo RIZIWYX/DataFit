@@ -201,7 +201,7 @@ function VueEnsemble({ p }: { p: DonneesPage }) {
           </EtatVide>
         </Panneau>
       )}
-      <GraphiquesProgression sport={p.sport} semaines={p.nbSemaines} />
+      <GraphiquesProgression sport={p.sport} semaines={p.nbSemaines} choisirSport={p.choisirSport} />
     </>
   )
 }

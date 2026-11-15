@@ -133,15 +133,40 @@ describe('texteProchain', () => {
 
   it('pour une échelle, annonce l\'étape suivante', () => {
     const texte = texteProchain(exercice('hspu'), { hspu: '1' }, HOMME, ['E', 'D', 'C', 'B'])
-    expect(texte).toContain('ATR contre le mur 30 s')
+    expect(texte).toContain('Pike push-up pieds surélevés')
+  })
+})
+
+describe('handstand : tenue libre (secondes) et échelle des HSPU', () => {
+  it('sont deux exercices distincts', () => {
+    expect(exercice('hs').type).toBe('hold')
+    expect(exercice('hspu').type).toBe('ladder')
+    // l'échelle ne contient plus de tenue : seulement des poussées
+    expect(exercice('hspu').etapes!.join(' ')).not.toMatch(/ATR/)
+  })
+
+  it('la tenue se range comme le L-sit : un rang par seuil atteint', () => {
+    // seuils : 3, 10, 20, 30, 45, 60, 90 secondes
+    expect(rang(exercice('hs'), { hs: '2' }, HOMME)).toBe(0)
+    expect(rang(exercice('hs'), { hs: '3' }, HOMME)).toBe(1)
+    expect(rang(exercice('hs'), { hs: '25' }, HOMME)).toBe(3)
+    expect(rang(exercice('hs'), { hs: '90' }, HOMME)).toBe(7)
+    expect(texteProchain(exercice('hs'), { hs: '25' }, HOMME, ['E', 'D', 'C', 'B', 'A'])).toContain('5 s à prendre')
+  })
+
+  it('les deux sont indépendants : une tenue ne change pas l\'étape des HSPU', () => {
+    const perfs = { hs: '60', hspu: '1' }
+    expect(rang(exercice('hs'), perfs, HOMME)).toBe(6)
+    expect(rang(exercice('hspu'), perfs, HOMME)).toBe(1)
   })
 })
 
 describe('conseilProchain (handstand, OAP)', () => {
   it('donne le conseil de l\'étape suivante et le rythme du niveau', () => {
     const conseil = conseilProchain(exercice('hspu'), 1, 'novice')
-    expect(conseil?.etape).toContain('ATR')
+    expect(conseil?.etape).toContain('surélevés')
     expect(conseil?.rythme).toContain('novice')
+    expect(conseilProchain(exercice('hs'), 2, 'novice')?.etape).toContain('20 s')
     expect(conseilProchain(exercice('oap'), 3, 'confirmer')?.rythme).toContain('confirmé')
   })
 
@@ -157,12 +182,12 @@ describe('conseilProchain (handstand, OAP)', () => {
   })
 
   it('a un conseil écrit pour chacune des 7 étapes à atteindre', () => {
-    for (const id of ['hspu', 'oap']) {
+    for (const id of ['hspu', 'oap', 'hs']) {
       const ex = exercice(id)
       for (let etape = 1; etape <= 7; etape++) {
         expect(ex.conseils?.[etape], `${id} étape ${etape}`).toBeTruthy()
       }
-      expect(ex.conseils).toHaveLength(ex.etapes!.length)
+      expect(ex.conseils, id).toHaveLength(8) // un conseil par rang, de E à Z
     }
   })
 })
