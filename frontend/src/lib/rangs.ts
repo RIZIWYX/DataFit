@@ -156,10 +156,10 @@ export function texteProchain(ex: Exercice, perfs: Perfs, profil: Profil, nomsRa
   return `Prochain : ${nomsRangs[r + 1]} à ${formatValeur(ex, cible)} · ${ecart}`
 }
 
-// Comment atteindre l'étape suivante d'une échelle (handstand, OAP...), s'il y a un conseil.
-// Renvoie le conseil de l'étape, puis le rythme de séances conseillé selon le niveau du profil.
+// Comment atteindre le rang suivant d'un exercice (échelle des HSPU ou de l'OAP, tenue en handstand...),
+// s'il y a un conseil. Renvoie le conseil, puis le rythme de séances conseillé selon le niveau du profil.
 export function conseilProchain(ex: Exercice, rangActuel: number, niveau: string): { etape: string; rythme: string } | null {
-  if (ex.type !== 'ladder' || rangActuel < 0 || rangActuel >= 7) return null
+  if (rangActuel < 0 || rangActuel >= 7) return null
   const etape = ex.conseils?.[rangActuel + 1]
   if (!etape) return null
   return { etape, rythme: RYTHMES[niveau] ?? RYTHMES.intermediaire }
