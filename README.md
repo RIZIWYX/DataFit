@@ -82,7 +82,7 @@ La base Neon est mise à jour automatiquement : à chaque merge sur `main` qui m
 
 ## Pour aller plus loin
 
-- [Architecture](docs/architecture.md), [API](docs/api.md), [Base de données](docs/base-de-donnees.md), [Sécurité](docs/securite.md) et son [audit](docs/audit-securite.md), [Kubernetes](docs/kubernetes.md), [Conventions Git](docs/conventions.md)
+- [Architecture](docs/architecture.md), [API](docs/api.md), [Base de données](docs/base-de-donnees.md), [Sécurité](docs/securite.md) et son [audit](docs/audit-securite.md), [Kubernetes](docs/kubernetes.md), [Tests](docs/tests.md), [Conventions Git](docs/conventions.md)
 - [Guide de développement](docs/developpement.md) : installation détaillée et problèmes fréquents.
 - [Charte graphique](docs/charte-graphique.md) : couleurs, typographie et composants du site.
 - [Homelab](homelab/README.md) : le serveur maison qui hébergera DataFit, son installation et sa sécurisation.
