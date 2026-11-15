@@ -1,8 +1,9 @@
 
 import { type SubmitEvent, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
-import { enregistrerCompte, lireCompte } from '../lib/compte.ts'
+import { enregistrerCompte } from '../lib/compte.ts'
 import { effacerProfil } from '../lib/profil.ts'
+import { ouvrirSession } from '../services/ouvertureSession.ts'
 
 type Mode = 'connexion' | 'inscription'
 
@@ -53,7 +54,11 @@ function useConnexion() {
           email,
           password: formData.get('mdp'),
           // à l'inscription seulement : la case des conditions d'utilisation (le backend la vérifie aussi)
-          ...(isInscription && { cguAcceptees: formData.get('cgu') === 'on' }),
+          ...(isInscription && {
+            cguAcceptees: formData.get('cgu') === 'on',
+            // case distincte des CGU : le consentement aux données de santé (le backend la vérifie aussi)
+            santeAcceptee: formData.get('sante') === 'on',
+          }),
         }),
       })
 
@@ -76,10 +81,8 @@ function useConnexion() {
         effacerProfil()
         navigate('/creation-profil')
       } else {
-        // un autre compte que celui gardé dans ce navigateur : le profil gardé n'est pas le sien
-        if (lireCompte()?.id !== data.id) effacerProfil()
-        enregistrerCompte({ id: data.id, email: data.email })
-        navigate('/dashboard')
+        // le profil vient du serveur : un navigateur neuf, ou un autre compte, retrouve le sien
+        navigate(await ouvrirSession({ id: data.id, email: data.email }))
       }
     } catch (e) {
       console.error(e) // en dev, pour voir la vraie cause dans la console

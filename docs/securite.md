@@ -67,7 +67,23 @@ La configuration est globale, dans `config/CorsConfig.java`. Les sites autorisé
 Le RGPD s'applique dès qu'on traite des données sur des personnes identifiables. Principes à respecter dans la conception :
 
 - **Minimisation** : ne collecter que ce qui sert. Les mesures brutes de la montre (dont la position) ne sont pas conservées : seuls les indicateurs calculés le sont.
-- **Consentement** : l'acceptation des CGU est datée dans `utilisateur.cgu_acceptees_le`.
+- **Consentement** : l'acceptation des CGU est datée dans `utilisateur.cgu_acceptees_le`. Le **consentement aux données de santé** (article 9) a sa propre case, distincte et jamais cochée d'avance, à l'inscription : `RegisterRequest.santeAcceptee` est obligatoire et la date est dans `utilisateur.sante_acceptee_le`. Les comptes anciens et ceux créés avec Google n'ont pas cette date : `AppLayout` affiche l'écran `ConsentementSante` à la place de l'application tant qu'elle manque (`GET` / `POST /api/compte/{utilisateurId}/consentement-sante`). Le refuser déconnecte. Le retrait passe par « Effacer mes données » ou « Supprimer mon compte » (page Profil) ; pas de bouton « retirer mon consentement » à part.
+
+### Données gardées dans le navigateur
+
+Le front écrit dans le `localStorage` (clés `datafit-*`, la plupart rangées par compte : `datafit-nutrition:12`). État actuel :
+
+| Clé | Contenu | Aussi sur le serveur ? | À la déconnexion |
+|---|---|---|---|
+| `datafit-compte` | identifiant et e-mail | oui | **effacée** |
+| `datafit-profil` | copie du profil (nom, naissance, poids, taille...) | oui, c'est lui qui fait foi : rechargé à chaque connexion (`services/ouvertureSession.ts`) | **effacée** |
+| `datafit-nutrition:<id>` | journal (repas, eau, objectif) et file d'envoi | repas et eau : oui ; objectif et activité choisis : non | gardée |
+| `datafit-records:<id>` | historique des records saisis (page Progression) | partiellement (une ligne par jour et par sport) | gardée |
+| `datafit-rangs:<id>` | performances saisies, onglet ouvert | partiellement | gardée |
+| `datafit-notes:<id>` | notes de séance | **non** | gardée |
+| `datafit-derniere-seance:<id>`, `datafit-synchronisation:<id>` | repères d'affichage | non | gardées |
+
+Les clés « gardées » ne sont pas effacées à la déconnexion car une partie n'existe **que** là (notes, objectif du journal, historique des records) : les effacer ferait perdre des données à l'utilisateur. Elles partent avec « Effacer mes données » et « Supprimer mon compte » (`lib/compte.ts`). Les chiffrer n'apporterait rien : la clé serait dans le même navigateur. La vraie correction est de les ranger sur le serveur puis de ne plus les copier (à faire, voir l'issue de suivi) ; en attendant, la CSP (`frontend/nginx.conf`) limite le risque qu'un script injecté les lise.
 - **Information** : la page `/donnees-personnelles` explique ce qui est collecté, pourquoi, combien de temps et comment l'effacer. Elle doit rester fidèle à ce que fait réellement le code.
 - **Droit d'accès et d'effacement** : toutes les tables sont liées au compte par `ON DELETE CASCADE`, donc supprimer un compte supprime toutes ses données. La suppression du compte et l'effacement par catégorie existent (page Profil) ; l'endpoint d'export reste à écrire 🚧.
 - **Données de test** : utiliser le simulateur, pas les vraies données d'un membre de l'équipe dans le dépôt.

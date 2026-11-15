@@ -116,9 +116,16 @@ function DonneesPersonnelles() {
         <p>
           Ta fréquence cardiaque et ton poids sont des données de santé au sens du RGPD. Ce sont
           des données dites sensibles, qui demandent une protection renforcée. Nous ne les
-          collectons qu'avec ton consentement explicite, que tu donnes à l'inscription. Tu peux
-          le retirer à tout moment : les données de santé associées à ton compte sont alors
-          supprimées.
+          collectons qu'avec ton consentement explicite : une case dédiée, distincte des
+          conditions d'utilisation et jamais cochée d'avance, à l'inscription. Si ton compte a été
+          créé avec « Continuer avec Google », ou avant cette case, DataFit te la demande avant
+          d'ouvrir l'application. La date de ton consentement est enregistrée avec ton compte.
+        </p>
+        <p>
+          Tu peux le retirer à tout moment : « Effacer mes données » (page Profil) supprime tes
+          séances, tes nuits, tes repas et tes performances, et « Supprimer mon compte » efface
+          tout. Un compte créé avec Google, qui n'a pas de mot de passe, peut nous le demander
+          depuis la page <Link to="/contact">Contact</Link>.
         </p>
         <p>
           DataFit n'est pas un dispositif médical. Les analyses et alertes comparent tes séances
@@ -202,13 +209,32 @@ function DonneesPersonnelles() {
       <section>
         <h2>8. Cookies et stockage dans ton navigateur</h2>
         <p>
-          DataFit n'utilise ni cookies publicitaires ni outils de mesure d'audience. Le site
-          enregistre certaines informations dans ton navigateur (stockage local) pour fonctionner,
-          par exemple pour garder tes préférences. Ces informations restent sur ton appareil et
-          tu peux les effacer depuis les réglages de ton navigateur. Quand tu effaces tes données
-          ou supprimes ton compte, DataFit efface aussi ce qu'il gardait dans ce navigateur ; sur
-          tes autres appareils, ces informations restent jusqu'à ce que tu les effaces depuis
-          leurs réglages.
+          DataFit n'utilise ni cookies publicitaires ni outils de mesure d'audience. DataFit ne
+          pose qu'un seul cookie : celui de ta session de connexion. Il est illisible par le code du site
+          (<em>HttpOnly</em>), expire au bout de 7 jours et disparaît quand tu te déconnectes.
+        </p>
+        <p>
+          Le site enregistre aussi des informations dans ton navigateur (stockage local) pour
+          fonctionner (certaines n'existent que sur ton appareil, les autres en sont une copie de ce que
+          nous gardons sur nos serveurs) :
+        </p>
+        <ul>
+          <li>
+            <strong>Ton identité</strong> (identifiant et adresse e-mail de ton compte, nom, prénom,
+            date de naissance, taille, poids, niveau et objectif) : une copie de ton profil, effacée
+            quand tu te déconnectes et rechargée depuis nos serveurs à la connexion suivante.
+          </li>
+          <li>
+            <strong>Tes saisies</strong> : journal nutrition (repas, eau, objectif), notes de
+            séance, historique de tes records et performances, rangs, dates de synchronisation. Elles
+            sont rangées par compte et restent sur l'appareil après la déconnexion, jusqu'à ce que tu
+            les effaces.
+          </li>
+        </ul>
+        <p>
+          Quand tu utilises « Effacer mes données » ou « Supprimer mon compte », DataFit efface aussi
+          ce qu'il gardait dans ce navigateur ; sur un appareil partagé, ou sur tes autres appareils,
+          efface-les depuis les réglages de leur navigateur (« effacer les données de site »).
         </p>
       </section>
 
