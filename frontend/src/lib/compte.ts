@@ -48,6 +48,18 @@ export function oublierCompte(id: number) {
   }
 }
 
+// Déconnexion : on retire du navigateur le compte et ce qui l'identifie (le profil : nom, date de
+// naissance, poids, taille). Ils sont rechargés depuis le serveur à la prochaine connexion (voir
+// services/ouvertureSession.ts). Ce qui est rangé par compte (journal nutrition, records, notes, rangs)
+// reste, car une partie n'existe qu'ici : voir docs/securite.md, « Données gardées dans le navigateur ».
+export function oublierIdentite() {
+  try {
+    localStorage.removeItem(CLE_STOCKAGE)
+  } catch {
+    // stockage indisponible : rien à effacer
+  }
+}
+
 // Ce que « Effacer mes données » (page Profil) peut effacer : les mêmes catégories que le backend
 // (CategorieDonnees.java), avec leur nom affiché.
 export type CategorieDonnees = 'seances' | 'sommeil' | 'nutrition' | 'performances'

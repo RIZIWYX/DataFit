@@ -50,6 +50,8 @@ public class AuthService {
             new Utilisateur(email, passwordHash);
         // RegisterRequest refuse déjà une inscription sans la case cochée : on note la date
         utilisateur.accepterCgu();
+        // idem pour le consentement aux données de santé (case distincte des CGU)
+        utilisateur.accepterSante();
 
         return utilisateurRepository.save(utilisateur);
     }

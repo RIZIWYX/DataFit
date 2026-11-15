@@ -35,6 +35,7 @@ erDiagram
         varchar mot_de_passe "empreinte BCrypt"
         timestamp cree_le
         timestamp cgu_acceptees_le
+        timestamp sante_acceptee_le "consentement aux données de santé"
     }
     PROFIL {
         int utilisateur_id PK, FK

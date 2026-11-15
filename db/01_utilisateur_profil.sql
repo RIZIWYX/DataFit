@@ -7,12 +7,14 @@ CREATE TABLE IF NOT EXISTS utilisateur (
     mot_de_passe  VARCHAR(255) NOT NULL,
     cree_le       TIMESTAMP NOT NULL DEFAULT now(),
     cgu_acceptees_le TIMESTAMP,  -- date d'acceptation des CGU, vide pour les comptes plus anciens
+    sante_acceptee_le TIMESTAMP, -- date du consentement aux données de santé, vide tant qu'il n'est pas donné
     -- faux pour un compte créé avec « Continuer avec Google » tant que son propriétaire n'a pas
     -- choisi de mot de passe (le mot de passe enregistré est alors aléatoire, personne ne le connaît)
     mot_de_passe_defini BOOLEAN NOT NULL DEFAULT TRUE
 );
 -- bases créées avant ces colonnes (CREATE TABLE IF NOT EXISTS ne modifie pas une table existante)
 ALTER TABLE utilisateur ADD COLUMN IF NOT EXISTS cgu_acceptees_le TIMESTAMP;
+ALTER TABLE utilisateur ADD COLUMN IF NOT EXISTS sante_acceptee_le TIMESTAMP;
 ALTER TABLE utilisateur ADD COLUMN IF NOT EXISTS mot_de_passe_defini BOOLEAN NOT NULL DEFAULT TRUE;
 
 -- l'adresse e-mail n'est plus confirmée par un lien envoyé par mail : on retire les colonnes
