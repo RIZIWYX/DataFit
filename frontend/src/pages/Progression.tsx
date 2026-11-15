@@ -91,6 +91,8 @@ function VueEnsemble({ p }: { p: DonneesPage }) {
       }))
     : []
 
+  const avecAllure = sportSeul !== null && allures.length > 1
+
   return (
     <>
       <div className="progression-barre">
@@ -133,7 +135,8 @@ function VueEnsemble({ p }: { p: DonneesPage }) {
         </p>
       </section>
 
-      <div className="progression-grille">
+      {/* trois blocs sans l'allure : le dernier prend toute la largeur plutôt que de rester seul d'un côté */}
+      <div className={`progression-grille${avecAllure ? '' : ' impair'}`}>
         <Panneau titre="Régularité · séances par semaine">
           <GrapheColonnes
             series={seriesDesSports(p.sports)}
@@ -172,7 +175,7 @@ function VueEnsemble({ p }: { p: DonneesPage }) {
           />
         </Panneau>
 
-        {sportSeul && allures.length > 1 ? (
+        {avecAllure && sportSeul && (
           <Panneau titre={`Allure moyenne par séance · ${sportSeul === 'course' ? 'au km' : 'aux 100 m'}`}>
             <GrapheLigne
               points={allures.map((a) => ({ libelle: formatJour(a.date), valeur: a.valeur }))}
@@ -185,16 +188,19 @@ function VueEnsemble({ p }: { p: DonneesPage }) {
               entetes={['Séance', 'Allure']}
             />
           </Panneau>
-        ) : (
-          <Panneau titre="Aller plus loin">
-            <EtatVide icone={ICONES.tendance} titre="Analysez un exercice en particulier">
-              Choisissez un exercice dans le menu ci-dessus : record, rang, charge, répétitions et volume,
-              selon ce qui a été mesuré. Choisissez la course ou la natation pour voir l'évolution de
-              votre allure.
-            </EtatVide>
-          </Panneau>
         )}
       </div>
+
+      {/* sans allure à tracer, une invitation à analyser un exercice, sous la grille : sa hauteur ne dépend plus d'un bloc voisin */}
+      {!avecAllure && (
+        <Panneau titre="Aller plus loin">
+          <EtatVide icone={ICONES.tendance} titre="Analysez un exercice en particulier">
+            Choisissez un exercice dans le menu ci-dessus : record, rang, charge, répétitions et volume,
+            selon ce qui a été mesuré. Choisissez la course ou la natation pour voir l'évolution de
+            votre allure.
+          </EtatVide>
+        </Panneau>
+      )}
       <GraphiquesProgression sport={p.sport} semaines={p.nbSemaines} />
     </>
   )
@@ -210,11 +216,12 @@ type PropsCourbe = {
   axe?: (valeur: number) => string
   inverse?: boolean // pour un temps : plus bas = mieux, donc en haut
   depuisZero?: boolean // pour une quantité (répétitions, volume...) : l'axe part de 0
+  entiers?: boolean // pour un rang : l'axe ne marque que des rangs entiers
   couleur?: string
 }
 
 // une courbe datée ; avec un seul point, une phrase plutôt qu'un graphique vide
-function CourbeDatee({ points, titre, aide, format, axe, inverse, depuisZero, couleur = 'var(--blanc)' }: PropsCourbe) {
+function CourbeDatee({ points, titre, aide, format, axe, inverse, depuisZero, entiers, couleur = 'var(--blanc)' }: PropsCourbe) {
   return (
     <Panneau titre={titre}>
       {points.length > 1 ? (
@@ -226,6 +233,7 @@ function CourbeDatee({ points, titre, aide, format, axe, inverse, depuisZero, co
           formatAxe={axe ?? format}
           inverse={inverse}
           depuisZero={depuisZero}
+          entiers={entiers}
           marqueurs
           entetes={['Date', titre]}
         />
@@ -292,6 +300,7 @@ function VueExercice({ p, exercice }: { p: DonneesPage; exercice: Exercice }) {
             aide="Le rang que ce record vous donnait."
             format={(v) => `${RANGS[v] ?? '–'} · ${NOMS_RANGS[v] ?? ''}`}
             axe={(v) => RANGS[v] ?? ''}
+            entiers
           />
         )}
 
