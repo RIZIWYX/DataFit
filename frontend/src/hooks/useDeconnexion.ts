@@ -1,12 +1,18 @@
 import { useNavigate } from 'react-router'
 
-// La déconnexion est une action, pas une page.
-// Démonstration : il n'y a pas encore de comptes côté serveur, se déconnecter ramène donc
-// à la page de connexion (comme l'ancien lien de la barre latérale). Quand l'authentification
-// existera, c'est ici qu'on fermera la session avant de partir.
+// La déconnexion est une action, pas une page : on ferme la session côté serveur (le cookie
+// de session est effacé par la réponse), puis on revient à la page de connexion.
+// Même si le serveur ne répond pas, on part : la session expirera d'elle-même.
 function useDeconnexion() {
   const navigate = useNavigate()
-  return () => navigate('/connexion')
+  return async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } catch {
+      // serveur injoignable : rien de plus à faire ici
+    }
+    navigate('/connexion')
+  }
 }
 
 export default useDeconnexion

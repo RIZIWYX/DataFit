@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.datafit.backend.securite.SessionService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,10 +29,13 @@ public class GoogleAuthController {
 
     private final JdbcTemplate jdbc;
     private final String clientId;
+    private final SessionService sessions;
     private final RestClient google = RestClient.create("https://oauth2.googleapis.com");
 
-    public GoogleAuthController(JdbcTemplate jdbc, @Value("${google.client-id:}") String clientId) {
+    public GoogleAuthController(JdbcTemplate jdbc, SessionService sessions,
+            @Value("${google.client-id:}") String clientId) {
         this.jdbc = jdbc;
+        this.sessions = sessions;
         this.clientId = clientId;
     }
 
@@ -87,7 +92,11 @@ public class GoogleAuthController {
             id = ids.get(0);
         }
 
-        return ResponseEntity.ok(Map.of("id", id, "email", email));
+        // la session (cookie) prouve ensuite qui est connecté, comme pour /api/auth/login
+        String jetonSession = sessions.ouvrir((long) id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, sessions.cookie(jetonSession).toString())
+                .body(Map.of("id", id, "email", email));
     }
 
     private static ResponseEntity<Map<String, String>> erreur(HttpStatus statut, String message) {

@@ -28,8 +28,10 @@ public class ConnexionService {
     public Utilisateur seConnecter(ConnexionRequest request) {
         String email = request.email().trim();
 
+        // l'adresse exacte d'abord, puis sans tenir compte des majuscules (anciens comptes)
         Utilisateur utilisateur = utilisateurRepository
             .findByEmail(email)
+            .or(() -> utilisateurRepository.findFirstByEmailIgnoreCaseOrderByIdAsc(email))
             .orElseThrow(() -> new IllegalArgumentException(
                 IDENTIFIANTS_INCORRECTS
             ));
