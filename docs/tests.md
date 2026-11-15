@@ -10,14 +10,14 @@ Les tests tournent à chaque `push` et à chaque pull request (`.github/workflow
 
 ## Ce qui est couvert
 
-**Backend** (74 tests)
-- *Unitaires, sans base* : suppression du compte et effacement des données (`CompteServiceTest`, `EffacementTablesTest`, qui vérifie que chaque nouvelle table liée à un compte est rangée), abonnement Stripe, hydratation, archives des mesures, inscription (`AuthServiceTest` : e-mail en minuscules, 72 octets, deux consentements), consentement santé, sessions, limiteur d'essais, contrôle d'accès (`AuthInterceptorTest`).
+**Backend** (79 tests)
+- *Unitaires, sans base* : suppression du compte et effacement des données (`CompteServiceTest`, `EffacementTablesTest`, qui vérifie que chaque nouvelle table liée à un compte est rangée), perfs Calisthenics et tenue en handstand (`CalisthenicsServiceTest`), abonnement Stripe, hydratation, archives des mesures, inscription (`AuthServiceTest` : e-mail en minuscules, 72 octets, deux consentements), consentement santé, sessions, limiteur d'essais, contrôle d'accès (`AuthInterceptorTest`).
 - *Intégration, avec une vraie base* : `AccesApiIntegrationTest` lance le serveur et joue des scénarios avec de vrais cookies : sans session 401 ; un compte ne lit, ne modifie, ne supprime rien chez un autre (403) ; création du profil d'un autre refusée ; consentement santé exigé à l'inscription ; déconnexion qui ferme la session côté serveur ; le jeton n'est jamais en base (seulement son empreinte) ; limite de 5 échecs par adresse e-mail.
 - `BackendApplicationTests` vérifie que toute l'application démarre.
 
 Ces tests d'intégration demandent une base PostgreSQL avec les tables de `db/` : `./lancer.sh` en local (port 5433, mot de passe de `.env`), ou le service `postgres` de la CI. Ils créent des comptes `it-…@test.invalid` et les suppriment à la fin.
 
-**Site** (~40 tests) : les calculs, qui sont la partie la plus facile à casser sans le voir : lecture et écriture des temps (`4:30`, `1:25:00`), rangs et paliers, progression, conseils handstand/OAP, historique des records, compte et profil gardés dans le navigateur (déconnexion, suppression, effacement).
+**Site** (49 tests) : les calculs, qui sont la partie la plus facile à casser sans le voir : lecture et écriture des temps (`4:30`, `1:25:00`), rangs et paliers (dont la tenue en handstand et l'échelle des HSPU), progression, conseils handstand/OAP, graphiques clés de la page Progression, historique des records, compte et profil gardés dans le navigateur (déconnexion, suppression, effacement).
 
 **Python** (24 tests) : routes `/sante`, documentation éteinte, validation des entrées (niveau, poids, dates, types de séance), graphiques.
 
