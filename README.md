@@ -8,7 +8,9 @@
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)
 [![Licence MIT](https://img.shields.io/badge/licence-MIT-green)](LICENSE)
 
-Application de suivi sportif. DataFit récupère les séances d'une montre connectée (fréquence cardiaque, vitesse, position), les range par sport (course, natation, musculation) et montre au sportif ses progrès : performances, rangs E -> Z par exercice, sommeil, nutrition et abonnement Premium.
+Application de suivi sportif. DataFit récupère les séances d'une montre connectée (fréquence cardiaque, vitesse, position), les range par sport (course, vélo, natation, musculation) et montre au sportif ses progrès : performances, rangs E -> Z par exercice, sommeil, nutrition et hydratation.
+
+On peut créer un compte avec une adresse e-mail ou avec Google, modifier son profil et son mot de passe, effacer ses données ou supprimer son compte. L'abonnement Premium passe par Stripe (en mode test pour l'instant).
 
 ## Architecture
 
@@ -27,9 +29,11 @@ Projet d'équipe de 5 étudiants (informatique et sciences des données).
 |---|---|
 | `frontend/` | le site : React, TypeScript, Vite |
 | `backend/` | l'API : Java 21, Spring Boot |
-| `db/` | le script qui crée les tables PostgreSQL au premier démarrage |
+| `db/` | les fichiers `.sql` qui créent les tables PostgreSQL, appliqués dans l'ordre (`01_...`, `02_...`) |
 | `analyse/` | le service d'analyse des séances (Python, FastAPI) |
 | `simulateur/` | le simulateur de montre connectée (Python, FastAPI) |
+| `homelab/` | l'auto-hébergement de DataFit sur notre propre serveur (en cours) |
+| `.github/` | la CI et la mise à jour automatique de la base Neon |
 | `docs/` | la documentation technique |
 
 ## Lancer le projet
@@ -48,6 +52,11 @@ Le site est sur http://localhost:3000. Le script s'occupe du reste :
 
 Pour repartir d'une base vide (comptes de test effacés) : `./lancer.sh --reinitialiser`.
 
+Deux fonctionnalités ont besoin de clés à ajouter dans `.env` (elles ne sont jamais commitées, demande-les à l'équipe) :
+
+- la connexion avec Google : `GOOGLE_CLIENT_ID`. Sans elle, le bouton Google n'apparaît pas, le reste marche ;
+- le paiement Premium : les variables `STRIPE_...` de `.env.example`, en mode test.
+
 Le site seul, pour développer :
 
 ```bash
@@ -63,7 +72,7 @@ Le site est sur http://localhost:5173, rechargé à chaque sauvegarde. Ses appel
 | Partie | Hébergement |
 |---|---|
 | site | Vercel |
-| backend | Render |
+| backend, simulateur et analyse | Render |
 | base de données | Neon (PostgreSQL) |
 
 **Le premier chargement peut prendre jusqu'à une minute.** Le backend est sur l'offre gratuite de Render : après une quinzaine de minutes sans visite, il se met en veille, et la visite suivante le réveille. Pendant ce temps, les pages qui appellent l'API (connexion, séances, nutrition...) restent en chargement ou affichent une erreur : il suffit d'attendre un peu et de recharger. Ensuite, tout répond normalement.
@@ -75,6 +84,7 @@ La base Neon est mise à jour automatiquement : à chaque merge sur `main` qui m
 - [Architecture](docs/architecture.md), [API](docs/api.md), [Base de données](docs/base-de-donnees.md), [Sécurité](docs/securite.md), [Conventions Git](docs/conventions.md)
 - [Guide de développement](docs/developpement.md) : installation détaillée et problèmes fréquents.
 - [Charte graphique](docs/charte-graphique.md) : couleurs, typographie et composants du site.
+- [Homelab](homelab/README.md) : le serveur maison qui hébergera DataFit, son installation et sa sécurisation.
 
 ## Licence
 
