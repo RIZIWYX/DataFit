@@ -15,6 +15,7 @@ type Props = {
   formatAxe?: (valeur: number) => string // version courte pour l'axe vertical
   inverse?: boolean // petites valeurs en haut (pour une allure : plus bas = plus rapide)
   depuisZero?: boolean // l'axe vertical part de 0
+  entiers?: boolean // l'axe ne marque que des valeurs entières (des rangs, des comptes) : jamais « 2,5 »
   marqueurs?: boolean // un point visible sur chaque valeur (pour les séries courtes)
   entetes?: [string, string] // titres des deux colonnes du tableau ; sans eux, pas de tableau
 }
@@ -28,6 +29,7 @@ function GrapheLigne({
   formatAxe = String,
   inverse = false,
   depuisZero = false,
+  entiers = false,
   marqueurs = false,
   entetes,
 }: Props) {
@@ -38,7 +40,7 @@ function GrapheLigne({
   const maximum = Math.max(...valeurs)
   // toutes les valeurs égales : on ouvre l'axe autour d'elles, sinon il n'aurait pas de hauteur
   const marge = minimum === maximum ? Math.max(1, Math.abs(maximum) * 0.1) : 0
-  const axe = graduations(depuisZero ? 0 : minimum - marge, maximum + marge)
+  const axe = graduations(depuisZero ? 0 : minimum - marge, maximum + marge, entiers ? 1 : 0)
   const haut = axe[0]
   const bas = axe[axe.length - 1]
 
