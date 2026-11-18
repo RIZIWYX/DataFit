@@ -1,0 +1,84 @@
+# Le backend Spring Boot. Une seule réplique : les mesures de la montre sont des fichiers sur un
+# disque qu'un seul pod peut monter (ReadWriteOnce), et le limiteur d'essais garde ses compteurs en mémoire.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mesures-montre
+  namespace: datafit
+  labels: { app: backend, app.kubernetes.io/part-of: datafit }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests: { storage: 2Gi }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: datafit
+  labels: { app: backend, app.kubernetes.io/part-of: datafit }
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate   # le disque ne se monte que sur un pod à la fois : on arrête l'ancien avant de lancer le nouveau
+  selector:
+    matchLabels: { app: backend }
+  template:
+    metadata:
+      labels: { app: backend, app.kubernetes.io/part-of: datafit }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001   # le disque des mesures appartient à cet utilisateur
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: backend
+          # image construite en local : docker build -t datafit-backend:latest backend (voir docs/kubernetes.md)
+          image: datafit-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8080 }
+          envFrom:
+            - configMapRef: { name: datafit-config }
+            - secretRef: { name: datafit-secrets }
+          volumeMounts:
+            - { name: mesures, mountPath: /app/donnees-montre }
+            - { name: tmp, mountPath: /tmp }
+          # Spring Boot met quelques dizaines de secondes à démarrer : on lui laisse jusqu'à 3 minutes
+          startupProbe:
+            tcpSocket: { port: http }
+            periodSeconds: 5
+            failureThreshold: 36
+          readinessProbe:
+            tcpSocket: { port: http }
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket: { port: http }
+            periodSeconds: 20
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true   # seuls /tmp et le disque des mesures sont modifiables
+            capabilities: { drop: ["ALL"] }
+          resources:
+            requests: { cpu: 200m, memory: 512Mi }
+            limits: { memory: 1Gi }
+      volumes:
+        - name: mesures
+          persistentVolumeClaim: { claimName: mesures-montre }
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: datafit
+  labels: { app: backend, app.kubernetes.io/part-of: datafit }
+spec:
+  type: ClusterIP
+  selector: { app: backend }
+  ports:
+    - { name: http, port: 8080, targetPort: http }

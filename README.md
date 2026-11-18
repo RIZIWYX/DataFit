@@ -34,6 +34,7 @@ Projet d'équipe de 5 étudiants (informatique et sciences des données).
 | `simulateur/` | le simulateur de montre connectée (Python, FastAPI) |
 | `homelab/` | l'auto-hébergement de DataFit sur notre propre serveur (en cours) |
 | `.github/` | la CI et la mise à jour automatique de la base Neon |
+| `k8s/` | le déploiement sur Kubernetes (voir [docs/kubernetes.md](docs/kubernetes.md)) |
 | `docs/` | la documentation technique |
 
 ## Lancer le projet
@@ -81,7 +82,7 @@ La base Neon est mise à jour automatiquement : à chaque merge sur `main` qui m
 
 ## Pour aller plus loin
 
-- [Architecture](docs/architecture.md), [API](docs/api.md), [Base de données](docs/base-de-donnees.md), [Sécurité](docs/securite.md), [Conventions Git](docs/conventions.md)
+- [Architecture](docs/architecture.md), [API](docs/api.md), [Base de données](docs/base-de-donnees.md), [Sécurité](docs/securite.md) et son [audit](docs/audit-securite.md), [Kubernetes](docs/kubernetes.md), [Conventions Git](docs/conventions.md)
 - [Guide de développement](docs/developpement.md) : installation détaillée et problèmes fréquents.
 - [Charte graphique](docs/charte-graphique.md) : couleurs, typographie et composants du site.
 - [Homelab](homelab/README.md) : le serveur maison qui hébergera DataFit, son installation et sa sécurisation.
