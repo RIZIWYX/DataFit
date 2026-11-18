@@ -37,13 +37,16 @@ private LocalDate date;
 @Column(name = "flag", nullable = false) private Double flag;
 @Column(name = "planche", nullable = false) private Double planche;
 @Column(name = "crucifix", nullable = false) private Double crucifix;
+// tenue libre en handstand, en secondes (0 = pas saisie) ; "handstand" est l'étape de l'échelle des HSPU
+@Column(name = "handstand_tenue", nullable = false) private Double handstandTenue = 0.0;
 
 protected Calisthenics() {
   // Constructeur par défaut requis par JPA
 }
 
-public Calisthenics(Utilisateur utilisateur, double traction, double dip, double pompe, double muscleup, double pistol, double lSit, double handstand, double frontLever, double oap, double flag, double planche, double crucifix) {
+public Calisthenics(Utilisateur utilisateur, double traction, double dip, double pompe, double muscleup, double pistol, double lSit, double handstand, double frontLever, double oap, double flag, double planche, double crucifix, double handstandTenue) {
   this.utilisateur = utilisateur;
+  this.handstandTenue = handstandTenue;
   this.traction = traction;
   this.dip = dip;
   this.pompe = pompe;
@@ -125,6 +128,10 @@ public Double getCrucifix() {
   return crucifix;
 }
 
+public Double getHandstandTenue() {
+  return handstandTenue;
+}
+
 public void setTraction(Double traction) {
   this.traction = traction;
 }
@@ -171,5 +178,9 @@ public void setPlanche(Double planche) {
 
 public void setCrucifix(Double crucifix) {
   this.crucifix = crucifix;
+}
+
+public void setHandstandTenue(Double handstandTenue) {
+  this.handstandTenue = handstandTenue;
 }
 }

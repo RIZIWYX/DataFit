@@ -1,5 +1,6 @@
 package com.datafit.backend.sport.calisthenics;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public record CalisthenicsRequest(
     @Positive(message = "La valeur pour traction doit être positive")
@@ -36,6 +37,15 @@ public record CalisthenicsRequest(
     Double planche,
 
     @Positive(message = "La valeur pour crucifix doit être positive")
-    Double crucifix
+    Double crucifix,
+
+    // tenue libre en handstand, en secondes : 0 si elle n'est pas saisie. Facultatif, pour qu'un
+    // ancien client qui ne l'envoie pas continue de fonctionner (compté comme 0).
+    @PositiveOrZero(message = "La tenue en handstand ne peut pas être négative")
+    Double handstandTenue
 ) {
+    // la tenue absente compte pour 0 seconde
+    public double handstandTenueOuZero() {
+        return handstandTenue == null ? 0 : handstandTenue;
+    }
 }

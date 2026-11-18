@@ -95,6 +95,8 @@ erDiagram
 
 Le schéma est simplifié : seules les colonnes principales sont montrées. `PERFORMANCE_DISCIPLINE` représente les sept tables de performances déclarées, qui ont toutes la même forme (une ligne par utilisateur et par jour, contrainte `UNIQUE (utilisateur_id, date)`). `SEANCE_CARDIO` représente aussi les tables vélo, natation et musculation, qui ajoutent leurs propres indicateurs.
 
+Dans `calisthenics`, le handstand a **deux colonnes** : `handstand` est l'étape de l'échelle des HSPU (pompes en équilibre, de 0 à 7), et `handstand_tenue` la tenue libre en secondes (0 = pas saisie), qui se range comme le L-sit. La seconde a été ajoutée par un `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` : les saisies déjà faites ont 0 seconde.
+
 Quelques choix expliqués :
 
 - **Une table par type de séance** plutôt qu'une table générique : chaque sport a des indicateurs différents (longueurs en natation, séries en musculation, roue libre à vélo), stockés dans de vraies colonnes typées.

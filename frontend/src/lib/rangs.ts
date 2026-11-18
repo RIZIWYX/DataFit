@@ -156,6 +156,22 @@ export function texteProchain(ex: Exercice, perfs: Perfs, profil: Profil, nomsRa
   return `Prochain : ${nomsRangs[r + 1]} à ${formatValeur(ex, cible)} · ${ecart}`
 }
 
+// Comment atteindre le rang suivant d'un exercice (échelle des HSPU ou de l'OAP, tenue en handstand...),
+// s'il y a un conseil. Renvoie le conseil, puis le rythme de séances conseillé selon le niveau du profil.
+export function conseilProchain(ex: Exercice, rangActuel: number, niveau: string): { etape: string; rythme: string } | null {
+  if (rangActuel < 0 || rangActuel >= 7) return null
+  const etape = ex.conseils?.[rangActuel + 1]
+  if (!etape) return null
+  return { etape, rythme: RYTHMES[niveau] ?? RYTHMES.intermediaire }
+}
+
+// le rythme proposé selon le niveau choisi dans le profil (novice, intermediaire, confirmer)
+const RYTHMES: Record<string, string> = {
+  novice: 'Niveau novice : 2 séances par semaine, séries courtes et propres, jamais à l\'échec. La régularité compte plus que l\'intensité.',
+  intermediaire: 'Niveau intermédiaire : 3 séances par semaine, une série à la limite, le reste propre.',
+  confirmer: 'Niveau confirmé : 3 à 4 séances par semaine, séries à la limite avec 3 minutes de repos, et une semaine plus légère toutes les 4 semaines.',
+}
+
 export function libelleMesure(ex: Exercice): string {
   switch (ex.type) {
     case 'load': return 'charge max (1RM), en kg'
