@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { enregistrerCompte, lireCompte } from '../lib/compte.ts'
-import { effacerProfil } from '../lib/profil.ts'
+import { ouvrirSession } from '../services/ouvertureSession.ts'
 
 // le script de Google Identity Services (un seul chargement pour toute l'application)
 let chargement: Promise<void> | null = null
@@ -44,9 +43,9 @@ function BoutonGoogle({ inscription }: { inscription: boolean }) {
           setErreur(data.error ?? 'Connexion Google impossible.')
           return
         }
-        if (lireCompte()?.id !== data.id) effacerProfil()
-        enregistrerCompte({ id: data.id, email: data.email })
-        navigate('/dashboard')
+        // le profil vient du serveur ; le consentement aux données de santé, s'il manque (nouveau
+        // compte Google), est demandé avant l'ouverture de l'application (AppLayout)
+        navigate(await ouvrirSession({ id: data.id, email: data.email }))
       } catch (e) {
         console.error(e)
         setErreur('Impossible de contacter le serveur. Vérifie que le backend est démarré.')
@@ -96,7 +95,10 @@ function BoutonGoogle({ inscription }: { inscription: boolean }) {
       </p>
       <div ref={zone} className="cnx-google-bouton" />
       {inscription && (
-        <p className="champ-aide">En continuant avec Google, vous acceptez les conditions d'utilisation.</p>
+        <p className="champ-aide">
+          En continuant avec Google, vous acceptez les conditions d'utilisation. Votre accord pour le
+          traitement de vos données de santé vous sera demandé juste après.
+        </p>
       )}
       {erreur && (
         <p className="alerte" role="alert">

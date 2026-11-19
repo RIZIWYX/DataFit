@@ -2,6 +2,7 @@ package com.datafit.backend.utilisateur;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "utilisateur")
@@ -28,6 +29,11 @@ public class Utilisateur {
     @Column(name = "mot_de_passe_defini", nullable = false)
     private boolean motDePasseDefini = true;
 
+    // quand le consentement au traitement des données de santé a été donné (RGPD, article 9) :
+    // vide tant qu'il n'est pas donné (comptes plus anciens, comptes créés avec Google)
+    @Column(name = "sante_acceptee_le")
+    private LocalDateTime santeAccepteeLe;
+
     protected Utilisateur() {
         // Constructeur par défaut requis par JPA
     }
@@ -46,6 +52,19 @@ public class Utilisateur {
 
     public void accepterCgu() {
         this.cguAccepteesLe = LocalDateTime.now();
+    }
+
+    // Note la date du consentement. Un consentement déjà donné garde sa date d'origine.
+    public void accepterSante() {
+        if (this.santeAccepteeLe == null) {
+            // à la microseconde, la précision de PostgreSQL : la date renvoyée tout de suite est celle
+            // qu'on relira en base (sinon elle différerait par les nanosecondes)
+            this.santeAccepteeLe = LocalDateTime.now().truncatedTo(ChronoUnit.MICROS);
+        }
+    }
+
+    public LocalDateTime getSanteAccepteeLe() {
+        return santeAccepteeLe;
     }
 
     public Long getId() {

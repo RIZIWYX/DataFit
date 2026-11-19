@@ -20,7 +20,12 @@ public record RegisterRequest(
 
     // la case « J'accepte les conditions d'utilisation » : absente ou décochée, pas de compte
     @AssertTrue(message = "Vous devez accepter les conditions d'utilisation")
-    boolean cguAcceptees
+    boolean cguAcceptees,
+
+    // la case « Je consens au traitement de mes données de santé » : distincte des CGU, jamais
+    // cochée d'avance. Sans elle, pas de compte (RGPD, article 9 : consentement explicite)
+    @AssertTrue(message = "Vous devez consentir au traitement de vos données de santé")
+    boolean santeAcceptee
 
 ) {}
 

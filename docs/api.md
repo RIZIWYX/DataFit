@@ -67,7 +67,8 @@ Liste tirée du code (`backend/src/main/java/com/datafit/backend/`). `{utilisate
 
 | Méthode | Adresse | Description |
 |---|---|---|
-| `POST` | `/api/auth/register` | Crée un compte, utilisable tout de suite (aucun mail de confirmation), ouvre la session (cookie) et renvoie `{ id, email }`. `400` adresse déjà utilisée (majuscules ignorées) ou mot de passe de plus de 72 octets |
+| `POST` | `/api/auth/register` | Crée un compte, utilisable tout de suite (aucun mail de confirmation), ouvre la session (cookie) et renvoie `{ id, email }`. Corps : `{ email, password, cguAcceptees, santeAcceptee }`, les deux cases doivent être `true`. `400` case manquante, adresse déjà utilisée (majuscules ignorées) ou mot de passe de plus de 72 octets |
+| `GET` / `POST` | `/api/compte/{utilisateurId}/consentement-sante` | Consentement aux données de santé (RGPD, article 9). `GET` renvoie `{ accepteLe }` (`null` tant qu'il n'est pas donné), `POST` l'enregistre et renvoie `{ accepteLe }` (une date déjà donnée est gardée). Demandé aux comptes anciens et aux comptes Google avant d'ouvrir l'application |
 | `POST` | `/api/auth/login` | Vérifie les identifiants, ouvre la session (cookie) et renvoie `{ id, email }`. `400` identifiants incorrects ; `429` après 5 échecs sur la même adresse e-mail (15 minutes) |
 | `POST` | `/api/auth/google` | Connexion « Continuer avec Google » : `{ credential }`, même réponse et même cookie que `/login` |
 | `POST` | `/api/auth/logout` | Ferme la session et efface le cookie, `204` (aussi sans session) |

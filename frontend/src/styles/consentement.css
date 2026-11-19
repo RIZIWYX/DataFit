@@ -1,0 +1,49 @@
+/* Écran de consentement aux données de santé : une carte centrée, à la place de l'application */
+
+.consentement {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem 1rem;
+}
+
+.consentement-carte {
+  width: min(100%, 36rem);
+  padding: 2rem;
+  background: var(--noir-1);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-l);
+}
+
+.consentement-carte h1 {
+  margin: 0 0 1rem;
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.consentement-carte p,
+.consentement-carte li {
+  color: var(--gris);
+}
+
+.consentement-carte strong {
+  color: var(--blanc);
+}
+
+.consentement-carte ul {
+  margin: 1rem 0 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.consentement-carte a {
+  color: var(--turquoise);
+}
+
+.consentement-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
