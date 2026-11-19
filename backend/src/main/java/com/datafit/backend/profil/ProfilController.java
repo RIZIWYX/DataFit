@@ -1,5 +1,6 @@
 package com.datafit.backend.profil;
 
+import com.datafit.backend.securite.AuthInterceptor;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,14 @@ public class ProfilController {
 
     @PostMapping("/register/profil")
     public ResponseEntity<?> creerProfil(
-            @Valid @RequestBody ProfilRequest request) {
+            @Valid @RequestBody ProfilRequest request,
+            @RequestAttribute(AuthInterceptor.ATTRIBUT_UTILISATEUR) Long connecte) {
+
+        // le compte vient du corps de la requête (pas de l'adresse) : AuthInterceptor ne peut pas
+        // le comparer, on vérifie ici qu'on crée bien le profil de SON compte
+        if (!connecte.equals(request.utilisateurId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Accès refusé."));
+        }
 
         try {
             Profil profil = profilService.creerProfil(request);

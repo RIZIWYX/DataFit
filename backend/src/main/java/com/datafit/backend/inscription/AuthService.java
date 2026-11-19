@@ -6,8 +6,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+
 @Service
 public class AuthService {
+
+    static final int MOT_DE_PASSE_OCTETS_MAX = 72;
 
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordEncoder passwordEncoder;
@@ -21,9 +26,18 @@ public class AuthService {
 
     @Transactional
     public Utilisateur inscrire(RegisterRequest request) {
-        String email = request.email().trim();
+        // en minuscules : Toto@x.fr et toto@x.fr ne doivent pas donner deux comptes
+        String email = request.email().trim().toLowerCase(Locale.ROOT);
 
-        if (utilisateurRepository.existsByEmail(email)) {
+        // BCrypt ne lit que les 72 premiers OCTETS du mot de passe (un « é » en prend 2) : au-delà,
+        // la fin serait ignorée sans prévenir. Le @Size de RegisterRequest compte des caractères.
+        if (request.password().getBytes(StandardCharsets.UTF_8).length > MOT_DE_PASSE_OCTETS_MAX) {
+            throw new IllegalArgumentException(
+                "Le mot de passe est trop long (72 octets au plus : les lettres accentuées en comptent 2)"
+            );
+        }
+
+        if (utilisateurRepository.existsByEmailIgnoreCase(email)) {
             throw new IllegalArgumentException(
                 "Cette adresse e-mail est déjà utilisée"
             );

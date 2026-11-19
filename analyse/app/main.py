@@ -1,5 +1,6 @@
 
 import logging
+import os
 
 from fastapi import FastAPI, HTTPException
 
@@ -10,7 +11,21 @@ from app.traitements.analyse_muscu import analyser_muscu
 from app.traitements.analyse_nutrition import analyser_nutrition
 from app.traitements.analyse_sommeil import analyser_sommeil
 
-app = FastAPI(title="DataFit - Analyses des séances")
+# La page Swagger (/docs) et le schéma (/openapi.json) décrivent toute l'API à qui les demande :
+# éteints par défaut. Pour les avoir en local : DOCS_ACTIVES=1 dans .env.
+_DOCS = os.getenv("DOCS_ACTIVES") == "1"
+app = FastAPI(
+    title="DataFit - Analyses des séances",
+    docs_url="/docs" if _DOCS else None,
+    redoc_url=None,
+    openapi_url="/openapi.json" if _DOCS else None,
+)
+
+
+# utilisé par le healthcheck de docker-compose et par Kubernetes
+@app.get("/sante", include_in_schema=False)
+def sante():
+    return {"statut": "ok"}
 
 logger = logging.getLogger(__name__)
 

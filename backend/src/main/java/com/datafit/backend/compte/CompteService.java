@@ -19,9 +19,10 @@ import java.util.Set;
 public class CompteService {
 
     // Tables liées au compte qu'« Effacer mes données » ne touche jamais : le profil (il reste,
-    // c'est le principe) et l'abonnement (il se gère sur la page Premium). Toutes les autres
+    // c'est le principe), l'abonnement (il se gère sur la page Premium) et les sessions de connexion
+    // (l'effacer déconnecterait l'utilisateur en plein milieu). Toutes les autres
     // tables avec utilisateur_id sont rangées dans CategorieDonnees (vérifié par EffacementTablesTest).
-    static final Set<String> TABLES_GARDEES = Set.of("profil", "abonnement");
+    static final Set<String> TABLES_GARDEES = Set.of("profil", "abonnement", "session_utilisateur");
 
     private final UtilisateurRepository utilisateurRepository;
     private final AbonnementRepository abonnementRepository;
@@ -113,8 +114,8 @@ public class CompteService {
         utilisateur.changerMotDePasse(passwordEncoder.encode(nouveau));
     }
 
-    // L'API ne sait pas encore qui appelle (l'identifiant est dans l'adresse, voir docs/securite.md) :
-    // le mot de passe est donc la seule preuve que c'est bien le propriétaire du compte.
+    // AuthInterceptor garantit déjà que l'appelant est connecté à CE compte. Le mot de passe est
+    // redemandé en plus pour ces actions irréversibles : un navigateur resté ouvert ne suffit pas.
     private Utilisateur verifierMotDePasse(Long utilisateurId, String motDePasse) {
         Utilisateur utilisateur = utilisateurRepository
             .findById(utilisateurId)
