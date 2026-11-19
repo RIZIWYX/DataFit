@@ -18,12 +18,15 @@ Serveur auto-hébergé sur un ancien portable, pour faire tourner DataFit en deh
 | Réseau Wi-Fi | Fait |
 | Accès à distance (Tailscale) | Fait |
 | Sécurisation (SSH, ufw, fail2ban, Lynis) | Fait |
-| Docker | En cours |
-| Caddy, sauvegardes, tunnel, supervision | À faire |
+| Docker | Fait |
+| Caddy (reverse proxy) | Fait |
+| Tunnel Cloudflare | Testé avec un tunnel temporaire |
+| Nom de domaine, sauvegardes, supervision | À faire |
 | Déploiement de DataFit | À faire |
 
 ## Documentation
 
 - [Installation](docs/01-installation.md)
 - [Sécurisation](docs/02-securisation.md)
+- [Docker, reverse proxy et tunnel](docs/03-conteneurs-et-exposition.md)
 - [Feuille de route](ROADMAP.md)
