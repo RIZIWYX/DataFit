@@ -1,7 +1,7 @@
 # Versions figées : deux constructions de l'image donnent exactement les mêmes bibliothèques
 # (sinon une nouvelle version, ou une version piégée, arrive sans prévenir).
 # Dependabot propose chaque semaine une PR pour les mettre à jour.
-fastapi==0.162.0
+fastapi==0.163.1
 uvicorn==0.54.0
 pydantic==2.14.2
 numpy==2.5.4
