@@ -29,7 +29,9 @@ spec:
               until pg_isready -h db -U "$PGUSER" -d datafit; do echo "base pas prête..."; sleep 3; done
               # le mot de passe du secret est celui de la base ; les .sql sont envoyés dans l'ordre
               cat /sql/*.sql | psql -q -v ON_ERROR_STOP=1
-              echo "Tables à jour."
+              # puis le rôle limité du backend, qui reçoit les droits sur ces tables
+              psql -q -v ON_ERROR_STOP=1 -v app_user="$APP_USER" -v app_password="$APP_PASSWORD" -f /sql/role_application.psql
+              echo "Tables et rôle du backend à jour."
           env:
             - { name: PGHOST, value: db }
             - { name: PGDATABASE, value: datafit }
@@ -38,6 +40,10 @@ spec:
               valueFrom: { secretKeyRef: { name: datafit-secrets, key: DB_USER } }
             - name: PGPASSWORD
               valueFrom: { secretKeyRef: { name: datafit-secrets, key: DB_PASSWORD } }
+            - name: APP_USER
+              valueFrom: { secretKeyRef: { name: datafit-secrets, key: DB_APP_USER } }
+            - name: APP_PASSWORD
+              valueFrom: { secretKeyRef: { name: datafit-secrets, key: DB_APP_PASSWORD } }
           volumeMounts:
             - { name: sql, mountPath: /sql, readOnly: true }
           securityContext:
