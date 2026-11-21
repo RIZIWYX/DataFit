@@ -59,9 +59,16 @@ if [ ! -f .env ]; then
   cp .env.example .env
   echo "-> .env créé à partir de .env.example"
 fi
+# rôle limité du backend (datafit_app) : son mot de passe est ajouté à .env la première fois
+if ! grep -q '^DB_APP_PASSWORD=' .env; then
+  printf '\n# rôle utilisé par le backend : lit et écrit les données, sans pouvoir toucher aux tables\nDB_APP_USER=datafit_app\nDB_APP_PASSWORD=%s\n' \
+    "$(tr -dc 'a-z0-9' < /dev/urandom | head -c 24)" >> .env
+  echo "-> Mot de passe du rôle datafit_app ajouté à .env"
+fi
 set -a
 . ./.env
 set +a
+DB_APP_USER=${DB_APP_USER:-datafit_app}
 
 if [ "${1:-}" = "--reinitialiser" ]; then
   echo "-> Suppression de la base locale..."
@@ -86,13 +93,20 @@ psql_base() {
   compose exec -T db sh -c \
     'PGOPTIONS="-c client_min_messages=warning" psql -q -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
 }
+# crée ou met à jour le rôle limité du backend (après les tables, pour lui donner ses droits)
+psql_role() {
+  compose exec -T -e APP_USER="$DB_APP_USER" -e APP_PASSWORD="$DB_APP_PASSWORD" db sh -c \
+    'PGOPTIONS="-c client_min_messages=warning" psql -q -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v app_user="$APP_USER" -v app_password="$APP_PASSWORD"' \
+    < db/roles/role_application.sql
+}
 mot_de_passe_sql=${DB_PASSWORD//\'/\'\'} # une apostrophe s'écrit '' en SQL
 if ! psql_base <<< "ALTER ROLE \"$DB_USER\" WITH PASSWORD '$mot_de_passe_sql';" \
-  || ! cat db/*.sql | psql_base; then
+  || ! cat db/*.sql | psql_base \
+  || ! psql_role; then
   echo "La base n'a pas pu être mise à jour. Pour repartir d'une base neuve : ./lancer.sh --reinitialiser"
   exit 1
 fi
-echo "-> Base prête : mot de passe et tables à jour."
+echo "-> Base prête : mot de passe, tables et rôle $DB_APP_USER à jour."
 
 echo "-> Site : http://localhost:3000 | Backend : http://localhost:8080 | Base : localhost:5433"
 compose up --build

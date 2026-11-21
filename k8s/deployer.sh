@@ -12,8 +12,12 @@ if [ ! -f k8s/secret.yaml ]; then
   echo "Il manque k8s/secret.yaml : copie k8s/secret.example.yaml en k8s/secret.yaml et mets tes valeurs."
   exit 1
 fi
-if grep -q "DB_PASSWORD: change-moi" k8s/secret.yaml; then
-  echo "k8s/secret.yaml contient encore le mot de passe d'exemple : choisis-en un autre."
+if grep -Eq "DB_(APP_)?PASSWORD: change-moi" k8s/secret.yaml; then
+  echo "k8s/secret.yaml contient encore un mot de passe d'exemple : choisis-en d'autres."
+  exit 1
+fi
+if ! grep -q "DB_APP_PASSWORD:" k8s/secret.yaml; then
+  echo "Il manque DB_APP_USER et DB_APP_PASSWORD dans k8s/secret.yaml : voir k8s/secret.example.yaml."
   exit 1
 fi
 
@@ -22,7 +26,9 @@ kubectl apply -f k8s/namespace.yaml
 kubectl apply -f k8s/secret.yaml
 
 echo "-> Fichiers SQL de db/ (ConfigMap db-sql)"
-kubectl -n datafit create configmap db-sql --from-file=db/ --dry-run=client -o yaml | kubectl apply -f -
+# le fichier du rôle est rangé sous un autre nom (.psql) : le Job ne le mélange pas avec db/*.sql
+kubectl -n datafit create configmap db-sql --from-file=db/ \
+  --from-file=role_application.psql=db/roles/role_application.sql --dry-run=client -o yaml | kubectl apply -f -
 
 # un Job terminé ne peut pas être modifié : on le supprime pour relancer les tables à jour
 kubectl -n datafit delete job db-migrations --ignore-not-found

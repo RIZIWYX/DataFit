@@ -36,3 +36,19 @@ jobs:
           # dans l'ordre des numéros : 01_utilisateur_profil.sql d'abord
           cat $(ls db/*.sql | sort) | psql "$NEON_DATABASE_URL" -q -v ON_ERROR_STOP=1 --single-transaction
           echo "Schéma Neon à jour : $(ls db/*.sql | wc -l) fichiers appliqués"
+
+      # rôle limité utilisé par Render (DB_USER=datafit_app) : son mot de passe est dans le secret
+      # NEON_APP_PASSWORD. Sans ce secret, l'étape est sautée et rien ne change.
+      - name: Rôle du backend sur Neon
+        env:
+          NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+          NEON_APP_PASSWORD: ${{ secrets.NEON_APP_PASSWORD }}
+          PGOPTIONS: '-c client_min_messages=warning'
+        run: |
+          if [ -z "$NEON_APP_PASSWORD" ]; then
+            echo "::warning::Secret NEON_APP_PASSWORD absent : rôle datafit_app non créé sur Neon"
+            exit 0
+          fi
+          psql "$NEON_DATABASE_URL" -q -v ON_ERROR_STOP=1 -v app_user=datafit_app \
+            -v app_password="$NEON_APP_PASSWORD" -f db/roles/role_application.sql
+          echo "Rôle datafit_app à jour sur Neon"

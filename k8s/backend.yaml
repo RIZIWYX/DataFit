@@ -40,6 +40,13 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - { name: http, containerPort: 8080 }
+          # le backend se connecte avec le rôle limité, pas avec le propriétaire de la base
+          # (env passe avant envFrom : ces deux valeurs remplacent DB_USER / DB_PASSWORD du secret)
+          env:
+            - name: DB_USER
+              valueFrom: { secretKeyRef: { name: datafit-secrets, key: DB_APP_USER } }
+            - name: DB_PASSWORD
+              valueFrom: { secretKeyRef: { name: datafit-secrets, key: DB_APP_PASSWORD } }
           envFrom:
             - configMapRef: { name: datafit-config }
             - secretRef: { name: datafit-secrets }
