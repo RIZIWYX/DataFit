@@ -12,7 +12,7 @@ Audit réalisé le **15 novembre 2026** (issue #59) sur le code de `main` (jusqu
 | 2 | Élevé | Base, backend et services Python ouverts sur toutes les interfaces réseau | **Corrigé** (Docker) |
 | 3 | Élevé | Aucune limite d'essais (connexion, inscription, contact) | **Corrigé** |
 | 4 | Moyen | Pas d'en-têtes de sécurité HTTP, version de nginx affichée | **Corrigé** |
-| 5 | Moyen | Le backend se connecte avec le super-utilisateur de la base | **Reste à faire** |
+| 5 | Moyen | Le backend se connecte avec le super-utilisateur de la base | **Corrigé** |
 | 6 | Moyen | Conteneurs en root, dépendances Python non figées, Swagger actif | **Corrigé** |
 | 7 | Moyen | RGPD : pas de suppression de compte, pas de consentement santé, données en clair dans le navigateur | **En partie** |
 | 8 | Faible | E-mails sensibles à la casse, 72 octets BCrypt, SQL dans les logs, pas d'audit des dépendances | **Corrigé** |
@@ -53,9 +53,19 @@ nginx (`frontend/nginx.conf`) et Vercel (`frontend/vercel.json`) envoient une `C
 
 La CSP a été vérifiée dans un navigateur (servie par nginx, compte créé par l'interface) : inscription, création du profil, synchronisation de la montre, les 13 pages du site, séance et graphiques, rechargement complet d'une page. Aucune violation, aucun appel refusé. Le bouton « Continuer avec Google » a aussi été testé avec un identifiant client factice : le script et la fenêtre de Google se chargent sans violation (la connexion Google elle-même n'a pas été testée, il faudrait un vrai compte Google). Si une page se comporte mal plus tard, la console du navigateur (« Refused to ... because it violates the Content Security Policy ») indique quoi autoriser.
 
-### 5. Super-utilisateur de la base : reste à faire
+### 5. Super-utilisateur de la base : corrigé
 
-Le backend utilise `POSTGRES_USER`, qui peut supprimer des tables et créer des rôles. Une injection SQL ou une faille du backend aurait donc tous les droits. À faire : un second rôle avec seulement `SELECT/INSERT/UPDATE/DELETE`, créé par `lancer.sh`, la CI, Neon et Kubernetes. Non fait ici car cela touche la base en ligne (Neon), qu'on ne peut pas tester depuis le dépôt : à traiter à part.
+**Avant.** Le backend utilisait `POSTGRES_USER`, qui peut supprimer des tables et créer des rôles : une injection SQL ou une faille du backend aurait eu tous les droits.
+
+**Maintenant.** Le backend se connecte avec un rôle à part, `datafit_app`, qui n'a que `SELECT`, `INSERT`, `UPDATE` et `DELETE` sur les tables (et le droit de faire avancer les séquences). Il ne peut ni créer, ni modifier, ni supprimer une table, ni créer de rôle. Les tables restent créées par le propriétaire de la base.
+
+Le rôle est décrit dans `db/roles/role_application.sql` (rejouable) et créé partout :
+- **en local** : `lancer.sh` ajoute `DB_APP_USER` et `DB_APP_PASSWORD` à `.env` la première fois, crée le rôle après les tables et `docker-compose.yml` donne ce rôle au backend ;
+- **CI** : le rôle est créé après les tables et les tests tournent avec lui (un droit manquant fait échouer la CI) ;
+- **Neon** : le workflow « Base Neon » crée le rôle si le secret `NEON_APP_PASSWORD` existe ; Render utilise `DB_USER=datafit_app` ;
+- **Kubernetes** : le Job `db-migrations` crée le rôle, le backend lit `DB_APP_USER` / `DB_APP_PASSWORD` du secret.
+
+`ALTER DEFAULT PRIVILEGES` donne automatiquement les mêmes droits aux tables ajoutées plus tard dans `db/`.
 
 ### 6. Conteneurs et services Python : corrigé
 
