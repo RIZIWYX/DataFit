@@ -28,30 +28,33 @@ export default function Seance() {
     </div>
   )
   const allure = allureSeance(seance)
+  // les chiffres déjà dans la bande du haut ne sont pas répétés dans le panneau des résultats
+  const nomPrincipal = seance.sport === 'musculation' ? 'Séries' : 'Distance'
+  const dejaAffiches = [nomPrincipal, allure ? 'Allure moyenne' : '']
+  const resultats = seance.indicateurs.filter((m) => !dejaAffiches.includes(m.nom))
   return (
     <div className="ecran seance">
       <Link to="/historique" className="lien-retour"><Icone trace={ICONES.retour} />Historique</Link>
       <TitrePage surtitre={`${SPORTS[seance.sport].nom} · ${formatDateLongue(seance.date)}${seance.heure ? `, ${formatHeure(seance.heure)}` : ''}`}
         titre={seance.nom} actions={<span className="etiquette"><Icone trace={ICONES.montre} />Reçue de la montre</span>} />
       {erreur && <p className="alerte" role="alert">{erreur}</p>}
+      {/* l'essentiel d'un coup d'œil : ce qui a été fait. La fréquence cardiaque est dans son panneau. */}
       <dl className="indicateurs seance-chiffres">
-        <Indicateur nom={seance.sport === 'musculation' ? 'Séries' : 'Distance'} valeur={resumeSeance(seance)} />
+        <Indicateur nom={nomPrincipal} valeur={resumeSeance(seance)} />
         <Indicateur nom="Durée" valeur={formatDureeSecondes(seance.dureeSecondes)} />
         {allure && <Indicateur nom="Allure moyenne" valeur={allure} />}
-        <Indicateur nom="FC moyenne" valeur={`${seance.fcMoyenne} bpm`} />
-        <Indicateur nom="FC maximale" valeur={`${seance.fcMax} bpm`} />
       </dl>
       <div className="seance-grille">
         <Panneau titre="Fréquence cardiaque">
-          <dl className="indicateurs">
+          <dl className="indicateurs compacts seance-chiffres-fc">
             <Indicateur nom="Minimum" valeur={`${seance.fcMin} bpm`} />
             <Indicateur nom="Moyenne" valeur={`${seance.fcMoyenne} bpm`} />
             <Indicateur nom="Maximum" valeur={`${seance.fcMax} bpm`} />
           </dl>
         </Panneau>
-        {seance.indicateurs.length > 0 && <Panneau titre={seance.sport === 'course' ? 'Vitesse et régularité' : 'Résultats de la séance'}>
-          <dl className="indicateurs">
-            {seance.indicateurs.map((m) => <Indicateur key={m.nom} nom={m.nom} valeur={m.valeur} />)}
+        {resultats.length > 0 && <Panneau titre={seance.sport === 'course' ? 'Vitesse et régularité' : 'Résultats de la séance'}>
+          <dl className="indicateurs compacts seance-chiffres-resultats">
+            {resultats.map((m) => <Indicateur key={m.nom} nom={m.nom} valeur={m.valeur} />)}
           </dl>
         </Panneau>}
       </div>
