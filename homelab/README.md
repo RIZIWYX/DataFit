@@ -21,7 +21,8 @@ Serveur auto-hébergé sur un ancien portable, pour faire tourner DataFit en deh
 | Docker | Fait |
 | Caddy (reverse proxy) | Fait |
 | Tunnel Cloudflare | Testé avec un tunnel temporaire |
-| Nom de domaine, sauvegardes, supervision | À faire |
+| Sauvegardes (restic, chaque nuit) | Fait, copie externe à faire |
+| Nom de domaine, supervision | À faire |
 | Déploiement de DataFit | À faire |
 
 ## Documentation
@@ -29,4 +30,5 @@ Serveur auto-hébergé sur un ancien portable, pour faire tourner DataFit en deh
 - [Installation](docs/01-installation.md)
 - [Sécurisation](docs/02-securisation.md)
 - [Docker, reverse proxy et tunnel](docs/03-conteneurs-et-exposition.md)
+- [Sauvegardes](docs/04-sauvegardes.md)
 - [Feuille de route](ROADMAP.md)
