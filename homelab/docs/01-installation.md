@@ -106,7 +106,13 @@ sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.ta
 
 J'ai aussi désactivé l'économie d'énergie du Wi-Fi dans NetworkManager (`wifi.powersave = 2` dans `/etc/NetworkManager/conf.d/wifi-powersave.conf`).
 
-Le serveur décrochait pourtant toujours. J'ai essayé d'ajouter `fwlps=0 ips=0 swlps=0` aux options du pilote, mais après redémarrage la carte ne trouvait plus aucun réseau. Je suis revenu à `ant_sel=1` seul.
+Le serveur décrochait pourtant toujours. J'ai essayé d'ajouter `fwlps=0 ips=0 swlps=0` (désactivation des économies d'énergie du pilote) avec `ant_sel=1`, mais la carte ne trouvait plus aucun réseau. La configuration qui fonctionne finalement est :
+
+```
+options rtl8723be ant_sel=2 fwlps=0 ips=0 swlps=0
+```
+
+On peut vérifier les valeurs réellement chargées avec `grep . /sys/module/rtl8723be/parameters/*`.
 
 Le journal a donné la vraie cause :
 
@@ -127,7 +133,7 @@ J'ai aussi supprimé la connexion au réseau public de la résidence (`nmcli con
 ## Reste à faire
 
 - [x] Veille désactivée
-- [ ] Mises à jour automatiques avec `unattended-upgrades`
-- [ ] Reconnexion Wi-Fi sans limite d'essais (`connection.autoconnect-retries 0`)
+- [x] Mises à jour automatiques avec `unattended-upgrades`
+- [x] Reconnexion Wi-Fi sans limite d'essais (`connection.autoconnect-retries 0`)
 - [ ] Redémarrage automatique après coupure de courant dans le BIOS, si l'option existe
 - [ ] IP fixe en local : impossible, la box est gérée par Wifirst. L'adresse stable est celle de Tailscale.
