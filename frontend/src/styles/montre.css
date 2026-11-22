@@ -111,18 +111,17 @@
   font-size: 0.8rem;
   color: var(--gris-2);
 }
-.montre-totaux {
-  display: flex;
-  gap: 2.5rem;
-  margin: 0;
+/* chiffres clés : un nombre et son unité ne se coupent plus en deux lignes. Ces règles passent devant le
+   bloc commun « :is(.montre, .sommeil, ...) .indicateurs » de graphiques-analyse.css. */
+.montre .indicateur-valeur {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  line-height: 1.2;
 }
-.montre-totaux dt {
-  font-size: 0.8rem;
-  color: var(--gris);
-}
-.montre-totaux dd {
-  margin: 0.4rem 0 0;
-  font-size: 2.6rem;
+.montre .indicateurs.montre-totaux {
+  grid-template-columns: repeat(2, auto);
+  justify-content: start;
+  gap: 1.25rem 2.5rem;
 }
 .montre-liens {
   display: flex;
@@ -177,24 +176,16 @@
 .montre-seance > .icone:last-child {
   color: var(--gris-2);
 }
-.montre-seance-chiffres {
-  display: grid;
+.montre .indicateurs.montre-seance-chiffres {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
   margin: 1.1rem 0 1.25rem;
   padding-top: 1.1rem;
   border-top: 1px solid var(--trait);
 }
-.montre-seance-chiffres dt {
-  font-size: 0.75rem;
-  color: var(--gris);
-}
-.montre-seance-chiffres dd {
-  margin: 0.35rem 0 0;
-  font-size: 1.15rem;
-  font-weight: 650;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+/* trois chiffres dans un panneau étroit : un peu plus petits que la variante compacte */
+.montre .indicateurs.montre-seance-chiffres .indicateur-valeur {
+  font-size: clamp(1.25rem, 1rem + 0.7vw, 1.6rem);
 }
 
 .montre-limites {
