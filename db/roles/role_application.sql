@@ -9,7 +9,7 @@ SELECT format('CREATE ROLE %I LOGIN', :'app_user')
 WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'app_user') \gexec
 
 -- le mot de passe est remis à chaque fois : il suit celui de .env ou du secret
-SELECT format('ALTER ROLE %I WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD %L',
+SELECT format('ALTER ROLE %I WITH LOGIN PASSWORD %L',
               :'app_user', :'app_password') \gexec
 
 SELECT format('GRANT CONNECT ON DATABASE %I TO %I', current_database(), :'app_user') \gexec
