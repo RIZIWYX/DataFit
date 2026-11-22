@@ -75,7 +75,7 @@ function Sommeil() {
       </div>
 
       <section className="sommeil-bande" aria-label={libelleNuit(nuit)}>
-        <dl className="indicateurs">
+        <dl className="indicateurs sommeil-chiffres-5">
           <Indicateur nom="Durée de sommeil" valeur={dureeNuit(nuit.dureeSommeilS)} />
           <Indicateur nom="Coucher" valeur={heureNuit(formatHeure(nuit.coucher))} />
           <Indicateur nom="Lever" valeur={heureNuit(formatHeure(nuit.lever))} />
@@ -86,14 +86,14 @@ function Sommeil() {
 
       <div className="sommeil-grille">
         <Panneau titre="Fréquence cardiaque nocturne">
-          <dl className="indicateurs">
+          <dl className="indicateurs compacts sommeil-chiffres-3">
             <Indicateur nom="Minimum" valeur={`${nombre(nuit.fcMin)} bpm`} />
             <Indicateur nom="Moyenne" valeur={`${nombre(nuit.fcMoyenne)} bpm`} />
             <Indicateur nom="Maximum" valeur={`${nombre(nuit.fcMax)} bpm`} />
           </dl>
         </Panneau>
         <Panneau titre="Réveils et repos">
-          <dl className="indicateurs">
+          <dl className="indicateurs compacts sommeil-chiffres-2">
             <Indicateur nom="Réveils" valeur={String(nuit.reveilsNb)} />
             <Indicateur nom="Endormissement" valeur={dureeNuit(nuit.latenceEndormissementS)} />
             <Indicateur nom="Éveil nocturne" valeur={dureeNuit(nuit.eveilNocturneS)} />
@@ -109,7 +109,7 @@ function Sommeil() {
             <i key={p.classe} className={p.classe} style={{ flexGrow: p.duree }} title={`${p.nom} : ${dureeNuit(p.duree)}`} />
           ))}
         </div>
-        <dl className="indicateurs sommeil-phases-chiffres">
+        <dl className="indicateurs compacts sommeil-phases-chiffres">
           {phases.map((p) => (
             <Indicateur key={p.classe} nom={p.nom} valeur={dureeNuit(p.duree)}
               ecart={{ sens: 'stable', texte: part(p.duree) }} />
