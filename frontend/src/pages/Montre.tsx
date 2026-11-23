@@ -1,15 +1,22 @@
 import '../styles/graphiques-analyse.css'
 import '../styles/montre.css'
+import GrapheColonnes from '../components/GrapheColonnes.tsx'
 import Icone from '../components/Icone.tsx'
+import Indicateur from '../components/Indicateur.tsx'
 import { Link } from 'react-router'
 import LienFleche from '../components/LienFleche.tsx'
 import Panneau from '../components/Panneau.tsx'
 import TitrePage from '../components/TitrePage.tsx'
 import { ICONES } from '../data/icones.ts'
-import { SPORTS, couleurSport } from '../data/sports.ts'
+import { LISTE_SPORTS, SPORTS, couleurSport } from '../data/sports.ts'
 import useMontre from '../hooks/useMontre.ts'
+import { parSemaine } from '../lib/activite.ts'
+import { colonnesDesSemaines, nbSeances, seriesDesSports } from '../lib/colonnes.ts'
 import { allureSeance, formatDate, formatDuree, formatHeure, formatJourRelatif, resumeSeance } from '../lib/format.ts'
 import { dureeNuit } from '../lib/sommeil.ts'
+
+// les semaines montrées par le graphique de ce que la montre a envoyé
+const SEMAINES_RECUES = 8
 
 // La montre : son état maintenant, ce qu'elle mesure (et ce qu'elle ne mesure pas),
 // et ce qu'elle a envoyé jusqu'ici.
@@ -109,15 +116,9 @@ function Montre() {
 
         {/* à côté de la montre : ce qu'elle a envoyé jusqu'ici */}
         <Panneau titre="Données reçues" className="montre-recu">
-          <dl className="montre-totaux">
-            <div>
-              <dt>Séances</dt>
-              <dd className="chiffre">{m.nbSeances}</dd>
-            </div>
-            <div>
-              <dt>Nuits</dt>
-              <dd className="chiffre">{m.nbNuits}</dd>
-            </div>
+          <dl className="indicateurs montre-totaux">
+            <Indicateur nom="Séances" valeur={String(m.nbSeances)} />
+            <Indicateur nom="Nuits" valeur={String(m.nbNuits)} />
           </dl>
           {m.premiereDonnee && <p className="montre-note">Depuis le {formatDate(m.premiereDonnee)}.</p>}
           <div className="montre-liens">
@@ -128,36 +129,24 @@ function Montre() {
       </section>
 
       {m.chargement && <p role="status">Chargement des résultats...</p>}
+
+      {/* ce que la montre a envoyé : semaine par semaine, puis la dernière séance */}
       <div className="montre-grille">
-        <Panneau titre="Ce que la montre mesure">
-          <div className="montre-tableau">
-            <table className="tableau-donnees">
-              <thead>
-                <tr>
-                  <th scope="col">Mesure</th>
-                  <th scope="col">Quand</th>
-                  <th scope="col">Dernière valeur reçue</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mesures.map((mesure) => (
-                  <tr key={mesure.nom}>
-                    <td><strong>{mesure.nom}</strong></td>
-                    <td>{mesure.quand}</td>
-                    <td>{mesure.valeur}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="montre-note">
-            Les valeurs affichées proviennent des analyses enregistrées. Les courbes minute par minute
-            sont dans le détail de chaque séance et sur la page Sommeil.
-          </p>
+        <Panneau titre="Séances reçues par semaine">
+          {m.seances.length > 0 ? (
+            <GrapheColonnes
+              series={seriesDesSports(LISTE_SPORTS)}
+              colonnes={colonnesDesSemaines(parSemaine(m.seances, SEMAINES_RECUES, aujourdHui), LISTE_SPORTS)}
+              unite={nbSeances}
+              entete="Semaine"
+            />
+          ) : (
+            <p className="montre-note">Aucune séance reçue pour l'instant : le graphique se dessinera au fil des synchronisations.</p>
+          )}
         </Panneau>
 
         {m.derniereSeance ? (
-          <Panneau titre="Dernière séance reçue" action={<LienFleche to="/historique">Toutes les séances</LienFleche>}>
+          <Panneau titre="Dernière séance reçue">
             <Link to={`/historique/${m.derniereSeance.id}`} className="montre-seance">
               <span className="montre-seance-icone" style={{ color: couleurSport(m.derniereSeance.sport) }}>
                 <Icone trace={SPORTS[m.derniereSeance.sport].icone} />
@@ -171,21 +160,15 @@ function Montre() {
               </span>
               <Icone trace={ICONES.chevron} />
             </Link>
-            <dl className="montre-seance-chiffres">
-              <div>
-                <dt>{m.derniereSeance.sport === 'musculation' ? 'Séries' : 'Distance'}</dt>
-                <dd>{resumeSeance(m.derniereSeance)}</dd>
-              </div>
-              <div>
-                <dt>Durée</dt>
-                <dd>{formatDuree(m.derniereSeance.dureeMin)}</dd>
-              </div>
-              <div>
-                <dt>FC moyenne</dt>
-                <dd>{m.derniereSeance.fcMoyenne} bpm</dd>
-              </div>
+            <dl className="indicateurs compacts montre-seance-chiffres">
+              <Indicateur nom={m.derniereSeance.sport === 'musculation' ? 'Séries' : 'Distance'} valeur={resumeSeance(m.derniereSeance)} />
+              <Indicateur nom="Durée" valeur={formatDuree(m.derniereSeance.dureeMin)} />
+              <Indicateur nom="FC moyenne" valeur={`${m.derniereSeance.fcMoyenne} bpm`} />
             </dl>
-            <LienFleche to={`/historique/${m.derniereSeance.id}`}>Voir l'analyse de la séance</LienFleche>
+            <div className="montre-liens">
+              <LienFleche to={`/historique/${m.derniereSeance.id}`}>Voir l'analyse</LienFleche>
+              <LienFleche to="/historique">Toutes les séances</LienFleche>
+            </div>
           </Panneau>
         ) : (
           <Panneau titre="Dernière séance reçue">
@@ -193,6 +176,33 @@ function Montre() {
           </Panneau>
         )}
       </div>
+
+      <Panneau titre="Ce que la montre mesure">
+        <div className="montre-tableau">
+          <table className="tableau-donnees">
+            <thead>
+              <tr>
+                <th scope="col">Mesure</th>
+                <th scope="col">Quand</th>
+                <th scope="col">Dernière valeur reçue</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mesures.map((mesure) => (
+                <tr key={mesure.nom}>
+                  <td><strong>{mesure.nom}</strong></td>
+                  <td>{mesure.quand}</td>
+                  <td>{mesure.valeur}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="montre-note">
+          Les valeurs affichées proviennent des analyses enregistrées. Les courbes minute par minute
+          sont dans le détail de chaque séance et sur la page Sommeil.
+        </p>
+      </Panneau>
 
       <p className="montre-limites">
         <Icone trace={ICONES.info} />

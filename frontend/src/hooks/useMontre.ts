@@ -95,6 +95,7 @@ function useMontre() {
     message,
     erreur: [erreur, resultats.erreur, sommeil.erreur].filter(Boolean).join(' '),
     chargement: resultats.chargement || sommeil.chargement,
+    seances,
     derniereSeance,
     derniereCourse: seances.findLast((s) => s.sport === 'course'),
     nbSeances: seances.length,
