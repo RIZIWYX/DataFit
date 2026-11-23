@@ -1,6 +1,6 @@
 # Audit de sécurité
 
-Audit réalisé le **15 novembre 2026** (issue #59) sur le code de `main` (jusqu'à la PR #56), puis corrections (issue #60). Il reprend et met à jour le constat du 3 novembre 2026, établi avant la suppression de compte et l'effacement des données.
+Audit réalisé le **15 novembre 2026** (issue #59) sur le code de `main` (jusqu'à la PR #56), puis corrections (issues #60, #61 et #63). Il reprend et met à jour le constat du 3 novembre 2026, établi avant la suppression de compte et l'effacement des données.
 
 **Méthode.** Lecture du code (backend, front, Python, `docker-compose.yml`, nginx, CI), puis vérification en vrai : la pile complète a été lancée dans un projet Docker jetable (base neuve, supprimée ensuite) et attaquée avec `curl`. Ce n'est **pas** un test d'intrusion : aucun scanner automatique (OWASP ZAP, Trivy...) n'a été utilisé, et les services en ligne (Vercel, Render, Neon, Stripe) n'ont pas été testés.
 
@@ -14,7 +14,7 @@ Audit réalisé le **15 novembre 2026** (issue #59) sur le code de `main` (jusqu
 | 4 | Moyen | Pas d'en-têtes de sécurité HTTP, version de nginx affichée | **Corrigé** |
 | 5 | Moyen | Le backend se connecte avec le super-utilisateur de la base | **Corrigé** |
 | 6 | Moyen | Conteneurs en root, dépendances Python non figées, Swagger actif | **Corrigé** |
-| 7 | Moyen | RGPD : pas de suppression de compte, pas de consentement santé, données en clair dans le navigateur | **En partie** |
+| 7 | Moyen | RGPD : pas de suppression de compte, pas de consentement santé, données en clair dans le navigateur | **En partie** (consentement et profil faits, voir le détail) |
 | 8 | Faible | E-mails sensibles à la casse, 72 octets BCrypt, SQL dans les logs, pas d'audit des dépendances | **Corrigé** |
 | 9 | À prévoir | Pas de HTTPS, origine CORS écrite en dur | **En partie** |
 
@@ -76,10 +76,14 @@ Le rôle est décrit dans `db/roles/role_application.sql` (rejouable) et créé 
 
 ### 7. RGPD : en partie
 
-Fait depuis l'audit du 3 novembre : suppression du compte et effacement des données par catégorie (PR #51 et #52). Reste :
-- aucun **consentement propre aux données de santé** (seule la case des CGU existe) ;
-- le profil, le journal nutrition et les records restent **en clair dans le `localStorage`** du navigateur ;
-- pas d'export des données (droit d'accès / portabilité).
+Fait depuis l'audit du 3 novembre : suppression du compte et effacement des données par catégorie (PR #51 et #52). Fait ensuite pour l'issue #61 :
+- **consentement propre aux données de santé** : case distincte et jamais cochée d'avance à l'inscription, date enregistrée (`utilisateur.sante_acceptee_le`), vérifiée par le backend. Les comptes anciens et ceux créés avec Google le donnent sur un écran dédié avant d'ouvrir l'application ;
+- le **profil** gardé dans le navigateur n'est plus qu'une copie : le serveur fait foi (rechargé à chaque connexion) et la copie est effacée à la déconnexion. Cela corrige aussi un défaut : se connecter depuis un navigateur neuf renvoyait vers la création du profil.
+
+Reste :
+- le **journal nutrition, l'historique des records, les rangs et les notes de séance** restent dans le `localStorage` après la déconnexion, car une partie n'existe que là (notes, historique des records, objectif du journal). Inventaire complet dans [securite.md](securite.md#données-gardées-dans-le-navigateur). La vraie correction est de les ranger sur le serveur ; les chiffrer dans le navigateur n'apporterait rien (la clé y serait aussi) ;
+- pas d'export des données (droit d'accès / portabilité) ;
+- pas de bouton « retirer mon consentement » à part : le retrait passe par « Effacer mes données » ou « Supprimer mon compte ».
 
 ### 8. Détails : corrigé
 
