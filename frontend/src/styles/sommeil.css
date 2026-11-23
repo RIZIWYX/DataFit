@@ -172,3 +172,44 @@
 .sommeil-tableau tr.choisie td {
   color: var(--blanc);
 }
+
+/* chiffres clés : autant de colonnes que de chiffres, pour qu'un chiffre ne reste jamais seul sur une
+   deuxième ligne. Ces règles passent devant le bloc commun « :is(.seance, .sommeil, ...) .indicateurs »
+   de graphiques-analyse.css, qui laissait les unités ("bpm", "min") glisser sous leur nombre. */
+.sommeil .indicateurs.sommeil-chiffres-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.sommeil .indicateurs.sommeil-chiffres-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.sommeil .indicateurs.sommeil-chiffres-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.sommeil .indicateurs.sommeil-phases-chiffres {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+/* un nombre et son unité restent sur la même ligne ; si la place manque, ce sont les colonnes qui changent */
+.sommeil .indicateur-valeur {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  line-height: 1.2;
+}
+
+@media (max-width: 1099px) {
+  .sommeil .indicateurs.sommeil-chiffres-5 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .sommeil .indicateurs.sommeil-phases-chiffres {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 699px) {
+  .sommeil .indicateurs.sommeil-chiffres-5 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 599px) {
+  .sommeil .indicateurs.sommeil-chiffres-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
